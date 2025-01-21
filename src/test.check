@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "s21_string.h"
 
 #test s21_strlen_1
@@ -29,7 +30,6 @@
     
     ck_assert_str_eq(str2, str3);
 
-
 #test s21_strcpy_2
     const char str1[] = "This is a long test text";
     char str2[100];
@@ -50,7 +50,6 @@
     
     ck_assert_str_eq(str2, str3);
 
-
 /* cringe
 //#test s21_strcpy_4
     const char str1[] = "This is a long test text";
@@ -62,3 +61,37 @@
     
     ck_assert_str_eq(str2, str3);
 */
+
+
+#test s21_strncat_1
+    char str1[100] = "Hello";
+    char str2[100] = "Hello";
+    const char src[] = " World!";
+    
+    strncat(str1, src, 6);
+    s21_strncat(str2, src, 6);
+    
+    ck_assert_str_eq(str1, str2);
+
+#test s21_strncat_2
+    char str3[100] = "Goodbye";
+    char str4[100] = "Goodbye";
+    const char src2[] = " Cruel World!";
+    
+    strncat(str3, src2, 10);
+    s21_strncat(str4, src2, 10);
+    
+    ck_assert_str_eq(str3, str4);
+
+#test s21_strncat_3
+    char str5[100] = "Test";
+    char str6[100] = "Test";
+    const char src3[] = " String Concatenation";
+    
+    strncat(str5, src3, 80);
+    s21_strncat(str6, src3, 80);
+    
+    ck_assert_str_eq(str5, str6);
+
+
+
