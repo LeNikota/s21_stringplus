@@ -1,7 +1,64 @@
 #include <string.h>
+#include <stdio.h>
 #include "s21_string.h"
 
-#test strlen_test
+#test s21_strlen_1
+    const char str[] = "";
+    
+    ck_assert_int_eq(  strlen(str), s21_strlen(str));
+
+#test s21_strlen_2
     const char str[] = "Hello world";
     
-    ck_assert(strlen(str) == s21_strlen(str));
+    ck_assert_int_eq(  strlen(str), s21_strlen(str));
+
+#test s21_strlen_3
+    const char str[] = "Cotton Eye Joe";
+    
+    ck_assert_int_eq(  strlen(str), s21_strlen(str));
+
+
+
+#test s21_strcpy_1
+    const char str1[] = "This is a long test text";
+    char str2[100];
+    char str3[100];
+
+    strncpy(str2, str1, 5);
+    s21_strncpy(str3, str1, 5);
+    
+    ck_assert_str_eq(str2, str3);
+
+
+#test s21_strcpy_2
+    const char str1[] = "This is a long test text";
+    char str2[100];
+    char str3[100];
+
+    strncpy(str2, str1, 17);
+    s21_strncpy(str3, str1, 17);
+    
+    ck_assert_str_eq(str2, str3);
+
+#test s21_strcpy_3
+    const char str1[] = "This is a long test text";
+    char str2[100];
+    char str3[100];
+
+    strncpy(str2, str1, 80);
+    s21_strncpy(str3, str1, 80);
+    
+    ck_assert_str_eq(str2, str3);
+
+
+/* cringe
+//#test s21_strcpy_4
+    const char str1[] = "This is a long test text";
+    char str2[100];
+    char str3[100];
+
+    strncpy(str2, str1, 16);
+    s21_strncpy(str3, str1, 16);
+    
+    ck_assert_str_eq(str2, str3);
+*/
