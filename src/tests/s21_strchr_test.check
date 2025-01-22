@@ -3,3 +3,41 @@
 #include <stdlib.h>
 #include "s21_string.h"
 
+#include <check.h>
+#include <string.h>
+#include "s21_string.h"
+
+#test s21_strrchr_1
+    const char str[] = "Hello, World!";
+    char *result = s21_strrchr(str, 'o');
+    ck_assert_str_eq(result, "orld!");
+
+#test s21_strrchr_2
+    const char str[] = "Hello, World!";
+    char *result = s21_strrchr(str, 'H');
+    ck_assert_str_eq(result, "Hello, World!");
+
+#test s21_strrchr_3
+    const char str[] = "Hello, World!";
+    char *result = s21_strrchr(str, '!');
+    ck_assert_str_eq(result, "!");
+
+#test s21_strrchr_4
+    const char str[] = "Hello, World!";
+    char *result = s21_strrchr(str, 'l');
+    ck_assert_str_eq(result, "ld!");
+
+#test s21_strrchr_5
+    const char str[] = "Hello, World!";
+    char *result = s21_strrchr(str, 'x');
+    ck_assert_ptr_eq(result, S21_NULL); // Character not found
+
+#test s21_strrchr_6
+    const char str[] = "";
+    char *result = s21_strrchr(str, 'a');
+    ck_assert_ptr_eq(result, S21_NULL); // Empty string
+
+#test s21_strrchr_7
+    const char str[] = "Hello, World!";
+    char *result = s21_strrchr(str, '\0');
+    ck_assert_str_eq(result, ""); // Null character at the end

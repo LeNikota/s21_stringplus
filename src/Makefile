@@ -22,7 +22,7 @@ format:
 	@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -i
 
 test: all
-	checkmk ./tests/*.c > test.c
+	checkmk ./tests/*.check > test.c
 	gcc test.c -o test -L. -l:s21_string.a -lcheck -lm -lsubunit -lgcov
 	./test
 #@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -n
@@ -30,7 +30,6 @@ test: all
 #valgrind --tool=memcheck --leak-check=yes --leak-check=full --show-leak-kinds=all ./s21_cat $flags $files 2>&1 | grep -E "ERROR"
 
 gcov_report: clean test
-	./test
 	lcov --capture --directory . --output-file coverage.info
 	genhtml coverage.info --output-directory coverage_html
 	open ./coverage_html/index.html
