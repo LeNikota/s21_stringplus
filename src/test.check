@@ -170,3 +170,50 @@
     
     ck_assert_int_eq(s21_strncmp(str1, str2, 65), strncmp(str1, str2, 65));
 
+
+
+
+#test s21_strstr_1
+    const char str[] = "Hello, World!";
+    const char substr[] = "World";
+    ck_assert_str_eq(s21_strstr(str, substr), strstr(str, substr));
+
+#test s21_strstr_2
+    const char str[] = "Hello, World!";
+    const char substr[] = "Hello";
+    ck_assert_str_eq(s21_strstr(str, substr), strstr(str, substr));
+
+#test s21_strstr_3
+    const char str[] = "Hello, World!";
+    const char substr[] = "!";
+    ck_assert_str_eq(s21_strstr(str, substr), strstr(str, substr));
+
+#test s21_strstr_4
+    const char str[] = "Hello, World!";
+    const char substr[] = "lo";
+    ck_assert_str_eq(s21_strstr(str, substr), strstr(str, substr));
+
+#test s21_strstr_5
+    const char str[] = "Hello, World!";
+    const char substr[] = "Goodbye";
+    ck_assert_ptr_eq(s21_strstr(str, substr), strstr(str, substr));
+
+#test s21_strstr_6
+    const char str[] = "Hello, World!";
+    const char substr[] = "";
+    ck_assert_str_eq(s21_strstr(str, substr), strstr(str, substr));
+
+#test s21_strstr_7
+    const char str[] = "";
+    const char substr[] = "Hello";
+    ck_assert_ptr_eq(s21_strstr(str, substr), strstr(str, substr));
+
+#test s21_strstr_8
+    const char str[] = "";
+    const char substr[] = "";
+    ck_assert_str_eq(s21_strstr(str, substr), strstr(str, substr));
+
+
+
+
+
