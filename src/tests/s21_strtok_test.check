@@ -1,0 +1,97 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "s21_string.h"
+
+#test s21_strtok_1
+    char str[] = "Hello, World! This is a test.";
+    const char *delim = " ,.!"; // Delimiters are space, comma, period, and exclamation mark
+    char *token = s21_strtok(str, delim);
+    
+    ck_assert_str_eq(token, "Hello"); // First token should be "Hello"
+
+#test s21_strtok_2
+    char str[] = "Hello, World! This is a test.";
+    const char *delim = " ,.!"; 
+    s21_strtok(str, delim); // Get first token
+    char *token = s21_strtok(NULL, delim);
+    
+    ck_assert_str_eq(token, "World"); // Second token should be "World"
+
+#test s21_strtok_3
+    char str[] = "Hello, World! This is a test.";
+    const char *delim = " ,.!"; 
+    s21_strtok(str, delim); // Get first token
+    s21_strtok(NULL, delim); // Get second token
+    char *token = s21_strtok(NULL, delim);
+    
+    ck_assert_str_eq(token, "This"); // Third token should be "This"
+
+#test s21_strtok_4
+    char str[] = "Hello, World! This is a test.";
+    const char *delim = " ,.!"; 
+    s21_strtok(str, delim); // Get first token
+    s21_strtok(NULL, delim); // Get second token
+    s21_strtok(NULL, delim); // Get third token
+    char *token = s21_strtok(NULL, delim);
+    
+    ck_assert_str_eq(token, "is"); // Fourth token should be "is"
+
+#test s21_strtok_5
+    char str[] = "Hello, World! This is a test.";
+    const char *delim = " ,.!"; 
+    s21_strtok(str, delim); // Get first token
+    s21_strtok(NULL, delim); // Get second token
+    s21_strtok(NULL, delim); // Get third token
+    s21_strtok(NULL, delim); // Get fourth token
+    char *token = s21_strtok(NULL, delim);
+    
+    ck_assert_str_eq(token, "a"); // Fifth token should be "a"
+
+#test s21_strtok_6
+    char str[] = "Hello, World! This is a test.";
+    const char *delim = " ,.!"; 
+    s21_strtok(str, delim); // Get first token
+    s21_strtok(NULL, delim); // Get second token
+    s21_strtok(NULL, delim); // Get third token
+    s21_strtok(NULL, delim); // Get fourth token
+    s21_strtok(NULL, delim); // Get fifth token
+    char *token = s21_strtok(NULL, delim);
+    
+    ck_assert_str_eq(token, "test"); // Sixth token should be "test"
+
+#test s21_strtok_7
+    char str[] = "Hello, World! This is a test.";
+    const char *delim = " ,.!"; 
+    s21_strtok(str, delim); // Get first token
+    s21_strtok(NULL, delim); // Get second token
+    s21_strtok(NULL, delim); // Get third token
+    s21_strtok(NULL, delim); // Get fourth token
+    s21_strtok(NULL, delim); // Get fifth token
+    s21_strtok(NULL, delim); // Get sixth token
+    char *token = s21_strtok(NULL, delim);
+    
+    ck_assert_ptr_eq(token, NULL); // No more tokens should return NULL
+
+#test s21_strtok_8
+    char str[] = "   Leading spaces";
+    const char *delim = " "; 
+    char *token = s21_strtok(str, delim);
+    
+    ck_assert_str_eq(token, "Leading"); // First token should be "Leading"
+
+#test s21_strtok_9
+    char str[] = "Trailing spaces   ";
+    const char *delim = " "; 
+    char *token = s21_strtok(str, delim);
+    
+    ck_assert_str_eq(token, "Trailing"); // First token should be "Trailing"
+
+#test s21_strtok_10
+    char str[] = "Multiple   spaces";
+    const char *delim = " "; 
+    char *token = s21_strtok(str, delim);
+    
+    ck_assert_str_eq(token, "Multiple"); // First token should be "Multiple"
+    token = s21_strtok(NULL, delim);
+    ck_assert_str_eq(token, "spaces"); // Second token should be "spaces"

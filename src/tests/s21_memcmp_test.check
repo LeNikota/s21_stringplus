@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include "s21_string.h"
 
-#include <check.h>
-#include <string.h>
-#include "s21_string.h"
-
 #test s21_memcmp_1
     const char str1[] = "Hello";
     const char str2[] = "Hello";
