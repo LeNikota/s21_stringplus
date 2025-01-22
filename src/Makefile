@@ -16,13 +16,13 @@ s21_string.a: $(OBJ)
 	gcc $(FLAGS) $(TEST_FLAGS) -c $^ -o $@
 
 clean:
-	rm -rf $(OBJ) *.gcno *.gcda coverage* s21_string.a a.out test test.c
+	rm -rf $(OBJ) *.gcno *.gcda coverage* s21_string.a a.out  test.c test
 
 format:
 	@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -i
 
 test: all
-	checkmk test.check > test.c
+	checkmk ./tests/*.c > test.c
 	gcc test.c -o test -L. -l:s21_string.a -lcheck -lm -lsubunit -lgcov
 	./test
 #@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -n
