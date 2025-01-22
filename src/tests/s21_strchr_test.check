@@ -3,41 +3,52 @@
 #include <stdlib.h>
 #include "s21_string.h"
 
-#include <check.h>
-#include <string.h>
-#include "s21_string.h"
-
-#test s21_strrchr_1
+#test s21_strchr_1
     const char str[] = "Hello, World!";
-    char *result = s21_strrchr(str, 'o');
-    ck_assert_str_eq(result, "orld!");
+    char *result = s21_strchr(str, 'o');
+    char *expected = strchr(str, 'o');
+    ck_assert_str_eq(result, expected);
 
-#test s21_strrchr_2
+#test s21_strchr_2
     const char str[] = "Hello, World!";
-    char *result = s21_strrchr(str, 'H');
-    ck_assert_str_eq(result, "Hello, World!");
+    char *result = s21_strchr(str, 'H');
+    char *expected = strchr(str, 'H');
+    ck_assert_str_eq(result, expected);
 
-#test s21_strrchr_3
+#test s21_strchr_3
     const char str[] = "Hello, World!";
-    char *result = s21_strrchr(str, '!');
-    ck_assert_str_eq(result, "!");
+    char *result = s21_strchr(str, '!');
+    char *expected = strchr(str, '!');
+    ck_assert_str_eq(result, expected);
 
-#test s21_strrchr_4
+#test s21_strchr_4
     const char str[] = "Hello, World!";
-    char *result = s21_strrchr(str, 'l');
-    ck_assert_str_eq(result, "ld!");
+    char *result = s21_strchr(str, 'l');
+    char *expected = strchr(str, 'l');
+    ck_assert_str_eq(result, expected);
 
-#test s21_strrchr_5
+#test s21_strchr_5
     const char str[] = "Hello, World!";
-    char *result = s21_strrchr(str, 'x');
-    ck_assert_ptr_eq(result, S21_NULL); // Character not found
+    char *result = s21_strchr(str, 'x');
+    char *expected = strchr(str, 'x');
+    ck_assert_ptr_eq(result, expected); 
 
-#test s21_strrchr_6
+#test s21_strchr_6
     const char str[] = "";
-    char *result = s21_strrchr(str, 'a');
-    ck_assert_ptr_eq(result, S21_NULL); // Empty string
+    char *result = s21_strchr(str, 'a');
+    char *expected = strchr(str, 'a');
+    ck_assert_ptr_eq(result, expected); 
 
-#test s21_strrchr_7
+#test s21_strchr_7
     const char str[] = "Hello, World!";
-    char *result = s21_strrchr(str, '\0');
-    ck_assert_str_eq(result, ""); // Null character at the end
+    char *result = s21_strchr(str, '\0');
+    char *expected = strchr(str, '\0');
+    ck_assert_str_eq(result, expected); 
+
+/*
+//#test s21_strchr_8
+const char str[] = "Hello, World!";
+char *result = s21_strchr(str, 'w');
+char *expected = strchr(str, 'w');
+ck_assert_str_eq(S21_NULL, S21_NULL); 
+*/
