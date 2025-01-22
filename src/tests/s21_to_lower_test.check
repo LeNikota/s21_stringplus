@@ -1,5 +1,48 @@
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include "s21_string.h"
 
+#include <check.h>
+#include <string.h>
+#include <stdlib.h>
+#include "s21_string.h"
+
+#test s21_to_lower_1
+    const char str[] = "HELLO, WORLD!";
+    char *result = s21_to_lower(str);
+    ck_assert_str_eq(result, "hello, world!");
+    free(result);
+
+#test s21_to_lower_2
+    const char str[] = "Hello, World!";
+    char *result = s21_to_lower(str);
+    ck_assert_str_eq(result, "hello, world!");
+    free(result);
+
+#test s21_to_lower_3
+    const char str[] = "12345";
+    char *result = s21_to_lower(str);
+    ck_assert_str_eq(result, "12345");
+    free(result);
+
+#test s21_to_lower_4
+    const char str[] = "C PROGRAMMING";
+    char *result = s21_to_lower(str);
+    ck_assert_str_eq(result, "c programming");
+    free(result);
+
+#test s21_to_lower_5
+    const char str[] = "";
+    char *result = s21_to_lower(str);
+    ck_assert_str_eq(result, "");
+    free(result);
+
+#test s21_to_lower_6
+    char *result = s21_to_lower(S21_NULL);
+    ck_assert_ptr_eq(result, S21_NULL); // Test for NULL input
+
+#test s21_to_lower_7
+    const char str[] = "Mixed CASE 123!";
+    char *result = s21_to_lower(str);
+    ck_assert_str_eq(result, "mixed case 123!");
+    free(result);

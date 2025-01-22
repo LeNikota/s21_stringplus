@@ -1,5 +1,6 @@
 #include "s21_string.h"
 
+//! Many exits (returns), by school 21's rules must be one
 char *s21_strtok(char *str, const char *delim) {
   static char *last = S21_NULL;
 
