@@ -20,7 +20,7 @@
     const char src[] = "Hello, World!";
     const char str[] = "!!!";
     char *result = s21_insert(src, str, 13);
-    ck_assert_str_eq(result, "Hello, World!!!");
+    ck_assert_str_eq(result, "Hello, World!!!!");
     free(result);
 
 #test s21_insert_4
