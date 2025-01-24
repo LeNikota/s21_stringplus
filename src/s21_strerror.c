@@ -1,7 +1,7 @@
 #include "s21_string.h"
 
 #define ERROR_COUNT 134
-#define UNKNOWN_ERROR "Unknown error: "
+#define UNKNOWN_ERROR "Unknown error"
 
 static const char *const sys_error_list[ERROR_COUNT] = {
     [0] = "Success",
@@ -139,60 +139,10 @@ static const char *const sys_error_list[ERROR_COUNT] = {
     [132] = "Operation not possible due to RF-kill",
     [133] = "Memory page has hardware error"};
 
-/*
-
-Used to concatenate integer, which would sprintf do find, but it is not
-implemented yet so do it here
-
-*/
-void int_to_string(int num, char *buffer) {
-  int i = 0;
-  int is_negative = 0;
-
-  if (num < 0) {
-    is_negative = 1;
-    num = -num;
-  }
-
-  do {
-    buffer[i++] = (num % 10) + '0';
-    num /= 10;
-  } while (num > 0);
-
-  if (is_negative) {
-    buffer[i++] = '-';
-  }
-
-  for (int j = 0; j < i / 2; j++) {
-    char temp_char = buffer[j];
-    buffer[j] = buffer[i - j - 1];
-    buffer[i - j - 1] = temp_char;
-  }
-
-  buffer[i] = '\0';
-}
-
 char *s21_strerror(int errnum) {
   if (errnum >= 0 && errnum < ERROR_COUNT) {
     return (char *)sys_error_list[errnum];
   }
 
-  /*
-
-  return UNKNOWN_ERROR + errnum;
-
-  would be find, BUT low-level language doesn't
-  allow to concatenate strings and numbers easily, thus we have to do steps
-  bellow
-
-  */
-
-  static char num[256];
-  static char unknown_error[256];
-
-  int_to_string(errnum, num);
-  s21_strcat(UNKNOWN_ERROR, unknown_error);
-  s21_strcat(num, unknown_error);
-
-  return unknown_error;
+  return UNKNOWN_ERROR;
 }
