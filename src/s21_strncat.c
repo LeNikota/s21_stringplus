@@ -11,3 +11,16 @@ char *s21_strncat(char *dest, const char *src, s21_size_t n)  {
 
   return start;
 }
+
+// Used in sprintf
+char *s21_strcat(char *dest, const char *src)  {
+  char *start = dest;
+
+  while (*dest) dest++;
+
+  while (*src) *dest++ = *src++;
+
+  *dest = '\0';
+
+  return start;
+}

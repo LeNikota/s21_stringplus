@@ -1,5 +1,4 @@
 #include "s21_string.h"
-#include <string.h>
 #include <stdarg.h>
 
 // %[flags][width][.precision][length]specifier
@@ -31,7 +30,7 @@ typedef struct Fmt {
     // Format specifier for data type:
     // 'c' : char
     // 'd' : signed int
-    // 'i' : signed int
+    // 'i' : signed int (may be decimal, octal or hexadecimal)
     // 'e' : scientific notation using e character
     // 'E' : Scientific notation using E character
     // 'f' : float
@@ -46,14 +45,18 @@ typedef struct Fmt {
     // 'n' : Number of characters printed until %n occurs
     // '%' : literal percent
     char specifier;
+
+    // Variable argument list to hold the additional arguments
+    va_list args;
 } Fmt;
 
 const char* parse_int(const char *p, Fmt *fmt);
+void insert_integer(char *str, Fmt *fmt);
+void insert_string(char *str, Fmt *fmt);
 
 int s21_sprintf(char *str, const char *format, ...) {
     Fmt fmt = {0};
-    va_list args;
-    va_start(args, format);
+    va_start(fmt.args, format);
     
     int i = 0;
     for (const char *p = format; *p; p++) {
@@ -63,7 +66,7 @@ int s21_sprintf(char *str, const char *format, ...) {
 
             // Handle flags
             while (*p == '-' || *p == '+' || *p == '0' || *p == ' ' || *p == '#') {
-                if (flag_index < sizeof(fmt.flags) - 1) {
+                if (flag_index < 5) {
                     fmt.flags[flag_index++] = *p;
                 }
                 p++;
@@ -80,7 +83,6 @@ int s21_sprintf(char *str, const char *format, ...) {
                 fmt.length[0] = *p;
                 p++;
             }
-
             // long long int
             if (*p == 'l') {
                 fmt.length[1] = *p;
@@ -94,10 +96,13 @@ int s21_sprintf(char *str, const char *format, ...) {
             switch (fmt.specifier) {
                 case 'd':
                 case 'i':
+                    insert_integer(str, &fmt);
                     break;
                 case 's':
+                    insert_string(str, &fmt);
                     break;
                 case 'c':
+                    // insert_character(str, &fmt);
                     break;
                 case 'e':
                 case 'E':
@@ -129,7 +134,7 @@ int s21_sprintf(char *str, const char *format, ...) {
     }
 
     str[i] = '\0';
-    va_end(args);
+    va_end(fmt.args);
     
     return i;
 }
@@ -145,3 +150,69 @@ const char* parse_int(const char *p, Fmt *fmt) {
     return p;
 }
 
+// Macro to convert an integer to a string
+#define int_to_str(number, str)       \
+  do {                                \
+    int is_negative = 0;              \
+    int i = 0;                        \
+                                      \
+    if (number < 0) {                 \
+      is_negative = 1;                \
+      number = -number;               \
+    }                                 \
+                                      \
+    do {                              \
+      str[i++] = (number % 10) + '0'; \
+      number /= 10;                   \
+    } while (number > 0);             \
+                                      \
+    if (is_negative) {                \
+      str[i++] = '-';                 \
+    }                                 \
+                                      \
+    str[i] = '\0';                    \
+                                      \
+    for (int j = 0; j < i / 2; j++) { \
+      char temp = str[j];             \
+      str[j] = str[i - j - 1];        \
+      str[i - j - 1] = temp;          \
+    }                                 \
+  } while (0)
+
+void insert_integer(char *str, Fmt *fmt) {
+    if(fmt->specifier == 'd'){
+        if(fmt->length == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, str);
+            
+        } else if(s21_strcmp(fmt->length, "l") == 0){
+            long int number = va_arg(fmt->args, long int);
+            int_to_str(number, str);
+
+        } else if(s21_strcmp(fmt->length, "ll") == 0){
+            long long int number = va_arg(fmt->args, long long int);
+            int_to_str(number, str);
+            
+        }
+    } else /* 'i' */ {
+        if(fmt->length == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, str);
+
+        } else if(s21_strcmp(fmt->length, "l") == 0){
+            long int number = va_arg(fmt->args, long int);
+            int_to_str(number, str);
+
+        } else if(s21_strcmp(fmt->length, "ll") == 0){
+            long long int number = va_arg(fmt->args, long long int);
+            int_to_str(number, str);
+            
+        }
+    }
+
+}
+
+void insert_string(char *str, Fmt *fmt){
+    char* string = va_arg(fmt->args, char*);
+    s21_strcat(str, string);
+}

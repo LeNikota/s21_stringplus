@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "s21_string.h"
+
+#test s21_sprintf_integer_decimal
+    char buffer[100];
+    char expected[100];
+    int number = 42;
+
+    sprintf(expected, "Number: %d", number);
+    s21_sprintf(buffer, "Number: %d", number);
+
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_integer_signed
+    char buffer_i[100];
+    char expected_i[100];
+    int signed_number = -42;
+
+    sprintf(expected_i, "Signed Number: %i", signed_number);
+    s21_sprintf(buffer_i, "Signed Number: %i", signed_number);
+
+    ck_assert_str_eq(buffer_i, expected_i);
+
+#test s21_sprintf_string
+    char buffer_s[100];
+    char expected_s[100];
+    const char *name = "Alice";
+
+    sprintf(expected_s, "Name: %s", name);
+    s21_sprintf(buffer_s, "Name: %s", name);
+
+    ck_assert_str_eq(buffer_s, expected_s);
