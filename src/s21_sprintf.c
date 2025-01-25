@@ -56,6 +56,7 @@ typedef struct Fmt {
 const char* parse_int(const char *p, Fmt *fmt);
 void insert_integer(Fmt *fmt);
 void insert_string(Fmt *fmt);
+void insert_character(Fmt *fmt);
 
 int s21_sprintf(char *str, const char *format, ...) {
     Fmt fmt = {0};
@@ -109,7 +110,7 @@ int s21_sprintf(char *str, const char *format, ...) {
                     insert_string(&fmt);
                     break;
                 case 'c':
-                    // insert_character(str, &fmt);
+                    insert_character(&fmt);
                     break;
                 case 'e':
                 case 'E':
@@ -223,5 +224,10 @@ void insert_string(Fmt *fmt){
     char* string = va_arg(fmt->args, char*);
     
     while (*string) *fmt->str++ = *string++;
+    *fmt->str = '\0';
+}
+
+void insert_character(Fmt *fmt){
+    *fmt->str++ = va_arg(fmt->args, int);
     *fmt->str = '\0';
 }

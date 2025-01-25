@@ -8,27 +8,60 @@
     char expected[100];
     int number = 42;
 
-    sprintf(expected, "Number: %d", number);
-    s21_sprintf(buffer, "Number: %d", number);
-
+    ck_assert_int_eq(s21_sprintf(buffer, "Number: %d", number), sprintf(expected, "Number: %d", number));
     ck_assert_str_eq(buffer, expected);
 
-#test s21_sprintf_integer_signed
-    char buffer_i[100];
-    char expected_i[100];
-    int signed_number = -42;
+#test s21_sprintf_long_decimal
+    char buffer[100];
+    char expected[100];
+    long number = 1234567890L;
 
-    sprintf(expected_i, "Signed Number: %i", signed_number);
-    s21_sprintf(buffer_i, "Signed Number: %i", signed_number);
+    ck_assert_int_eq(s21_sprintf(buffer, "Long Number: %ld", number), sprintf(expected, "Long Number: %ld", number));
+    ck_assert_str_eq(buffer, expected);
 
-    ck_assert_str_eq(buffer_i, expected_i);
+#test s21_sprintf_long_long_decimal
+    char buffer[100];
+    char expected[100];
+    long long number = 1234567890123456789LL;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Long Long Number: %lld", number), sprintf(expected, "Long Long Number: %lld", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_integer
+    char buffer[100];
+    char expected[100];
+    int number = 42;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Number: %i", number), sprintf(expected, "Number: %i", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_long_integer
+    char buffer[100];
+    char expected[100];
+    long number = 1234567890L;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Long Number: %li", number), sprintf(expected, "Long Number: %li", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_long_long_integer
+    char buffer[100];
+    char expected[100];
+    long long number = 1234567890123456789LL;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Long Long Number: %lli", number), sprintf(expected, "Long Long Number: %lli", number));
+    ck_assert_str_eq(buffer, expected);
 
 #test s21_sprintf_string
-    char buffer_s[100];
-    char expected_s[100];
-    const char *name = "Alice";
+    char buffer[100];
+    char expected[100];
+    const char *text = "Hello, World!";
 
-    sprintf(expected_s, "Name: %s", name);
-    s21_sprintf(buffer_s, "Name: %s", name);
+    ck_assert_int_eq(s21_sprintf(buffer, "Text: %s", text), sprintf(expected, "Text: %s", text));
+    ck_assert_str_eq(buffer, expected);
 
-    ck_assert_str_eq(buffer_s, expected_s);
+#test s21_sprintf_character
+    char buffer[100];
+    char expected[100];
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Character: %c%c%c", 'w', 'o', 'w'), sprintf(expected, "Character: %c%c%c",'w', 'o', 'w'));
+    ck_assert_str_eq(buffer, expected);
