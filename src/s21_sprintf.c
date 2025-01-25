@@ -103,7 +103,7 @@ int s21_sprintf(char *str, const char *format, ...) {
             switch (fmt.specifier) {
                 case 'd':
                 case 'i':
-                    // insert_integer(&fmt);
+                    insert_integer(&fmt);
                     break;
                 case 's':
                     insert_string(&fmt);
@@ -158,69 +158,66 @@ const char* parse_int(const char *p, Fmt *fmt) {
 }
 
 // Macro to convert an integer to a string
-#define int_to_str(number, str)       \
-  do {                                \
-    int is_negative = 0;              \
-    int i = 0;                        \
-                                      \
-    if (number < 0) {                 \
-      is_negative = 1;                \
-      number = -number;               \
-    }                                 \
-                                      \
-    do {                              \
-      str[i++] = (number % 10) + '0'; \
-      number /= 10;                   \
-    } while (number > 0);             \
-                                      \
-    if (is_negative) {                \
-      str[i++] = '-';                 \
-    }                                 \
-                                      \
-    str[i] = '\0';                    \
-                                      \
-    for (int j = 0; j < i / 2; j++) { \
-      char temp = str[j];             \
-      str[j] = str[i - j - 1];        \
-      str[i - j - 1] = temp;          \
-    }                                 \
-  } while (0)
+#define int_to_str(number, str)     \
+  char *start = str;                \
+  int is_negative = 0;              \
+  int i = 0;                        \
+                                    \
+  if (number < 0) {                 \
+    is_negative = 1;                \
+    number = -number;               \
+  }                                 \
+                                    \
+  do {                              \
+    *str++ = (number % 10) + '0';   \
+    number /= 10;                   \
+    i++;                            \
+  } while (number > 0);             \
+                                    \
+  if (is_negative) {                \
+    *str++ = '-';                   \
+    i++;                            \
+  }                                 \
+                                    \
+  *str = '\0';                      \
+                                    \
+  for (int j = 0; j < i / 2; j++) { \
+    char temp = start[j];           \
+    start[j] = start[i - j - 1];    \
+    start[i - j - 1] = temp;        \
+  }                                 \
 
-// void insert_integer(Fmt *fmt) {
-//     char buffer[256];
 
-//     if(fmt->specifier == 'd'){
-//         if(fmt->length == 0){
-//             int number = va_arg(fmt->args, int);
-//             int_to_str(number, buffer);
+void insert_integer(Fmt *fmt) {
+    if(fmt->specifier == 'd'){
+        if(s21_strcmp(fmt->length, "") == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, fmt->str);
             
-//         } else if(s21_strcmp(fmt->length, "l") == 0){
-//             long int number = va_arg(fmt->args, long int);
-//             int_to_str(number, buffer);
+        } else if(s21_strcmp(fmt->length, "l") == 0){
+            long int number = va_arg(fmt->args, long int);
+            int_to_str(number, fmt->str);
 
-//         } else if(s21_strcmp(fmt->length, "ll") == 0){
-//             long long int number = va_arg(fmt->args, long long int);
-//             int_to_str(number, buffer);
-//         }
-//     } else /* 'i' */ {
-//         if(fmt->length == 0){
-//             int number = va_arg(fmt->args, int);
-//             int_to_str(number, buffer);
+        } else if(s21_strcmp(fmt->length, "ll") == 0){
+            long long int number = va_arg(fmt->args, long long int);
+            int_to_str(number, fmt->str);
+        }
+    } else /* 'i' */ {
+        if(s21_strcmp(fmt->length, "") == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, fmt->str);
 
-//         } else if(s21_strcmp(fmt->length, "l") == 0){
-//             long int number = va_arg(fmt->args, long int);
-//             int_to_str(number, buffer);
+        } else if(s21_strcmp(fmt->length, "l") == 0){
+            long int number = va_arg(fmt->args, long int);
+            int_to_str(number, fmt->str);
 
-//         } else if(s21_strcmp(fmt->length, "ll") == 0){
-//             long long int number = va_arg(fmt->args, long long int);
-//             int_to_str(number, buffer);
+        } else if(s21_strcmp(fmt->length, "ll") == 0){
+            long long int number = va_arg(fmt->args, long long int);
+            int_to_str(number, fmt->str);
             
-//         }
-//     }
-
-//     while (*buffer) str[fmt->i++] = *buffer++;
-//     str[fmt->i] = '\0';
-// }
+        }
+    }
+}
 
 void insert_string(Fmt *fmt){
     char* string = va_arg(fmt->args, char*);

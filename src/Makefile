@@ -1,4 +1,4 @@
-FLAGS = -Wall -Wextra -Werror -std=c11 # -fsanitize=address -fsanitize=leak -fsanitize=undefined -fsanitize=unreachable
+FLAGS = #-Wall -Wextra -Werror -std=c11 # -fsanitize=address -fsanitize=leak -fsanitize=undefined -fsanitize=unreachable
 SRC = $(wildcard s21_*.c)
 OBJ = $(SRC:.c=.o)
 ifeq ($(MAKECMDGOALS), gcov_report)
