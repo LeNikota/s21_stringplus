@@ -49,19 +49,21 @@ typedef struct Fmt {
     // Variable argument list to hold the additional arguments
     va_list args;
 
-    // Current position in the formatted string (str)
-    int i;
+    // The pointer to current position in the formatted string (str)
+    char * str;
 } Fmt;
 
 const char* parse_int(const char *p, Fmt *fmt);
-void insert_integer(char *str, Fmt *fmt);
-void insert_string(char *str, Fmt *fmt);
+void insert_integer(Fmt *fmt);
+void insert_string(Fmt *fmt);
 
 int s21_sprintf(char *str, const char *format, ...) {
     Fmt fmt = {0};
+    fmt.str = str;
+
     va_start(fmt.args, format);
     
-    for (const char *p = format; *p; p++) {
+    for (const char *p = format; *p ; p++) {
         if (*p == '%') {
             p++;
             int flag_index = 0;
@@ -101,10 +103,10 @@ int s21_sprintf(char *str, const char *format, ...) {
             switch (fmt.specifier) {
                 case 'd':
                 case 'i':
-                    insert_integer(str, &fmt);
+                    // insert_integer(&fmt);
                     break;
                 case 's':
-                    insert_string(str, &fmt);
+                    insert_string(&fmt);
                     break;
                 case 'c':
                     // insert_character(str, &fmt);
@@ -127,21 +129,21 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'n':
                     break;
                 case '%':
-                    str[fmt.i++] = '%';
+                    *fmt.str++ = '%';
                     break;
                 default:
-                    str[fmt.i++] = *p;
+                    *fmt.str++ = *p;
                     break;
             }
         } else {
-            str[fmt.i++] = *p;
+            *fmt.str++ = *p;
         }
     }
 
-    str[fmt.i] = '\0';
+    *fmt.str = '\0';
     va_end(fmt.args);
     
-    return fmt.i;
+    return fmt.str - str;
 }
 
 const char* parse_int(const char *p, Fmt *fmt) {
@@ -184,45 +186,45 @@ const char* parse_int(const char *p, Fmt *fmt) {
     }                                 \
   } while (0)
 
-void insert_integer(char *str, Fmt *fmt) {
-    char buffer[256];
+// void insert_integer(Fmt *fmt) {
+//     char buffer[256];
 
-    if(fmt->specifier == 'd'){
-        if(fmt->length == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, buffer);
+//     if(fmt->specifier == 'd'){
+//         if(fmt->length == 0){
+//             int number = va_arg(fmt->args, int);
+//             int_to_str(number, buffer);
             
-        } else if(s21_strcmp(fmt->length, "l") == 0){
-            long int number = va_arg(fmt->args, long int);
-            int_to_str(number, buffer);
+//         } else if(s21_strcmp(fmt->length, "l") == 0){
+//             long int number = va_arg(fmt->args, long int);
+//             int_to_str(number, buffer);
 
-        } else if(s21_strcmp(fmt->length, "ll") == 0){
-            long long int number = va_arg(fmt->args, long long int);
-            int_to_str(number, buffer);
-        }
-    } else /* 'i' */ {
-        if(fmt->length == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, buffer);
+//         } else if(s21_strcmp(fmt->length, "ll") == 0){
+//             long long int number = va_arg(fmt->args, long long int);
+//             int_to_str(number, buffer);
+//         }
+//     } else /* 'i' */ {
+//         if(fmt->length == 0){
+//             int number = va_arg(fmt->args, int);
+//             int_to_str(number, buffer);
 
-        } else if(s21_strcmp(fmt->length, "l") == 0){
-            long int number = va_arg(fmt->args, long int);
-            int_to_str(number, buffer);
+//         } else if(s21_strcmp(fmt->length, "l") == 0){
+//             long int number = va_arg(fmt->args, long int);
+//             int_to_str(number, buffer);
 
-        } else if(s21_strcmp(fmt->length, "ll") == 0){
-            long long int number = va_arg(fmt->args, long long int);
-            int_to_str(number, buffer);
+//         } else if(s21_strcmp(fmt->length, "ll") == 0){
+//             long long int number = va_arg(fmt->args, long long int);
+//             int_to_str(number, buffer);
             
-        }
-    }
+//         }
+//     }
 
-    while (*buffer) str[fmt->i++] = *buffer++;
-    str[fmt->i] = '\0';
-}
+//     while (*buffer) str[fmt->i++] = *buffer++;
+//     str[fmt->i] = '\0';
+// }
 
-void insert_string(char *str, Fmt *fmt){
+void insert_string(Fmt *fmt){
     char* string = va_arg(fmt->args, char*);
     
-    while (*string) str[fmt->i++] = *string++;
-    str[fmt->i] = '\0';
+    while (*string) *fmt->str++ = *string++;
+    *fmt->str = '\0';
 }
