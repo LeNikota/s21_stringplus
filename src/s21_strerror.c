@@ -140,13 +140,9 @@ static const char *const sys_error_list[ERROR_COUNT] = {
     [133] = "Memory page has hardware error"};
 
 char *s21_strerror(int errnum) {
-  static char buffer[256];
-
   if (errnum >= 0 && errnum < ERROR_COUNT) {
     return (char *)sys_error_list[errnum];
   }
 
-  s21_sprintf(buffer, "%s, %d", UNKNOWN_ERROR, errnum);
-  return buffer;
-  // return UNKNOWN_ERROR;
+  return UNKNOWN_ERROR;
 }

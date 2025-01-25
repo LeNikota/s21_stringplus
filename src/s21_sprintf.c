@@ -48,6 +48,9 @@ typedef struct Fmt {
 
     // Variable argument list to hold the additional arguments
     va_list args;
+
+    // Current position in the formatted string (str)
+    int i;
 } Fmt;
 
 const char* parse_int(const char *p, Fmt *fmt);
@@ -58,7 +61,6 @@ int s21_sprintf(char *str, const char *format, ...) {
     Fmt fmt = {0};
     va_start(fmt.args, format);
     
-    int i = 0;
     for (const char *p = format; *p; p++) {
         if (*p == '%') {
             p++;
@@ -76,7 +78,10 @@ int s21_sprintf(char *str, const char *format, ...) {
             if (*p >= '0' && *p <= '9') p = parse_int(p, &fmt);
 
             // Handle precision
-            if (*p++ == '.') p = parse_int(p, &fmt);
+            if (*p == '.') {
+                p++;
+                p = parse_int(p, &fmt);
+            }
 
             // Handle length modifier
             if (*p == 'h' || *p == 'l' || *p == 'L') {
@@ -91,7 +96,7 @@ int s21_sprintf(char *str, const char *format, ...) {
 
             // Handle the format specifier
             fmt.specifier = *p;
-
+            
             // Process the specifier
             switch (fmt.specifier) {
                 case 'd':
@@ -122,21 +127,21 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'n':
                     break;
                 case '%':
-                    str[i++] = '%';
+                    str[fmt.i++] = '%';
                     break;
                 default:
-                    str[i++] = *p;
+                    str[fmt.i++] = *p;
                     break;
             }
         } else {
-            str[i++] = *p;
+            str[fmt.i++] = *p;
         }
     }
 
-    str[i] = '\0';
+    str[fmt.i] = '\0';
     va_end(fmt.args);
     
-    return i;
+    return fmt.i;
 }
 
 const char* parse_int(const char *p, Fmt *fmt) {
@@ -180,39 +185,44 @@ const char* parse_int(const char *p, Fmt *fmt) {
   } while (0)
 
 void insert_integer(char *str, Fmt *fmt) {
+    char buffer[256];
+
     if(fmt->specifier == 'd'){
         if(fmt->length == 0){
             int number = va_arg(fmt->args, int);
-            int_to_str(number, str);
+            int_to_str(number, buffer);
             
         } else if(s21_strcmp(fmt->length, "l") == 0){
             long int number = va_arg(fmt->args, long int);
-            int_to_str(number, str);
+            int_to_str(number, buffer);
 
         } else if(s21_strcmp(fmt->length, "ll") == 0){
             long long int number = va_arg(fmt->args, long long int);
-            int_to_str(number, str);
-            
+            int_to_str(number, buffer);
         }
     } else /* 'i' */ {
         if(fmt->length == 0){
             int number = va_arg(fmt->args, int);
-            int_to_str(number, str);
+            int_to_str(number, buffer);
 
         } else if(s21_strcmp(fmt->length, "l") == 0){
             long int number = va_arg(fmt->args, long int);
-            int_to_str(number, str);
+            int_to_str(number, buffer);
 
         } else if(s21_strcmp(fmt->length, "ll") == 0){
             long long int number = va_arg(fmt->args, long long int);
-            int_to_str(number, str);
+            int_to_str(number, buffer);
             
         }
     }
 
+    while (*buffer) str[fmt->i++] = *buffer++;
+    str[fmt->i] = '\0';
 }
 
 void insert_string(char *str, Fmt *fmt){
     char* string = va_arg(fmt->args, char*);
-    s21_strcat(str, string);
+    
+    while (*string) str[fmt->i++] = *string++;
+    str[fmt->i] = '\0';
 }
