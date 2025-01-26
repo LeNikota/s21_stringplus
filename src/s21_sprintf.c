@@ -57,6 +57,7 @@ const char* parse_int(const char *p, Fmt *fmt);
 void insert_integer(Fmt *fmt);
 void insert_string(Fmt *fmt);
 void insert_character(Fmt *fmt);
+void insert_count(Fmt *fmt, char *str);
 
 int s21_sprintf(char *str, const char *format, ...) {
     Fmt fmt = {0};
@@ -128,6 +129,7 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'p':
                     break;
                 case 'n':
+                    insert_count(&fmt, str);
                     break;
                 case '%':
                     *fmt.str++ = '%';
@@ -230,4 +232,10 @@ void insert_string(Fmt *fmt){
 void insert_character(Fmt *fmt){
     *fmt->str++ = va_arg(fmt->args, int);
     *fmt->str = '\0';
+}
+
+void insert_count(Fmt *fmt, char *str){
+    int *count = va_arg(fmt->args, int *);
+
+    *count = fmt->str - str;
 }

@@ -65,3 +65,20 @@
 
     ck_assert_int_eq(s21_sprintf(buffer, "Character: %c%c%c", 'w', 'o', 'w'), sprintf(expected, "Character: %c%c%c",'w', 'o', 'w'));
     ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_n_flag
+    char buffer[100];
+    char expected[100];
+    int count;
+    int count_expected;
+    int count_second;
+    int count_expected_second;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "How much have you read %n", &count), sprintf(expected, "How much have you read %n", &count_expected));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, count_expected);
+
+    ck_assert_int_eq(s21_sprintf(buffer, "How much have you read %n, and how much now %n", &count, &count_second), sprintf(expected, "How much have you read %n, and how much now %n", &count_expected, &count_expected_second));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, count_expected);
+    ck_assert_int_eq(count_second, count_expected_second);
