@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "s21_string.h"
 
 #test s21_sprintf_integer_decimal
@@ -82,3 +83,46 @@
     ck_assert_str_eq(buffer, expected);
     ck_assert_int_eq(count, count_expected);
     ck_assert_int_eq(count_second, count_expected_second);
+
+
+
+
+
+
+
+
+
+
+#test s21_sprintf_unsigned_integer
+    char buffer[100];
+    char expected[100];
+    unsigned int number = 42;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Unsigned Number: %u", number), sprintf(expected, "Unsigned Number: %u", number));
+    ck_assert_str_eq(buffer, expected); 
+    
+#test s21_sprintf_unsigned_integer_max
+    char buffer[100];
+    char expected[100];
+    unsigned int number = ULONG_MAX;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Number: %u", number), sprintf(expected, "Max Unsigned Number: %u", number));
+    ck_assert_str_eq(buffer, expected);
+
+
+#test s21_sprintf_unsigned_long_integer_max
+    char buffer[100];
+    char expected[100];
+    unsigned long number = ULONG_MAX; 
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Long Number: %lu", number), sprintf(expected, "Max Unsigned Long Number: %lu", number));
+    ck_assert_str_eq(buffer, expected);
+
+
+#test s21_sprintf_unsigned_long_long_integer_max
+    char buffer[100];
+    char expected[100];
+    unsigned long long number = ULLONG_MAX; 
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Long Long Number: %llu", number), sprintf(expected, "Max Unsigned Long Long Number: %llu", number));
+    ck_assert_str_eq(buffer, expected);

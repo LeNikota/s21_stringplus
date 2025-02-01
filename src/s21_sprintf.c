@@ -57,7 +57,8 @@ const char* parse_int(const char *p, Fmt *fmt);
 void insert_integer(Fmt *fmt);
 void insert_string(Fmt *fmt);
 void insert_character(Fmt *fmt);
-void insert_count(Fmt *fmt, char *str);
+void insert_unsigned_integer(Fmt *fmt);
+void return_count(Fmt *fmt, char *str);
 
 int s21_sprintf(char *str, const char *format, ...) {
     Fmt fmt = {0};
@@ -122,6 +123,7 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'o':
                     break;
                 case 'u':
+                    insert_unsigned_integer(&fmt);
                     break;
                 case 'x':
                 case 'X':
@@ -129,7 +131,7 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'p':
                     break;
                 case 'n':
-                    insert_count(&fmt, str);
+                    return_count(&fmt, str);
                     break;
                 case '%':
                     *fmt.str++ = '%';
@@ -190,6 +192,24 @@ const char* parse_int(const char *p, Fmt *fmt) {
     start[i - j - 1] = temp;        \
   }                                 \
 
+// Macro to convert an unsigned integer to a string
+#define unsigned_int_to_str(number, str) \
+  char *start = str;                     \
+  int i = 0;                             \
+                                         \
+  do {                                   \
+    *str++ = (number % 10) + '0';        \
+    number /= 10;                        \
+    i++;                                 \
+  } while (number > 0);                  \
+                                         \
+  *str = '\0';                           \
+                                         \
+  for (int j = 0; j < i / 2; j++) {      \
+    char temp = start[j];                \
+    start[j] = start[i - j - 1];         \
+    start[i - j - 1] = temp;             \
+  }   
 
 void insert_integer(Fmt *fmt) {
     if(fmt->specifier == 'd'){
@@ -234,7 +254,22 @@ void insert_character(Fmt *fmt){
     *fmt->str = '\0';
 }
 
-void insert_count(Fmt *fmt, char *str){
+void insert_unsigned_integer(Fmt *fmt){
+     if(s21_strcmp(fmt->length, "") == 0){
+            unsigned int number = va_arg(fmt->args, unsigned int);
+            unsigned_int_to_str(number, fmt->str);
+            
+        } else if(s21_strcmp(fmt->length, "l") == 0){
+            unsigned long int number = va_arg(fmt->args, unsigned long int);
+            unsigned_int_to_str(number, fmt->str);
+
+        } else if(s21_strcmp(fmt->length, "ll") == 0){
+            unsigned long long int number = va_arg(fmt->args, unsigned long long int);
+            unsigned_int_to_str(number, fmt->str);
+    }
+}
+
+void return_count(Fmt *fmt, char *str){
     int *count = va_arg(fmt->args, int *);
 
     *count = fmt->str - str;
