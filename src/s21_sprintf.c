@@ -41,7 +41,7 @@ typedef struct Fmt {
     // 'u' : unsigned int
     // 'x' : Unsigned hexadecimal integer
     // 'X' : Unsigned hexadecimal integer (capital letters)
-    // 'p' : pointer
+    // 'p' : pointer address
     // 'n' : Number of characters printed until %n occurs
     // '%' : literal percent
     char specifier;
@@ -58,6 +58,7 @@ void insert_integer(Fmt *fmt);
 void insert_string(Fmt *fmt);
 void insert_character(Fmt *fmt);
 void insert_unsigned_integer(Fmt *fmt);
+void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
 
 int s21_sprintf(char *str, const char *format, ...) {
@@ -129,6 +130,7 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'X':
                     break;
                 case 'p':
+                    insert_pointer(&fmt);
                     break;
                 case 'n':
                     return_count(&fmt, str);
@@ -268,6 +270,49 @@ void insert_unsigned_integer(Fmt *fmt){
             unsigned_int_to_str(number, fmt->str);
     }
 }
+
+void insert_pointer(Fmt *fmt) {
+  void *ptr = va_arg(fmt->args, void *);
+
+  if (ptr == S21_NULL) {
+    *fmt->str++ = '0';
+    *fmt->str++ = 'x';
+    *fmt->str++ = '0';
+    *fmt->str = '\0';
+    return;
+  }
+
+  *fmt->str++ = '0';
+  *fmt->str++ = 'x';
+
+  unsigned long long address = (unsigned long long)ptr;
+  char *start = fmt->str;
+  int i = 0;
+
+  do {
+    unsigned long long int digit = address % 16;
+    address /= 16;
+    
+    if (digit < 10) {
+      *fmt->str++ = '0' + digit;
+    } else {
+      *fmt->str++ = 'a' + (digit - 10);
+    }
+    
+    i++;
+  } while (address > 0);
+
+  *fmt->str = '\0';
+
+  for (int j = 0; j < i / 2; j++) {
+    char temp = start[j];
+    start[j] = start[i - j - 1];
+    start[i - j - 1] = temp;
+  }
+
+
+}
+
 
 void return_count(Fmt *fmt, char *str){
     int *count = va_arg(fmt->args, int *);

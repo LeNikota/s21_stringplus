@@ -104,7 +104,7 @@
 #test s21_sprintf_unsigned_integer_max
     char buffer[100];
     char expected[100];
-    unsigned int number = ULONG_MAX;
+    unsigned int number = INT_MAX;
 
     ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Number: %u", number), sprintf(expected, "Max Unsigned Number: %u", number));
     ck_assert_str_eq(buffer, expected);
@@ -125,4 +125,62 @@
     unsigned long long number = ULLONG_MAX; 
 
     ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Long Long Number: %llu", number), sprintf(expected, "Max Unsigned Long Long Number: %llu", number));
+    ck_assert_str_eq(buffer, expected);
+
+
+
+
+
+#test s21_sprintf_pointer_null
+    char buffer[100];
+    char expected[100];
+    void *ptr = NULL;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Pointer: %p", ptr), sprintf(expected, "Pointer: %p", ptr));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_pointer_valid
+    char buffer[100];
+    char expected[100];
+    int number = 42;
+    void *ptr = &number;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Pointer: %p", ptr), sprintf(expected, "Pointer: %p", ptr));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_pointer_array
+    char buffer[100];
+    char expected[100];
+    int array[5] = {1, 2, 3, 4, 5};
+    void *ptr = array;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Pointer to array: %p", ptr), sprintf(expected, "Pointer to array: %p", ptr));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_pointer_function
+    char buffer[100];
+    char expected[100];
+    void (*func_ptr)(void) = NULL;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Function Pointer: %p", func_ptr), sprintf(expected, "Function Pointer: %p", func_ptr));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_pointer_dynamic_memory
+    char buffer[100];
+    char expected[100];
+    char *dynamic_ptr = malloc(10); // Allocate memory dynamically
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Dynamic Pointer: %p", dynamic_ptr), sprintf(expected, "Dynamic Pointer: %p", dynamic_ptr));
+    ck_assert_str_eq(buffer, expected);
+
+    free(dynamic_ptr); // Free the allocated memory
+
+#test s21_sprintf_pointer_multiple
+    char buffer[100];
+    char expected[100];
+    int a = 10, b = 20;
+    void *ptr_a = &a;
+    void *ptr_b = &b;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Pointers: %p and %p", ptr_a, ptr_b), sprintf(expected, "Pointers: %p and %p", ptr_a, ptr_b));
     ck_assert_str_eq(buffer, expected);
