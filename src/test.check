@@ -1,0 +1,7 @@
+#include <string.h>
+#include "s21_string.h"
+
+#test strlen_test
+    const char str[] = "Hello world";
+    
+    ck_assert(strlen(str) == s21_strlen(str));
