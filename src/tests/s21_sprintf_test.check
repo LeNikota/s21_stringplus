@@ -168,12 +168,12 @@
 #test s21_sprintf_pointer_dynamic_memory
     char buffer[100];
     char expected[100];
-    char *dynamic_ptr = malloc(10); // Allocate memory dynamically
+    char *dynamic_ptr = malloc(10);
 
     ck_assert_int_eq(s21_sprintf(buffer, "Dynamic Pointer: %p", dynamic_ptr), sprintf(expected, "Dynamic Pointer: %p", dynamic_ptr));
     ck_assert_str_eq(buffer, expected);
 
-    free(dynamic_ptr); // Free the allocated memory
+    free(dynamic_ptr);
 
 #test s21_sprintf_pointer_multiple
     char buffer[100];
@@ -251,3 +251,83 @@
 
 
 
+
+#test s21_sprintf_octal
+    char buffer[100];
+    char expected[100];
+    int number = 04321;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Octal as Decimal: %d", number), sprintf(expected, "Octal as Decimal: %d", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Octal as Integer: %i", number), sprintf(expected, "Octal as Integer: %i", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_hexadecimal
+    char buffer[100];
+    char expected[100];
+    int number = 0xABCDE;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Decimal: %d", number), sprintf(expected, "Hexadecimal as Decimal: %d", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Integer: %i", number), sprintf(expected, "Hexadecimal as Integer: %i", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_hexadecimal_uppercase
+    char buffer[100];
+    char expected[100];
+    int number = 0x63AB21;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Decimal: %d", number), sprintf(expected, "Hexadecimal as Decimal: %d", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Integer: %i", number), sprintf(expected, "Hexadecimal as Integer: %i", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_octal_hh
+    char buffer[100];
+    char expected[100];
+    signed char number = 033;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Decimal: %hhd", number), sprintf(expected, "Signed Char as Decimal: %hhd", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Integer: %hhi", number), sprintf(expected, "Signed Char as Integer: %hhi", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_octal_h
+    char buffer[100];
+    char expected[100];
+    short number = 044670;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Short as Decimal: %hd", number), sprintf(expected, "Short as Decimal: %hd", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Short as Integer: %hi", number), sprintf(expected, "Short as Integer: %hi", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_octal_l
+    char buffer[100];
+    char expected[100];
+    long number = 06235;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Long as Decimal: %ld", number), sprintf(expected, "Long as Decimal: %ld", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Long as Integer: %li", number), sprintf(expected, "Long as Integer: %li", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_octal_ll
+    char buffer[100];
+    char expected[100];
+    long long number = 03757;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Long Long as Decimal: %lld", number), sprintf(expected, "Long Long as Decimal: %lld", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Long Long as Integer: %lli", number), sprintf(expected, "Long Long as Integer: %lli", number));
+    ck_assert_str_eq(buffer, expected);
+
+#test s21_sprintf_hex_hh
+    char buffer[100];
+    char expected[100];
+    signed char number = 0x6A;
+
+    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Decimal: %hhd", number), sprintf(expected, "Signed Char as Decimal: %hhd", number));
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Integer: %hhi", number), sprintf(expected, "Signed Char as Integer: %hhi", number));
+    ck_assert_str_eq(buffer, expected);

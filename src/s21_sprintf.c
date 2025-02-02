@@ -214,47 +214,25 @@ const char* parse_int(const char *p, Fmt *fmt) {
   }   
 
 void insert_integer(Fmt *fmt) {
-    if(fmt->specifier == 'd'){
-        if(s21_strcmp(fmt->length, "") == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, fmt->str);
-            
-        } else if(s21_strcmp(fmt->length, "l") == 0){
-            long int number = va_arg(fmt->args, long int);
-            int_to_str(number, fmt->str);
+    if(s21_strcmp(fmt->length, "") == 0){
+        int number = va_arg(fmt->args, int);
+        int_to_str(number, fmt->str);
 
-        } else if(s21_strcmp(fmt->length, "ll") == 0){
-            long long int number = va_arg(fmt->args, long long int);
-            int_to_str(number, fmt->str);
-        } else if(s21_strcmp(fmt->length, "h") == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "l") == 0){
+        long int number = va_arg(fmt->args, long int);
+        int_to_str(number, fmt->str);
 
-        } else if(s21_strcmp(fmt->length, "hh") == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, fmt->str);
-        }
-    } else /* 'i' */ { //! Incomplete implementation, cannot parse hex && octal!
-        if(s21_strcmp(fmt->length, "") == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "ll") == 0){
+        long long int number = va_arg(fmt->args, long long int);
+        int_to_str(number, fmt->str);
+        
+    } else if(s21_strcmp(fmt->length, "h") == 0){
+        int number = va_arg(fmt->args, int);
+        int_to_str(number, fmt->str);
 
-        } else if(s21_strcmp(fmt->length, "l") == 0){
-            long int number = va_arg(fmt->args, long int);
-            int_to_str(number, fmt->str);
-
-        } else if(s21_strcmp(fmt->length, "ll") == 0){
-            long long int number = va_arg(fmt->args, long long int);
-            int_to_str(number, fmt->str);
-            
-        } else if(s21_strcmp(fmt->length, "h") == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, fmt->str);
-
-        } else if(s21_strcmp(fmt->length, "hh") == 0){
-            int number = va_arg(fmt->args, int);
-            int_to_str(number, fmt->str);
-        }
+    } else if(s21_strcmp(fmt->length, "hh") == 0){
+        int number = va_arg(fmt->args, int);
+        int_to_str(number, fmt->str);
     }
 }
 
