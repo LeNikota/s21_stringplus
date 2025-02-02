@@ -94,8 +94,8 @@ int s21_sprintf(char *str, const char *format, ...) {
                 fmt.length[0] = *p;
                 p++;
             }
-            // long long int
-            if (*p == 'l') {
+            // long long int (ll[i|d]) or signed char (hh[i|d])
+            if (*p == 'l' || *p == 'h') {
                 fmt.length[1] = *p;
                 p++;
             }
@@ -226,8 +226,15 @@ void insert_integer(Fmt *fmt) {
         } else if(s21_strcmp(fmt->length, "ll") == 0){
             long long int number = va_arg(fmt->args, long long int);
             int_to_str(number, fmt->str);
+        } else if(s21_strcmp(fmt->length, "h") == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, fmt->str);
+
+        } else if(s21_strcmp(fmt->length, "hh") == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, fmt->str);
         }
-    } else /* 'i' */ {
+    } else /* 'i' */ { //! Incomplete implementation, cannot parse hex && octal!
         if(s21_strcmp(fmt->length, "") == 0){
             int number = va_arg(fmt->args, int);
             int_to_str(number, fmt->str);
@@ -240,6 +247,13 @@ void insert_integer(Fmt *fmt) {
             long long int number = va_arg(fmt->args, long long int);
             int_to_str(number, fmt->str);
             
+        } else if(s21_strcmp(fmt->length, "h") == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, fmt->str);
+
+        } else if(s21_strcmp(fmt->length, "hh") == 0){
+            int number = va_arg(fmt->args, int);
+            int_to_str(number, fmt->str);
         }
     }
 }
@@ -257,17 +271,25 @@ void insert_character(Fmt *fmt){
 }
 
 void insert_unsigned_integer(Fmt *fmt){
-     if(s21_strcmp(fmt->length, "") == 0){
-            unsigned int number = va_arg(fmt->args, unsigned int);
-            unsigned_int_to_str(number, fmt->str);
-            
-        } else if(s21_strcmp(fmt->length, "l") == 0){
-            unsigned long int number = va_arg(fmt->args, unsigned long int);
-            unsigned_int_to_str(number, fmt->str);
+    if(s21_strcmp(fmt->length, "") == 0){
+        unsigned int number = va_arg(fmt->args, unsigned int);
+        unsigned_int_to_str(number, fmt->str);
+        
+    } else if(s21_strcmp(fmt->length, "l") == 0){
+        unsigned long int number = va_arg(fmt->args, unsigned long int);
+        unsigned_int_to_str(number, fmt->str);
 
-        } else if(s21_strcmp(fmt->length, "ll") == 0){
-            unsigned long long int number = va_arg(fmt->args, unsigned long long int);
-            unsigned_int_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "ll") == 0){
+        unsigned long long int number = va_arg(fmt->args, unsigned long long int);
+        unsigned_int_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "h") == 0){
+        // unsigned short int number = va_arg(fmt->args, unsigned short int);
+        int number = va_arg(fmt->args, int);
+        unsigned_int_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "hh") == 0){
+        // unsigned char number = (unsigned char)va_arg(fmt->args, unsigned char);
+        int number = va_arg(fmt->args, int);
+        unsigned_int_to_str(number, fmt->str);
     }
 }
 
