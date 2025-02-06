@@ -8,170 +8,219 @@
     char buffer[100];
     char expected[100];
     int number = 42;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Number: %d", number), sprintf(expected, "Number: %d", number));
+    count = sprintf(expected, "Number: %d", number);
+    s21_count = s21_sprintf(buffer, "Number: %d", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_long_decimal
     char buffer[100];
     char expected[100];
     long number = 1234567890L;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Long Number: %ld", number), sprintf(expected, "Long Number: %ld", number));
+    count = sprintf(expected, "Long Number: %ld", number);
+    s21_count = s21_sprintf(buffer, "Long Number: %ld", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_long_long_decimal
     char buffer[100];
     char expected[100];
     long long number = 1234567890123456789LL;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Long Long Number: %lld", number), sprintf(expected, "Long Long Number: %lld", number));
+    count = sprintf(expected, "Long Long Number: %lld", number);
+    s21_count = s21_sprintf(buffer, "Long Long Number: %lld", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_integer
     char buffer[100];
     char expected[100];
     int number = 42;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Number: %i", number), sprintf(expected, "Number: %i", number));
+    count = sprintf(expected, "Number: %i", number);
+    s21_count = s21_sprintf(buffer, "Number: %i", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_long_integer
     char buffer[100];
     char expected[100];
     long number = 1234567890L;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Long Number: %li", number), sprintf(expected, "Long Number: %li", number));
+    count = sprintf(expected, "Long Number: %li", number);
+    s21_count = s21_sprintf(buffer, "Long Number: %li", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_long_long_integer
     char buffer[100];
     char expected[100];
     long long number = 1234567890123456789LL;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Long Long Number: %lli", number), sprintf(expected, "Long Long Number: %lli", number));
+    count = sprintf(expected, "Long Long Number: %lli", number);
+    s21_count = s21_sprintf(buffer, "Long Long Number: %lli", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_string
     char buffer[100];
     char expected[100];
     const char *text = "Hello, World!";
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Text: %s", text), sprintf(expected, "Text: %s", text));
+    count = sprintf(expected, "Text: %s", text);
+    s21_count = s21_sprintf(buffer, "Text: %s", text);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_character
     char buffer[100];
     char expected[100];
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Character: %c%c%c", 'w', 'o', 'w'), sprintf(expected, "Character: %c%c%c",'w', 'o', 'w'));
+    count = sprintf(expected, "Character: %c%c%c", 'w', 'o', 'w');
+    s21_count = s21_sprintf(buffer, "Character: %c%c%c", 'w', 'o', 'w');
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_n_flag
     char buffer[100];
     char expected[100];
-    int count;
-    int count_expected;
-    int count_second;
-    int count_expected_second;
+    int count, s21_count;
+    int count_second, s21_count_second;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "How much have you read %n", &count), sprintf(expected, "How much have you read %n", &count_expected));
+    count = sprintf(expected, "How much have you read %n", &count_second);
+    s21_count = s21_sprintf(buffer, "How much have you read %n", &s21_count_second);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(count, count_expected);
-
-    ck_assert_int_eq(s21_sprintf(buffer, "How much have you read %n, and how much now %n", &count, &count_second), sprintf(expected, "How much have you read %n, and how much now %n", &count_expected, &count_expected_second));
-    ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(count, count_expected);
-    ck_assert_int_eq(count_second, count_expected_second);
-
-
-
-
-
-
-
-
-
+    ck_assert_int_eq(count, s21_count);
+    ck_assert_int_eq(count_second, s21_count_second);
 
 #test s21_sprintf_unsigned_integer
     char buffer[100];
     char expected[100];
     unsigned int number = 42;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Unsigned Number: %u", number), sprintf(expected, "Unsigned Number: %u", number));
-    ck_assert_str_eq(buffer, expected); 
-    
+    count = sprintf(expected, "Unsigned Number: %u", number);
+    s21_count = s21_sprintf(buffer, "Unsigned Number: %u", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
 #test s21_sprintf_unsigned_integer_max
     char buffer[100];
     char expected[100];
     unsigned int number = INT_MAX;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Number: %u", number), sprintf(expected, "Max Unsigned Number: %u", number));
+    count = sprintf(expected, "Max Unsigned Number: %u", number);
+    s21_count = s21_sprintf(buffer, "Max Unsigned Number: %u", number);
+
     ck_assert_str_eq(buffer, expected);
-
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_unsigned_long_integer_max
     char buffer[100];
     char expected[100];
-    unsigned long number = ULONG_MAX; 
+    unsigned long number = ULONG_MAX;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Long Number: %lu", number), sprintf(expected, "Max Unsigned Long Number: %lu", number));
+    count = sprintf(expected, "Max Unsigned Long Number: %lu", number);
+    s21_count = s21_sprintf(buffer, "Max Unsigned Long Number: %lu", number);
+
     ck_assert_str_eq(buffer, expected);
-
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_unsigned_long_long_integer_max
     char buffer[100];
     char expected[100];
-    unsigned long long number = ULLONG_MAX; 
+    unsigned long long number = ULLONG_MAX;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Max Unsigned Long Long Number: %llu", number), sprintf(expected, "Max Unsigned Long Long Number: %llu", number));
+    count = sprintf(expected, "Max Unsigned Long Long Number: %llu", number);
+    s21_count = s21_sprintf(buffer, "Max Unsigned Long Long Number: %llu", number);
+
     ck_assert_str_eq(buffer, expected);
-
-
-
-
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_pointer_null
     char buffer[100];
     char expected[100];
     void *ptr = NULL;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Pointer: %p", ptr), sprintf(expected, "Pointer: %p", ptr));
+    count = sprintf(expected, "Pointer: %p", ptr);
+    s21_count = s21_sprintf(buffer, "Pointer: %p", ptr);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_pointer_valid
     char buffer[100];
     char expected[100];
     int number = 42;
     void *ptr = &number;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Pointer: %p", ptr), sprintf(expected, "Pointer: %p", ptr));
+    count = sprintf(expected, "Pointer: %p", ptr);
+    s21_count = s21_sprintf(buffer, "Pointer: %p", ptr);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_pointer_array
     char buffer[100];
     char expected[100];
     int array[5] = {1, 2, 3, 4, 5};
     void *ptr = array;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Pointer to array: %p", ptr), sprintf(expected, "Pointer to array: %p", ptr));
+    count = sprintf(expected, "Pointer to array: %p", ptr);
+    s21_count = s21_sprintf(buffer, "Pointer to array: %p", ptr);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_pointer_function
     char buffer[100];
     char expected[100];
     void (*func_ptr)(void) = NULL;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Function Pointer: %p", func_ptr), sprintf(expected, "Function Pointer: %p", func_ptr));
+    count = sprintf(expected, "Function Pointer: %p", func_ptr);
+    s21_count = s21_sprintf(buffer, "Function Pointer: %p", func_ptr);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_pointer_dynamic_memory
     char buffer[100];
     char expected[100];
     char *dynamic_ptr = malloc(10);
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Dynamic Pointer: %p", dynamic_ptr), sprintf(expected, "Dynamic Pointer: %p", dynamic_ptr));
+    count = sprintf(expected, "Dynamic Pointer: %p", dynamic_ptr);
+    s21_count = s21_sprintf(buffer, "Dynamic Pointer: %p", dynamic_ptr);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
     free(dynamic_ptr);
 
@@ -181,153 +230,287 @@
     int a = 10, b = 20;
     void *ptr_a = &a;
     void *ptr_b = &b;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Pointers: %p and %p", ptr_a, ptr_b), sprintf(expected, "Pointers: %p and %p", ptr_a, ptr_b));
+    count = sprintf(expected, "Pointers: %p and %p", ptr_a, ptr_b);
+    s21_count = s21_sprintf(buffer, "Pointers: %p and %p", ptr_a, ptr_b);
+
     ck_assert_str_eq(buffer, expected);
-
-
-
-
-
-
-
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_short_decimal
     char buffer[100];
     char expected[100];
     short number = 42;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Short Number: %hd", number), sprintf(expected, "Short Number: %hd", number));
+    count = sprintf(expected, "Short Number: %hd", number);
+    s21_count = s21_sprintf(buffer, "Short Number: %hd", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Short Integer: %hi", number), sprintf(expected, "Short Integer: %hi", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_unsigned_short_integer
     char buffer[100];
     char expected[100];
     unsigned short number = 42;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Unsigned Short Number: %hu", number), sprintf(expected, "Unsigned Short Number: %hu", number));
+    count = sprintf(expected, "Unsigned Short Number: %hu", number);
+    s21_count = s21_sprintf(buffer, "Unsigned Short Number: %hu", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_signed_char
     char buffer[100];
     char expected[100];
     signed char number = -10;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char: %hhd", number), sprintf(expected, "Signed Char: %hhd", number));
-    ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char: %hhi", number), sprintf(expected, "Signed Char: %hhi", number));
-    ck_assert_str_eq(buffer, expected);
+    count = sprintf(expected, "Signed Char: %hhd", number);
+    s21_count = s21_sprintf(buffer, "Signed Char: %hhd", number);
 
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_unsigned_char
     char buffer[100];
     char expected[100];
     unsigned char number = 250;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Unsigned Char: %hhu", number), sprintf(expected, "Unsigned Char: %hhu", number));
+    count = sprintf(expected, "Unsigned Char: %hhu", number);
+    s21_count = s21_sprintf(buffer, "Unsigned Char: %hhu", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_multiple_short
     char buffer[100];
     char expected[100];
     short number1 = 10;
     short number2 = 20;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Shorts: %hd and %hd", number1, number2), sprintf(expected, "Shorts: %hd and %hd", number1, number2));
+    count = sprintf(expected, "Shorts: %hd and %hd", number1, number2);
+    s21_count = s21_sprintf(buffer, "Shorts: %hd and %hd", number1, number2);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_multiple_signed_char
     char buffer[100];
     char expected[100];
     signed char char1 = -5;
     signed char char2 = 5;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Chars: %hhd and %hhi", char1, char2), sprintf(expected, "Chars: %hhd and %hhi", char1, char2));
+    count = sprintf(expected, "Chars: %hhd and %hhi", char1, char2);
+    s21_count = s21_sprintf(buffer, "Chars: %hhd and %hhi", char1, char2);
+
     ck_assert_str_eq(buffer, expected);
-
-
-
-
-
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_octal
     char buffer[100];
     char expected[100];
     int number = 04321;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Octal as Decimal: %d", number), sprintf(expected, "Octal as Decimal: %d", number));
+    count = sprintf(expected, "Octal as Decimal: %d", number);
+    s21_count = s21_sprintf(buffer, "Octal as Decimal: %d", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Octal as Integer: %i", number), sprintf(expected, "Octal as Integer: %i", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_hexadecimal
     char buffer[100];
     char expected[100];
     int number = 0xABCDE;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Decimal: %d", number), sprintf(expected, "Hexadecimal as Decimal: %d", number));
+    count = sprintf(expected, "Hexadecimal as Decimal: %d", number);
+    s21_count = s21_sprintf(buffer, "Hexadecimal as Decimal: %d", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Integer: %i", number), sprintf(expected, "Hexadecimal as Integer: %i", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_hexadecimal_uppercase
     char buffer[100];
     char expected[100];
     int number = 0x63AB21;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Decimal: %d", number), sprintf(expected, "Hexadecimal as Decimal: %d", number));
+    count = sprintf(expected, "Hexadecimal as Decimal: %d", number);
+    s21_count = s21_sprintf(buffer, "Hexadecimal as Decimal: %d", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Hexadecimal as Integer: %i", number), sprintf(expected, "Hexadecimal as Integer: %i", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_octal_hh
     char buffer[100];
     char expected[100];
     signed char number = 033;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Decimal: %hhd", number), sprintf(expected, "Signed Char as Decimal: %hhd", number));
+    count = sprintf(expected, "Signed Char as Decimal: %hhd", number);
+    s21_count = s21_sprintf(buffer, "Signed Char as Decimal: %hhd", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Integer: %hhi", number), sprintf(expected, "Signed Char as Integer: %hhi", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_octal_h
     char buffer[100];
     char expected[100];
     short number = 044670;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Short as Decimal: %hd", number), sprintf(expected, "Short as Decimal: %hd", number));
+    count = sprintf(expected, "Short as Decimal: %hd", number);
+    s21_count = s21_sprintf(buffer, "Short as Decimal: %hd", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Short as Integer: %hi", number), sprintf(expected, "Short as Integer: %hi", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_octal_l
     char buffer[100];
     char expected[100];
     long number = 06235;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Long as Decimal: %ld", number), sprintf(expected, "Long as Decimal: %ld", number));
+    count = sprintf(expected, "Long as Decimal: %ld", number);
+    s21_count = s21_sprintf(buffer, "Long as Decimal: %ld", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Long as Integer: %li", number), sprintf(expected, "Long as Integer: %li", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_octal_ll
     char buffer[100];
     char expected[100];
     long long number = 03757;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Long Long as Decimal: %lld", number), sprintf(expected, "Long Long as Decimal: %lld", number));
+    count = sprintf(expected, "Long Long as Decimal: %lld", number);
+    s21_count = s21_sprintf(buffer, "Long Long as Decimal: %lld", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Long Long as Integer: %lli", number), sprintf(expected, "Long Long as Integer: %lli", number));
-    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_hex_hh
     char buffer[100];
     char expected[100];
     signed char number = 0x6A;
+    int count, s21_count;
 
-    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Decimal: %hhd", number), sprintf(expected, "Signed Char as Decimal: %hhd", number));
+    count = sprintf(expected, "Signed Char as Decimal: %hhd", number);
+    s21_count = s21_sprintf(buffer, "Signed Char as Decimal: %hhd", number);
+
     ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(s21_sprintf(buffer, "Signed Char as Integer: %hhi", number), sprintf(expected, "Signed Char as Integer: %hhi", number));
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_integer_hex_lowercase
+    char buffer[100];
+    char expected[100];
+    unsigned int number = 255;
+    int count, s21_count;
+
+    count = sprintf(expected, "Hex: %x", number);
+    s21_count = s21_sprintf(buffer, "Hex: %x", number);
+
     ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_integer_hex_uppercase
+    char buffer[100];
+    char expected[100];
+    unsigned int number = 255;
+    int count, s21_count;
+
+    count = sprintf(expected, "Hex: %X", number);
+    s21_count = s21_sprintf(buffer, "Hex: %X", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_unsigned_integer_hex_lowercase
+    char buffer[100];
+    char expected[100];
+    unsigned long number = 4294967295UL;
+    int count, s21_count;
+
+    count = sprintf(expected, "Long Hex: %lx", number);
+    s21_count = s21_sprintf(buffer, "Long Hex: %lx", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_unsigned_integer_hex_uppercase
+    char buffer[100];
+    char expected[100];
+    unsigned long number = 4294967295UL;
+    int count, s21_count;
+
+    count = sprintf(expected, "Long Hex: %lX", number);
+    s21_count = s21_sprintf(buffer, "Long Hex: %lX", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_long_unsigned_integer_hex_lowercase
+    char buffer[100];
+    char expected[100];
+    unsigned long long number = 18446744073709551615ULL;
+    int count, s21_count;
+
+    count = sprintf(expected, "Long Long Hex: %llx", number);
+    s21_count = s21_sprintf(buffer, "Long Long Hex: %llx", number);
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_long_unsigned_integer_hex_uppercase
+    char buffer[100];
+    char expected[100];
+    unsigned long long number = 18446744073709551615ULL;
+    int count, s21_count;
+
+    count = sprintf(expected, "Long Long Hex: %llX", number);
+    s21_count = s21_sprintf(buffer, "Long Long Hex: %llX", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_integer_hex_zero
+    char buffer[100];
+    char expected[100];
+    unsigned int number = 0;
+    int count, s21_count;
+
+    count = sprintf(expected, "Hex: %x", number);
+    s21_count = s21_sprintf(buffer, "Hex: %x", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_long_integer_hex_zero
+    char buffer[100];
+    char expected[100];
+    unsigned long number = 0;
+    int count, s21_count;
+
+    count = sprintf(expected, "Long Hex: %lx", number);
+    s21_count = s21_sprintf(buffer, "Long Hex: %lx", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_long_long_integer_hex_zero
+    char buffer[100];
+    char expected[100];
+    unsigned long long number = 0;
+    int count, s21_count;
+
+    count = sprintf(expected, "Long Long Hex: %llx", number);
+    s21_count = s21_sprintf(buffer, "Long Long Hex: %llx", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
