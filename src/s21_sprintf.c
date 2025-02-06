@@ -25,7 +25,7 @@ typedef struct Fmt {
     // 'h' : short int
     // 'l' : long
     // 'L' : long double
-    char length[2];        
+    char length[3];        
 
     // Format specifier for data type:
     // 'c' : char
@@ -58,6 +58,7 @@ void insert_integer(Fmt *fmt);
 void insert_string(Fmt *fmt);
 void insert_character(Fmt *fmt);
 void insert_unsigned_integer(Fmt *fmt);
+void insert_hexadecimal(Fmt *fmt);
 void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
 
@@ -92,11 +93,13 @@ int s21_sprintf(char *str, const char *format, ...) {
             // Handle length modifier
             if (*p == 'h' || *p == 'l' || *p == 'L') {
                 fmt.length[0] = *p;
+                fmt.length[1] ='\0';
                 p++;
             }
             // long long int (ll[i|d]) or signed char (hh[i|d])
             if (*p == 'l' || *p == 'h') {
                 fmt.length[1] = *p;
+                fmt.length[2] = '\0';
                 p++;
             }
 
@@ -128,6 +131,7 @@ int s21_sprintf(char *str, const char *format, ...) {
                     break;
                 case 'x':
                 case 'X':
+                    insert_hexadecimal(&fmt);
                     break;
                 case 'p':
                     insert_pointer(&fmt);
@@ -211,7 +215,32 @@ const char* parse_int(const char *p, Fmt *fmt) {
     char temp = start[j];                \
     start[j] = start[i - j - 1];         \
     start[i - j - 1] = temp;             \
-  }   
+  }
+
+// Macro to convert an hexadecimal to a string
+#define hexadecimal_to_str(number, str)    \
+  char *start = str;                       \
+  int i = 0;                               \
+                                           \
+  do {                                     \
+    if ((number % 16) < 10) {              \
+      *str++ = '0' + (number % 16);        \
+    } else {                               \
+      *str++ = 'a' + ((number % 16) - 10); \
+    }                                      \
+                                           \
+    number /= 16;                          \
+                                           \
+    i++;                                   \
+  } while (number > 0);                    \
+                                           \
+  *str = '\0';                             \
+                                           \
+  for (int j = 0; j < i / 2; j++) {        \
+    char temp = start[j];                  \
+    start[j] = start[i - j - 1];           \
+    start[i - j - 1] = temp;               \
+  }
 
 void insert_integer(Fmt *fmt) {
     if(s21_strcmp(fmt->length, "") == 0){
@@ -271,48 +300,30 @@ void insert_unsigned_integer(Fmt *fmt){
     }
 }
 
-void insert_pointer(Fmt *fmt) {
-  void *ptr = va_arg(fmt->args, void *);
-
-  if (ptr == S21_NULL) {
-    *fmt->str++ = '0';
-    *fmt->str++ = 'x';
-    *fmt->str++ = '0';
-    *fmt->str = '\0';
-    return;
-  }
-
-  *fmt->str++ = '0';
-  *fmt->str++ = 'x';
-
-  unsigned long long address = (unsigned long long)ptr;
-  char *start = fmt->str;
-  int i = 0;
-
-  do {
-    unsigned long long int digit = address % 16;
-    address /= 16;
-    
-    if (digit < 10) {
-      *fmt->str++ = '0' + digit;
-    } else {
-      *fmt->str++ = 'a' + (digit - 10);
-    }
-    
-    i++;
-  } while (address > 0);
-
-  *fmt->str = '\0';
-
-  for (int j = 0; j < i / 2; j++) {
-    char temp = start[j];
-    start[j] = start[i - j - 1];
-    start[i - j - 1] = temp;
-  }
-
-
+void insert_hexadecimal(Fmt *fmt){
+    unsigned int number = va_arg(fmt->args, unsigned int);
+    hexadecimal_to_str(number, fmt->str);
 }
 
+void insert_pointer(Fmt *fmt) {
+    void *ptr = va_arg(fmt->args, void *);
+    unsigned long address = (unsigned long)ptr;
+
+    if(address == 0){
+      *fmt->str++ = '(';
+      *fmt->str++ = 'n';
+      *fmt->str++ = 'i';
+      *fmt->str++ = 'l';
+      *fmt->str++ = ')';
+      *fmt->str = '\0';
+      return;
+    }
+
+    *fmt->str++ = '0';
+    *fmt->str++ = 'x';
+
+    hexadecimal_to_str(address, fmt->str);
+}
 
 void return_count(Fmt *fmt, char *str){
     int *count = va_arg(fmt->args, int *);
