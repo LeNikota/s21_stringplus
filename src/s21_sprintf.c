@@ -55,6 +55,7 @@ typedef struct Fmt {
 
 const char* parse_int(const char *p, Fmt *fmt);
 void insert_integer(Fmt *fmt);
+void insert_octal(Fmt *fmt);
 void insert_string(Fmt *fmt);
 void insert_character(Fmt *fmt);
 void insert_unsigned_integer(Fmt *fmt);
@@ -125,6 +126,7 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'G':
                     break;
                 case 'o':
+                    insert_octal(&fmt);
                     break;
                 case 'u':
                     insert_unsigned_integer(&fmt);
@@ -217,7 +219,7 @@ const char* parse_int(const char *p, Fmt *fmt) {
     start[i - j - 1] = temp;             \
   }
 
-// Macro to convert an hexadecimal to a string
+// Macro to convert a hexadecimal number to a string
 #define hexadecimal_to_str(number, str, hex_case) \
   char *start = str;                              \
   int i = 0;                                      \
@@ -231,6 +233,25 @@ const char* parse_int(const char *p, Fmt *fmt) {
                                                   \
     number /= 16;                                 \
                                                   \
+    i++;                                          \
+  } while (number > 0);                           \
+                                                  \
+  *str = '\0';                                    \
+                                                  \
+  for (int j = 0; j < i / 2; j++) {               \
+    char temp = start[j];                         \
+    start[j] = start[i - j - 1];                  \
+    start[i - j - 1] = temp;                      \
+  }
+
+// Macro to convert an octal number to a string
+#define octal_to_str(number, str) \
+  char *start = str;                              \
+  int i = 0;                                      \
+                                                  \
+  do {                                            \
+    *str++ = '0' + (number % 8);                  \
+    number /= 8;                                  \
     i++;                                          \
   } while (number > 0);                           \
                                                   \
@@ -265,6 +286,25 @@ void insert_integer(Fmt *fmt) {
     }
 }
 
+void insert_octal(Fmt *fmt){
+    if(s21_strcmp(fmt->length, "") == 0){
+        unsigned int number = va_arg(fmt->args, unsigned int);
+        octal_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "l") == 0){
+        unsigned long int number = va_arg(fmt->args, unsigned long int);
+        octal_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "ll") == 0){
+        unsigned long long int number = va_arg(fmt->args, unsigned long long int);
+        octal_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "h") == 0){
+        unsigned short number = va_arg(fmt->args, int);
+        octal_to_str(number, fmt->str);
+    } else if(s21_strcmp(fmt->length, "hh") == 0){
+        unsigned char number = va_arg(fmt->args, int);
+        octal_to_str(number, fmt->str);
+    }
+}
+
 void insert_string(Fmt *fmt){
     char* string = va_arg(fmt->args, char*);
     
@@ -281,11 +321,9 @@ void insert_unsigned_integer(Fmt *fmt){
     if(s21_strcmp(fmt->length, "") == 0){
         unsigned int number = va_arg(fmt->args, unsigned int);
         unsigned_int_to_str(number, fmt->str);
-        
     } else if(s21_strcmp(fmt->length, "l") == 0){
         unsigned long int number = va_arg(fmt->args, unsigned long int);
         unsigned_int_to_str(number, fmt->str);
-
     } else if(s21_strcmp(fmt->length, "ll") == 0){
         unsigned long long int number = va_arg(fmt->args, unsigned long long int);
         unsigned_int_to_str(number, fmt->str);

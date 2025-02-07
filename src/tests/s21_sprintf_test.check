@@ -514,3 +514,253 @@
 
     ck_assert_str_eq(buffer, expected);
     ck_assert_int_eq(count, s21_count);
+
+
+
+
+
+
+
+
+    #test s21_sprintf_unsigned_integer_octal
+    char buffer[100];
+    char expected[100];
+    unsigned int number = 42;
+    int count, s21_count;
+
+    count = sprintf(expected, "Unsigned Number in Octal: %o", number);
+    s21_count = s21_sprintf(buffer, "Unsigned Number in Octal: %o", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+    #test s21_sprintf_unsigned_long_integer_octal_max
+    char buffer[100];
+    char expected[100];
+    unsigned long number = ULONG_MAX; // Maximum value for unsigned long
+    int count, s21_count;
+
+    count = sprintf(expected, "Max Unsigned Long in Octal: %lo", number);
+    s21_count = s21_sprintf(buffer, "Max Unsigned Long in Octal: %lo", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_long_long_integer_octal_max
+    char buffer[100];
+    char expected[100];
+    unsigned long long number = ULLONG_MAX; // Maximum value for unsigned long long
+    int count, s21_count;
+
+    count = sprintf(expected, "Max Unsigned Long Long in Octal: %llo", number);
+    s21_count = s21_sprintf(buffer, "Max Unsigned Long Long in Octal: %llo", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_short_integer_octal_max
+    char buffer[100];
+    char expected[100];
+    unsigned short number = USHRT_MAX; // Maximum value for unsigned short
+    int count, s21_count;
+
+    count = sprintf(expected, "Max Unsigned Short in Octal: %ho", number);
+    s21_count = s21_sprintf(buffer, "Max Unsigned Short in Octal: %ho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_short_integer_octal_max
+    char buffer[100];
+    char expected[100];
+    short number = SHRT_MAX; // Maximum value for short
+    int count, s21_count;
+
+    count = sprintf(expected, "Max Short in Octal: %ho", number);
+    s21_count = s21_sprintf(buffer, "Max Short in Octal: %ho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_integer_octal_edge_case
+    char buffer[100];
+    char expected[100];
+    unsigned int number = 1; // Edge case for small number
+    int count, s21_count;
+
+    count = sprintf(expected, "Edge Case Unsigned in Octal: %o", number);
+    s21_count = s21_sprintf(buffer, "Edge Case Unsigned in Octal: %o", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_long_integer_octal_edge_case
+    char buffer[100];
+    char expected[100];
+    unsigned long number = 1; // Edge case for small number
+    int count, s21_count;
+
+    count = sprintf(expected, "Edge Case Unsigned Long in Octal: %lo", number);
+    s21_count = s21_sprintf(buffer, "Edge Case Unsigned Long in Octal: %lo", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_long_long_integer_octal_edge_case
+    char buffer[100];
+    char expected[100];
+    unsigned long long number = 1; // Edge case for small number
+    int count, s21_count;
+
+    count = sprintf(expected, "Edge Case Unsigned Long Long in Octal: %llo", number);
+    s21_count = s21_sprintf(buffer, "Edge Case Unsigned Long Long in Octal: %llo", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_short_integer_octal_edge_case
+    char buffer[100];
+    char expected[100];
+    unsigned short number = 1; // Edge case for small number
+    int count, s21_count;
+
+    count = sprintf(expected, "Edge Case Unsigned Short in Octal: %ho", number);
+    s21_count = s21_sprintf(buffer, "Edge Case Unsigned Short in Octal: %ho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_integer_octal_zero
+    char buffer[100];
+    char expected[100];
+    unsigned int number = 0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero in Unsigned Octal: %o", number);
+    s21_count = s21_sprintf(buffer, "Zero in Unsigned Octal: %o", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_long_integer_octal_zero
+    char buffer[100];
+    char expected[100];
+    unsigned long number = 0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero in Unsigned Long Octal: %lo", number);
+    s21_count = s21_sprintf(buffer, "Zero in Unsigned Long Octal: %lo", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_long_long_integer_octal_zero
+    char buffer[100];
+    char expected[100];
+    unsigned long long number = 0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero in Unsigned Long Long Octal: %llo", number);
+    s21_count = s21_sprintf(buffer, "Zero in Unsigned Long Long Octal: %llo", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_short_integer_octal_zero
+    char buffer[100];
+    char expected[100];
+    unsigned short number = 0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero in Unsigned Short Octal: %ho", number);
+    s21_count = s21_sprintf(buffer, "Zero in Unsigned Short Octal: %ho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_short_integer_octal_zero
+    char buffer[100];
+    char expected[100];
+    short number = 0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero in Short Octal: %ho", number);
+    s21_count = s21_sprintf(buffer, "Zero in Short Octal: %ho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_char_integer_octal
+    char buffer[100];
+    char expected[100];
+    unsigned char number = 42; // Regular value
+    int count, s21_count;
+
+    count = sprintf(expected, "Unsigned Char in Octal: %hho", number);
+    s21_count = s21_sprintf(buffer, "Unsigned Char in Octal: %hho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_char_integer_octal_zero
+    char buffer[100];
+    char expected[100];
+    unsigned char number = 0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero in Unsigned Char Octal: %hho", number);
+    s21_count = s21_sprintf(buffer, "Zero in Unsigned Char Octal: %hho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_unsigned_char_integer_octal_max
+    char buffer[100];
+    char expected[100];
+    unsigned char number = UCHAR_MAX; // Maximum value for unsigned char
+    int count, s21_count;
+
+    count = sprintf(expected, "Max Unsigned Char in Octal: %hho", number);
+    s21_count = s21_sprintf(buffer, "Max Unsigned Char in Octal: %hho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_signed_char_integer_octal
+    char buffer[100];
+    char expected[100];
+    signed char number = -10; // Regular value
+    int count, s21_count;
+
+    count = sprintf(expected, "Signed Char in Octal: %hho", number);
+    s21_count = s21_sprintf(buffer, "Signed Char in Octal: %hho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_signed_char_integer_octal_zero
+    char buffer[100];
+    char expected[100];
+    signed char number = 0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero in Signed Char Octal: %hho", number);
+    s21_count = s21_sprintf(buffer, "Zero in Signed Char Octal: %hho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_signed_char_integer_octal_max
+    char buffer[100];
+    char expected[100];
+    signed char number = SCHAR_MAX; // Maximum value for signed char
+    int count, s21_count;
+
+    count = sprintf(expected, "Max Signed Char in Octal: %hho", number);
+    s21_count = s21_sprintf(buffer, "Max Signed Char in Octal: %hho", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+
+
