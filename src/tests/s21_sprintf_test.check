@@ -99,6 +99,13 @@
     ck_assert_str_eq(buffer, expected);
     ck_assert_int_eq(count, s21_count);
 
+
+
+
+
+
+
+
 #test s21_sprintf_n_flag
     char buffer[100];
     char expected[100];
@@ -111,6 +118,66 @@
     ck_assert_str_eq(buffer, expected);
     ck_assert_int_eq(count, s21_count);
     ck_assert_int_eq(count_second, s21_count_second);
+
+#test s21_sprintf_long_n
+    char buffer[100];
+    int count, s21_count;
+    long written_chars;
+
+    count = sprintf(buffer, "Hello, World!%ln", &written_chars);
+    s21_count = s21_sprintf(buffer, "Hello, World!%ln", &written_chars);
+
+    ck_assert_int_eq(written_chars, count);
+    ck_assert_int_eq(s21_count, count);
+
+#test s21_sprintf_long_long_n
+    char buffer[100];
+    int count, s21_count;
+    long long written_chars;
+
+    count = sprintf(buffer, "Long Long Number: %lln", &written_chars);
+    s21_count = s21_sprintf(buffer, "Long Long Number: %lln", &written_chars);
+
+    ck_assert_int_eq(written_chars, count);
+    ck_assert_int_eq(s21_count, count);
+
+#test s21_sprintf_short_n
+    char buffer[100];
+    int count, s21_count;
+    short written_chars;
+
+    count = sprintf(buffer, "Short Number: %hn", &written_chars);
+    s21_count = s21_sprintf(buffer, "Short Number: %hn", &written_chars);
+
+    ck_assert_int_eq(written_chars, count);
+    ck_assert_int_eq(s21_count, count);
+
+#test s21_sprintf_signed_char_n
+    char buffer[100];
+    int count, s21_count;
+    signed char written_chars;
+
+    count = sprintf(buffer, "Signed Char: %hhn", &written_chars);
+    s21_count = s21_sprintf(buffer, "Signed Char: %hhn", &written_chars);
+
+    ck_assert_int_eq(written_chars, count);
+    ck_assert_int_eq(s21_count, count);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #test s21_sprintf_unsigned_integer
     char buffer[100];

@@ -384,7 +384,23 @@ void insert_pointer(Fmt *fmt) {
 }
 
 void return_count(Fmt *fmt, char *str){
-    int *count = va_arg(fmt->args, int *);
+        if(s21_strcmp(fmt->length, "") == 0){
+        int *count = va_arg(fmt->args, int *);
+        *count = fmt->str - str;
 
-    *count = fmt->str - str;
+    } else if(s21_strcmp(fmt->length, "l") == 0){
+        long *count = va_arg(fmt->args, long *);
+        *count = fmt->str - str;
+
+    } else if(s21_strcmp(fmt->length, "ll") == 0){
+        long long *count = va_arg(fmt->args, long long *);
+        *count = fmt->str - str;
+        
+    } else if(s21_strcmp(fmt->length, "h") == 0){
+        short *count = va_arg(fmt->args, short *);
+        *count = fmt->str - str;
+    } else if(s21_strcmp(fmt->length, "hh") == 0){
+        char *count = va_arg(fmt->args, char *);
+        *count = fmt->str - str;
+    }
 }
