@@ -269,19 +269,19 @@ void insert_integer(Fmt *fmt) {
         int_to_str(number, fmt->str);
 
     } else if(s21_strcmp(fmt->length, "l") == 0){
-        long int number = va_arg(fmt->args, long int);
+        long number = va_arg(fmt->args, long);
         int_to_str(number, fmt->str);
 
     } else if(s21_strcmp(fmt->length, "ll") == 0){
-        long long int number = va_arg(fmt->args, long long int);
+        long long number = va_arg(fmt->args, long long);
         int_to_str(number, fmt->str);
         
     } else if(s21_strcmp(fmt->length, "h") == 0){
-        int number = va_arg(fmt->args, int);
+        short number = va_arg(fmt->args, int);
         int_to_str(number, fmt->str);
 
     } else if(s21_strcmp(fmt->length, "hh") == 0){
-        int number = va_arg(fmt->args, int);
+        char number = va_arg(fmt->args, int);
         int_to_str(number, fmt->str);
     }
 }
@@ -291,10 +291,10 @@ void insert_octal(Fmt *fmt){
         unsigned int number = va_arg(fmt->args, unsigned int);
         octal_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "l") == 0){
-        unsigned long int number = va_arg(fmt->args, unsigned long int);
+        unsigned long number = va_arg(fmt->args, unsigned long);
         octal_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "ll") == 0){
-        unsigned long long int number = va_arg(fmt->args, unsigned long long int);
+        unsigned long long number = va_arg(fmt->args, unsigned long long);
         octal_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "h") == 0){
         unsigned short number = va_arg(fmt->args, int);
@@ -322,16 +322,16 @@ void insert_unsigned_integer(Fmt *fmt){
         unsigned int number = va_arg(fmt->args, unsigned int);
         unsigned_int_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "l") == 0){
-        unsigned long int number = va_arg(fmt->args, unsigned long int);
+        unsigned long number = va_arg(fmt->args, unsigned long);
         unsigned_int_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "ll") == 0){
-        unsigned long long int number = va_arg(fmt->args, unsigned long long int);
+        unsigned long long number = va_arg(fmt->args, unsigned long long);
         unsigned_int_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "h") == 0){
-        int number = va_arg(fmt->args, int);
+        unsigned short number = va_arg(fmt->args, int);
         unsigned_int_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "hh") == 0){
-        int number = va_arg(fmt->args, int);
+        unsigned char number = va_arg(fmt->args, int);
         unsigned_int_to_str(number, fmt->str);
     }
 }
@@ -355,10 +355,10 @@ void insert_hexadecimal(Fmt *fmt){
         unsigned long long number = va_arg(fmt->args, unsigned long long);
         hexadecimal_to_str(number, fmt->str, hex_case);
     } else if(s21_strcmp(fmt->length, "h") == 0){
-        int number = va_arg(fmt->args, int);
+        unsigned short number = va_arg(fmt->args, int);
         hexadecimal_to_str(number, fmt->str, hex_case);
     } else if(s21_strcmp(fmt->length, "hh") == 0){
-        int number = va_arg(fmt->args, int);
+        unsigned char number = va_arg(fmt->args, int);
         hexadecimal_to_str(number, fmt->str, hex_case);
     }
 }
@@ -384,7 +384,7 @@ void insert_pointer(Fmt *fmt) {
 }
 
 void return_count(Fmt *fmt, char *str){
-        if(s21_strcmp(fmt->length, "") == 0){
+    if(s21_strcmp(fmt->length, "") == 0){
         int *count = va_arg(fmt->args, int *);
         *count = fmt->str - str;
 
