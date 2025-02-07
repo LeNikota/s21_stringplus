@@ -218,28 +218,28 @@ const char* parse_int(const char *p, Fmt *fmt) {
   }
 
 // Macro to convert an hexadecimal to a string
-#define hexadecimal_to_str(number, str)    \
-  char *start = str;                       \
-  int i = 0;                               \
-                                           \
-  do {                                     \
-    if ((number % 16) < 10) {              \
-      *str++ = '0' + (number % 16);        \
-    } else {                               \
-      *str++ = 'a' + ((number % 16) - 10); \
-    }                                      \
-                                           \
-    number /= 16;                          \
-                                           \
-    i++;                                   \
-  } while (number > 0);                    \
-                                           \
-  *str = '\0';                             \
-                                           \
-  for (int j = 0; j < i / 2; j++) {        \
-    char temp = start[j];                  \
-    start[j] = start[i - j - 1];           \
-    start[i - j - 1] = temp;               \
+#define hexadecimal_to_str(number, str, hex_case) \
+  char *start = str;                              \
+  int i = 0;                                      \
+                                                  \
+  do {                                            \
+    if ((number % 16) < 10) {                     \
+      *str++ = '0' + (number % 16);               \
+    } else {                                      \
+      *str++ = hex_case + ((number % 16) - 10);   \
+    }                                             \
+                                                  \
+    number /= 16;                                 \
+                                                  \
+    i++;                                          \
+  } while (number > 0);                           \
+                                                  \
+  *str = '\0';                                    \
+                                                  \
+  for (int j = 0; j < i / 2; j++) {               \
+    char temp = start[j];                         \
+    start[j] = start[i - j - 1];                  \
+    start[i - j - 1] = temp;                      \
   }
 
 void insert_integer(Fmt *fmt) {
@@ -290,19 +290,39 @@ void insert_unsigned_integer(Fmt *fmt){
         unsigned long long int number = va_arg(fmt->args, unsigned long long int);
         unsigned_int_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "h") == 0){
-        // unsigned short int number = va_arg(fmt->args, unsigned short int);
         int number = va_arg(fmt->args, int);
         unsigned_int_to_str(number, fmt->str);
     } else if(s21_strcmp(fmt->length, "hh") == 0){
-        // unsigned char number = (unsigned char)va_arg(fmt->args, unsigned char);
         int number = va_arg(fmt->args, int);
         unsigned_int_to_str(number, fmt->str);
     }
 }
 
 void insert_hexadecimal(Fmt *fmt){
-    unsigned int number = va_arg(fmt->args, unsigned int);
-    hexadecimal_to_str(number, fmt->str);
+    char hex_case;
+
+    if(fmt->specifier == 'x'){
+        hex_case = 'a';
+    } else {
+        hex_case = 'A';
+    }
+
+    if(s21_strcmp(fmt->length, "") == 0){
+        unsigned int number = va_arg(fmt->args, unsigned int);
+        hexadecimal_to_str(number, fmt->str, hex_case);
+    } else if(s21_strcmp(fmt->length, "l") == 0){
+        unsigned long number = va_arg(fmt->args, unsigned long);
+        hexadecimal_to_str(number, fmt->str, hex_case);
+    } else if(s21_strcmp(fmt->length, "ll") == 0){
+        unsigned long long number = va_arg(fmt->args, unsigned long long);
+        hexadecimal_to_str(number, fmt->str, hex_case);
+    } else if(s21_strcmp(fmt->length, "h") == 0){
+        int number = va_arg(fmt->args, int);
+        hexadecimal_to_str(number, fmt->str, hex_case);
+    } else if(s21_strcmp(fmt->length, "hh") == 0){
+        int number = va_arg(fmt->args, int);
+        hexadecimal_to_str(number, fmt->str, hex_case);
+    }
 }
 
 void insert_pointer(Fmt *fmt) {
@@ -322,7 +342,7 @@ void insert_pointer(Fmt *fmt) {
     *fmt->str++ = '0';
     *fmt->str++ = 'x';
 
-    hexadecimal_to_str(address, fmt->str);
+    hexadecimal_to_str(address, fmt->str, 'a');
 }
 
 void return_count(Fmt *fmt, char *str){
