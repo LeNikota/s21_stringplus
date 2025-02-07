@@ -55,6 +55,7 @@ typedef struct Fmt {
 
 const char* parse_int(const char *p, Fmt *fmt);
 void insert_integer(Fmt *fmt);
+void insert_float(Fmt *fmt);
 void insert_octal(Fmt *fmt);
 void insert_string(Fmt *fmt);
 void insert_character(Fmt *fmt);
@@ -124,6 +125,9 @@ int s21_sprintf(char *str, const char *format, ...) {
                 case 'f':
                 case 'g':
                 case 'G':
+                    insert_float(&fmt);
+                    // implement e and E
+                    // implement g and G
                     break;
                 case 'o':
                     insert_octal(&fmt);
@@ -263,6 +267,26 @@ const char* parse_int(const char *p, Fmt *fmt) {
     start[i - j - 1] = temp;                      \
   }
 
+// Macro to convert a double number to a string
+#define double_to_str(number, str, precision) \
+  long long integer_part = (long long)number; \
+  int_to_str(integer_part, str);              \
+                                              \
+  if (number < 0) number = -number;           \
+  integer_part = (long long)number;           \
+  number -= integer_part;                     \
+                                              \
+  *str++ = '.';                               \
+                                              \
+  for (int i = 0; i < precision; i++) {       \
+    number *= 10;                             \
+    int fractional_digit = (long long)number; \
+    *str++ = fractional_digit + '0';          \
+    number -= fractional_digit;               \
+  }                                           \
+                                              \
+  *str = '\0';                                \
+
 void insert_integer(Fmt *fmt) {
     if(s21_strcmp(fmt->length, "") == 0){
         int number = va_arg(fmt->args, int);
@@ -283,6 +307,16 @@ void insert_integer(Fmt *fmt) {
     } else if(s21_strcmp(fmt->length, "hh") == 0){
         char number = va_arg(fmt->args, int);
         int_to_str(number, fmt->str);
+    }
+}
+
+void insert_float(Fmt *fmt){
+    if(s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0){
+        double number = va_arg(fmt->args, double);
+        double_to_str(number, fmt->str, 6)
+    } else if(s21_strcmp(fmt->length, "L") == 0){
+        long double number = va_arg(fmt->args, long double);
+        double_to_str(number, fmt->str, 6)
     }
 }
 

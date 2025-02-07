@@ -831,3 +831,170 @@
 
 
 
+
+
+
+
+
+
+
+
+
+#test s21_sprintf_float_simple
+    char buffer[100];
+    char expected[100];
+    float number = 3.14159; // Regular float value
+    int count, s21_count;
+
+    count = sprintf(expected, "Float value: %f", number);
+    s21_count = s21_sprintf(buffer, "Float value: %f", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_float_zero
+    char buffer[100];
+    char expected[100];
+    float number = 0.0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero Float: %f", number);
+    s21_count = s21_sprintf(buffer, "Zero Float: %f", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_float_negative
+    char buffer[100];
+    char expected[100];
+    float number = -2.71828; // Negative float value
+    int count, s21_count;
+
+    count = sprintf(expected, "Negative Float: %f", number);
+    s21_count = s21_sprintf(buffer, "Negative Float: %f", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_float_large
+    char buffer[100];
+    char expected[100];
+    float number = 1e38; // Large float value
+    int count, s21_count;
+
+    count = sprintf(expected, "Large Float: %f", number);
+    s21_count = s21_sprintf(buffer, "Large Float: %f", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_double_simple
+    char buffer[100];
+    char expected[100];
+    double number = 3.141592653589793; // Regular double value
+    int count, s21_count;
+
+    count = sprintf(expected, "Double value: %lf", number);
+    s21_count = s21_sprintf(buffer, "Double value: %lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_double_zero
+    char buffer[100];
+    char expected[100];
+    double number = 0.0; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero Double: %lf", number);
+    s21_count = s21_sprintf(buffer, "Zero Double: %lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_double_negative
+    char buffer[100];
+    char expected[100];
+    double number = -1.414213562373095; // Negative double value
+    int count, s21_count;
+
+    count = sprintf(expected, "Negative Double: %lf", number);
+    s21_count = s21_sprintf(buffer, "Negative Double: %lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_double_large
+    char buffer[100];
+    char expected[100];
+    double number = 1e308; // Large double value
+    int count, s21_count;
+
+    count = sprintf(expected, "Large Double: %lf", number);
+    s21_count = s21_sprintf(buffer, "Large Double: %lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_double_simple
+    char buffer[100];
+    char expected[100];
+    long double number = 3.141592653589793238462643383279502884L; // Regular long double value
+    int count, s21_count;
+
+    count = sprintf(expected, "Long Double value: %Lf", number);
+    s21_count = s21_sprintf(buffer, "Long Double value: %Lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_double_zero
+    char buffer[100];
+    char expected[100];
+    long double number = 0.0L; // Edge case for zero
+    int count, s21_count;
+
+    count = sprintf(expected, "Zero Long Double: %Lf", number);
+    s21_count = s21_sprintf(buffer, "Zero Long Double: %Lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_double_negative
+    char buffer[100];
+    char expected[100];
+    long double number = -2.7182818284590452353602874713526624977L; // Negative long double value
+    int count, s21_count;
+
+    count = sprintf(expected, "Negative Long Double: %Lf", number);
+    s21_count = s21_sprintf(buffer, "Negative Long Double: %Lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_double_large
+    char buffer[100];
+    char expected[100];
+    long double number = 1e4932L; // Large long double value
+    int count, s21_count;
+
+    count = sprintf(expected, "Large Long Double: %Lf", number);
+    s21_count = s21_sprintf(buffer, "Large Long Double: %Lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+#test s21_sprintf_long_double_small
+    char buffer[100];
+    char expected[100];
+    long double number = 1e-4932L; // Small long double value
+    int count, s21_count;
+
+    count = sprintf(expected, "Small Long Double: %Lf", number);
+    s21_count = s21_sprintf(buffer, "Small Long Double: %Lf", number);
+
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+
+
+
