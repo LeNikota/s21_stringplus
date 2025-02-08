@@ -1,5 +1,6 @@
 #include "s21_string.h"
 #include <stdarg.h>
+#include <math.h> // For round()
 
 // %[flags][width][.precision][length]specifier
 typedef struct Fmt {
@@ -267,25 +268,64 @@ const char* parse_int(const char *p, Fmt *fmt) {
     start[i - j - 1] = temp;                      \
   }
 
-// Macro to convert a double number to a string
-#define double_to_str(number, str, precision) \
-  long long integer_part = (long long)number; \
-  int_to_str(integer_part, str);              \
-                                              \
-  if (number < 0) number = -number;           \
-  integer_part = (long long)number;           \
-  number -= integer_part;                     \
-                                              \
-  *str++ = '.';                               \
-                                              \
-  for (int i = 0; i < precision; i++) {       \
-    number *= 10;                             \
-    int fractional_digit = (long long)number; \
-    *str++ = fractional_digit + '0';          \
-    number -= fractional_digit;               \
-  }                                           \
-                                              \
-  *str = '\0';                                \
+/*
+   The solution is offered by dunnygri
+   It's unoptimized
+   
+   There is C Ryu algorithm to convert double to string
+   It is complex and highly optimized one
+   If someone willing to spend time, please, implement it here
+*/
+#define double_to_str(number, str, precision)           \
+  char *start = str;                                    \
+  int isNegative = 0;                                   \
+                                                        \
+  if (number < 0) {                                     \
+    isNegative = 1;                                     \
+    number = -number;                                   \
+  }                                                     \
+                                                        \
+  int int_part_count = 0;                               \
+  while (number >= 1.0) {                               \
+    number /= 10;                                       \
+    int_part_count++;                                   \
+  }                                                     \
+                                                        \
+  if (int_part_count == 0) {                            \
+    *str++ = '0';                                       \
+  } else {                                              \
+    if (isNegative) *str++ = '-';                       \
+                                                        \
+    for (int j = 0; j < int_part_count; j++) {          \
+      number *= 10;                                     \
+      int digit = (int)number;                          \
+                                                        \
+      *str++ = digit + '0';                             \
+      number -= digit;                                  \
+    }                                                   \
+  }                                                     \
+                                                        \
+                                                        \
+  for (int i = int_part_count, j = 0; j < i / 2; j++) { \
+    char temp = start[j];                               \
+    start[j] = start[i - j - 1];                        \
+    start[i - j - 1] = temp;                            \
+  }                                                     \
+                                                        \
+  *str++ = '.';                                         \
+                                                        \
+  for (int i = 0; i < precision - 1; i++) {             \
+    number *= 10.0;                                     \
+    int digit = (int)number;                            \
+    *str++ = digit + '0';                               \
+    number -= digit;                                    \
+  }                                                     \
+  *str++ = round(number * 10) + '0';                    \
+                                                        \
+                                                        \
+  *str = '\0';
+
+
 
 void insert_integer(Fmt *fmt) {
     if(s21_strcmp(fmt->length, "") == 0){

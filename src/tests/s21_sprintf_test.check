@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <float.h>
 #include "s21_string.h"
 
 #test s21_sprintf_integer_decimal
@@ -973,28 +974,38 @@
     ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_long_double_large
-    char buffer[100];
-    char expected[100];
-    long double number = 1e4932L; // Large long double value
+    char buffer[10000];
+    char expected[10000];
+    long double number = LDBL_MAX;
     int count, s21_count;
 
     count = sprintf(expected, "Large Long Double: %Lf", number);
     s21_count = s21_sprintf(buffer, "Large Long Double: %Lf", number);
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
+    number = -LDBL_MAX;
+
+    count = sprintf(expected, "Large Long Double: %Lf", number);
+    s21_count = s21_sprintf(buffer, "Large Long Double: %Lf", number);
     ck_assert_str_eq(buffer, expected);
     ck_assert_int_eq(count, s21_count);
 
 #test s21_sprintf_long_double_small
-    char buffer[100];
-    char expected[100];
-    long double number = 1e-4932L; // Small long double value
+    char buffer[10000];
+    char expected[10000];
+    long double number = LDBL_MIN;
     int count, s21_count;
 
     count = sprintf(expected, "Small Long Double: %Lf", number);
     s21_count = s21_sprintf(buffer, "Small Long Double: %Lf", number);
-
     ck_assert_str_eq(buffer, expected);
     ck_assert_int_eq(count, s21_count);
 
+    number = -LDBL_MIN;
 
+    count = sprintf(expected, "Small Long Double: %Lf", number);
+    s21_count = s21_sprintf(buffer, "Small Long Double: %Lf", number);
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
 
