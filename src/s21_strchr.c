@@ -8,7 +8,7 @@ char *s21_strchr(const char *str, int c) {
       occurrence = str;
       break;
     }
-    
+
     str++;
   }
 

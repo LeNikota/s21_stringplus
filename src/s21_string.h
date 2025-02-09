@@ -1,6 +1,6 @@
 #pragma once
 
-typedef  long unsigned int s21_size_t;
+typedef long unsigned int s21_size_t;
 
 #define S21_NULL ((void *)0)
 
