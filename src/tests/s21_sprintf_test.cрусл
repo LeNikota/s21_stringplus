@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <float.h>
-#include "s21_string.h"
+#include "../s21_string.h"
+#include "test.h"
 
 #test s21_sprintf_integer_decimal
     char buffer[100];

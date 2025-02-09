@@ -1,4 +1,4 @@
-FLAGS = -Wall -Wextra -Werror -std=c11 # -fsanitize=address -fsanitize=leak -fsanitize=undefined -fsanitize=unreachable
+FLAGS = -Wall -Wextra -Werror -std=c11 #-fsanitize=address -fsanitize=leak -fsanitize=undefined -fsanitize=unreachable
 SRC = $(wildcard s21_*.c)
 OBJ = $(SRC:.c=.o)
 ifeq ($(MAKECMDGOALS), gcov_report)
@@ -16,14 +16,13 @@ s21_string.a: $(OBJ)
 	@gcc $(FLAGS) $(TEST_FLAGS) -c $^ -o $@
 
 clean:
-	@rm -rf $(OBJ) *.gcno *.gcda coverage* s21_string.a a.out  test.c test
+	@rm -rf $(OBJ) *.gcno *.gcda coverage* s21_string.a a.out test
 
 format:
 	@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -i
 
 test: all
-	@checkmk ./tests/*.check > test.c
-	@gcc test.c -o test -L. -l:s21_string.a -lcheck -lm -lsubunit -lgcov
+	@gcc $(FLAGS) -o test test.c ./tests/*.c -L. -l:s21_string.a -lcheck -lm -lsubunit -lgcov
 	@./test
 #@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -n
 #@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs cppcheck --enable=all --suppress=missingIncludeSystem
