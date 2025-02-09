@@ -276,53 +276,43 @@ const char* parse_int(const char *p, Fmt *fmt) {
    It is complex and highly optimized one
    If someone willing to spend time, please, implement it here
 */
-#define double_to_str(number, str, precision)           \
-  char *start = str;                                    \
-  int isNegative = 0;                                   \
-                                                        \
-  if (number < 0) {                                     \
-    isNegative = 1;                                     \
-    number = -number;                                   \
-  }                                                     \
-                                                        \
-  int int_part_count = 0;                               \
-  while (number >= 1.0) {                               \
-    number /= 10;                                       \
-    int_part_count++;                                   \
-  }                                                     \
-                                                        \
-  if (int_part_count == 0) {                            \
-    *str++ = '0';                                       \
-  } else {                                              \
-    if (isNegative) *str++ = '-';                       \
-                                                        \
-    for (int j = 0; j < int_part_count; j++) {          \
-      number *= 10;                                     \
-      int digit = (int)number;                          \
-                                                        \
-      *str++ = digit + '0';                             \
-      number -= digit;                                  \
-    }                                                   \
-  }                                                     \
-                                                        \
-                                                        \
-  for (int i = int_part_count, j = 0; j < i / 2; j++) { \
-    char temp = start[j];                               \
-    start[j] = start[i - j - 1];                        \
-    start[i - j - 1] = temp;                            \
-  }                                                     \
-                                                        \
-  *str++ = '.';                                         \
-                                                        \
-  for (int i = 0; i < precision - 1; i++) {             \
-    number *= 10.0;                                     \
-    int digit = (int)number;                            \
-    *str++ = digit + '0';                               \
-    number -= digit;                                    \
-  }                                                     \
-  *str++ = round(number * 10) + '0';                    \
-                                                        \
-                                                        \
+#define double_to_str(number, str, precision)       \
+  char *start = str;                                \
+  int is_negative = signbit(number);                \
+  int i = 0;                                        \
+                                                    \
+  if (is_negative) number = -number;                \
+                                                    \
+  long double int_part = truncl(number);            \
+  long double fractional_part = fmodl(number, 1.0); \
+                                                    \
+  if (is_negative) *str++ = '-';                  \
+                                                    \
+  if (fmodl(int_part, 10.0) >= 1.0) {               \
+    do {                                            \
+      *str++ = '0' + fmodl(int_part, 10.0);         \
+      int_part /= 10;                               \
+      i++;                                          \
+    } while (int_part >= 1.0);                       \
+  } else {                                          \
+    *str++ = '0';                                   \
+  }                                                 \
+                                                    \
+  for (int j = 0; j < i / 2; j++) {                 \
+    char temp = start[j];                           \
+    start[j] = start[i - j - 1];                    \
+    start[i - j - 1] = temp;                        \
+  }                                                 \
+                                                    \
+  *str++ = '.';                                     \
+                                                    \
+  for (int i = 0; i < precision - 1; i++) {         \
+    fractional_part *= 10.0;                        \
+    int digit = (int)fractional_part;               \
+    *str++ = digit + '0';                           \
+    fractional_part -= digit;                       \
+  }                                                 \
+  *str++ = round(fractional_part * 10) + '0';       \
   *str = '\0';
 
 
