@@ -39,6 +39,7 @@ START_TEST(s21_strncpy_3) {
   s21_strncpy(str3, str1, 80);
 
   ck_assert_str_eq(str2, str3);
+  ck_assert_int_eq(str2[50], str3[50]);
 }
 END_TEST
 

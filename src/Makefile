@@ -13,6 +13,7 @@ s21_string.a: $(OBJ)
 	@ar rcs $@ $^
 
 %.o: %.c
+	@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -i
 	@gcc $(FLAGS) $(TEST_FLAGS) -c $^ -o $@
 
 clean:
@@ -24,7 +25,6 @@ format:
 test: all
 	@gcc $(FLAGS) -o test s21_test.c ./tests/*.c -L. -l:s21_string.a -lcheck -lm -lsubunit -lgcov
 	@./test
-#@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -n
 #@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs cppcheck --enable=all --suppress=missingIncludeSystem
 #valgrind --tool=memcheck --leak-check=yes --leak-check=full --show-leak-kinds=all ./s21_cat $flags $files 2>&1 | grep -E "ERROR"
 

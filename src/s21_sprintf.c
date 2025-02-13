@@ -307,13 +307,12 @@ const char *parse_int(const char *p, Fmt *fmt) {
                                                     \
   *str++ = '.';                                     \
                                                     \
-  for (int i = 0; i < precision - 1; i++) {         \
+  for (int i = 0; i < precision; i++) {             \
     fractional_part *= 10.0;                        \
     int digit = (int)fractional_part;               \
     *str++ = digit + '0';                           \
     fractional_part -= digit;                       \
   }                                                 \
-  *str++ = round(fractional_part * 10) + '0';       \
   *str = '\0';
 
 void insert_integer(Fmt *fmt) {
