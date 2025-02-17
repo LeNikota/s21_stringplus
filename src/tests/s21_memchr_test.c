@@ -63,7 +63,7 @@ START_TEST(s21_memchr_8) {
 END_TEST
 
 Suite *s21_memchr_test(void) {
-  Suite *s = suite_create("Core");
+  Suite *s = suite_create("s21_memchr");
   TCase *tc = tcase_create("None");
   tcase_add_test(tc, s21_memchr_1);
   tcase_add_test(tc, s21_memchr_2);

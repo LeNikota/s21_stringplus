@@ -64,7 +64,7 @@ START_TEST(s21_insert_7) {
 END_TEST
 
 Suite *s21_insert_test(void) {
-  Suite *s = suite_create("Core");
+  Suite *s = suite_create("s21_insert");
   TCase *tc = tcase_create("None");
   tcase_add_test(tc, s21_insert_1);
   tcase_add_test(tc, s21_insert_2);

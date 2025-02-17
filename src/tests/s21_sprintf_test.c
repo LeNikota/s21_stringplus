@@ -596,9 +596,8 @@ START_TEST(test_s21_sprintf_combined) {
 }
 END_TEST
 
-
 Suite *s21_sprintf_test(void) {
-  Suite *s = suite_create("Core");
+  Suite *s = suite_create("s21_sprintf");
   TCase *tc = tcase_create("Combined Tests");
 
   tcase_add_test(tc, test_s21_sprintf_combined);

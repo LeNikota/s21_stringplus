@@ -13,7 +13,7 @@ START_TEST(s21_strerror_1) {
 END_TEST
 
 Suite *s21_strerror_test(void) {
-  Suite *s = suite_create("Core");
+  Suite *s = suite_create("s21_strerror");
   TCase *tc = tcase_create("None");
   tcase_add_test(tc, s21_strerror_1);
   suite_add_tcase(s, tc);
