@@ -27,6 +27,7 @@ int main(void) {
       s21_to_upper_test(),
       s21_trim_test(),
       s21_sprintf_test(),
+      s21_sscanf_test(),
       NULL  // Завершающий элемент массива
   };
 
