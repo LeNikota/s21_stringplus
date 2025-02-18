@@ -1,4 +1,3 @@
-#include "../s21_string.h"
 #include "test.h"
 
 START_TEST(s21_insert_1) {

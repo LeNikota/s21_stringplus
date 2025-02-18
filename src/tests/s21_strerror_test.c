@@ -1,8 +1,3 @@
-#include <check.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "../s21_string.h"
 #include "test.h"
 
 START_TEST(s21_strerror_1) {

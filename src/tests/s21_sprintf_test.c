@@ -1,11 +1,4 @@
-#include <check.h>
-#include <float.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "../s21_string.h"
+#include "test.h"
 
 START_TEST(test_s21_sprintf_combined) {
   char buffer[100000];
