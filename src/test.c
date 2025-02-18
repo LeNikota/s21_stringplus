@@ -1,8 +1,8 @@
-#include <check.h>  // Если вы используете библиотеку Check
+#include "./tests/test.h"
+
+#include <check.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "./tests/test.h"
 
 int main(void) {
   // Создание массива указателей на сьюты
