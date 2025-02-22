@@ -86,68 +86,47 @@ void return_count(Fmt *fmt, char *str);
 
 // Macro to convert an integer to a string
 #define int_to_str(number, buffer, fmt) \
+  bool is_negative = 0;                 \
+                                        \
   if (number < 0) {                     \
     number = -number;                   \
+    is_negative = 1;                    \
+  }                                     \
+                                        \
+  to_str(number, buffer);               \
+                                        \
+  if (is_negative) {                    \
     *buffer++ = '-';                    \
   } else if (fmt->flag_plus) {          \
     *buffer++ = '+';                    \
   } else if (fmt->flag_space) {         \
     *buffer++ = ' ';                    \
-  }                                     \
-                                        \
-  to_str(number, buffer)
+  }
 
 // Macro to convert a hexadecimal number to a string
-#define hexadecimal_to_str(number, str, hex_case, fmt) \
-  if (fmt->flag_base) {                                \
-    *str++ = '0';                                      \
-    *str++ = hex_case + 23;                            \
-  }                                                    \
-                                                       \
-  char *start = str;                                   \
-  int i = 0;                                           \
-                                                       \
-  do {                                                 \
-    if ((number % 16) < 10) {                          \
-      *str++ = '0' + (number % 16);                    \
-    } else {                                           \
-      *str++ = hex_case + ((number % 16) - 10);        \
-    }                                                  \
-                                                       \
-    number /= 16;                                      \
-                                                       \
-    i++;                                               \
-  } while (number > 0);                                \
-                                                       \
-  *str = '\0';                                         \
-                                                       \
-  for (int j = 0; j < i / 2; j++) {                    \
-    char temp = start[j];                              \
-    start[j] = start[i - j - 1];                       \
-    start[i - j - 1] = temp;                           \
-  }
+#define hexadecimal_to_str(number, buffer, hex_case) \
+  do {                                               \
+    if ((number % 16) < 10) {                        \
+      *buffer++ = '0' + (number % 16);               \
+    } else {                                         \
+      *buffer++ = hex_case + ((number % 16) - 10);   \
+    }                                                \
+                                                     \
+    number /= 16;                                    \
+  } while (number > 0);                              \
+                                                     \
+  *buffer = '\0';
 
 // Macro to convert an octal number to a string
-#define octal_to_str(number, str, fmt) \
-  if (fmt->flag_base) *str++ = '0';    \
-                                       \
-  char *start = str;                   \
-  int i = 0;                           \
-                                       \
-  do {                                 \
-    *str++ = '0' + (number % 8);       \
-    number /= 8;                       \
-    i++;                               \
-  } while (number > 0);                \
-                                       \
-  *str = '\0';                         \
-                                       \
-  for (int j = 0; j < i / 2; j++) {    \
-    char temp = start[j];              \
-    start[j] = start[i - j - 1];       \
-    start[i - j - 1] = temp;           \
-  }
+#define octal_to_str(number, buffer) \
+  do {                               \
+    *buffer++ = '0' + (number % 8);  \
+    number /= 8;                     \
+  } while (number > 0);              \
+                                     \
+  *buffer = '\0';
 
+// Decimal to string
 #define double_to_str(number, str, precision)       \
   char *start = str;                                \
   int is_negative = signbit(number);                \
