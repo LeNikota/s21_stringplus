@@ -100,6 +100,8 @@ void return_count(Fmt *fmt, char *str);
     *str++ = '-';                    \
   } else if (fmt->flag_plus) {       \
     *str++ = '+';                    \
+  } else if (fmt->flag_space) {      \
+    *str++ = ' ';                    \
   }                                  \
                                      \
   to_str(number, str)
