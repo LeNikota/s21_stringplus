@@ -36,7 +36,7 @@ int s21_sprintf(char *str, const char *format, ...) {
 
       // Handle width
       if (*p == '*') {
-        fmt.width_star = true;
+        fmt.width = va_arg(fmt.args, int);
         p++;
       } else if (*p >= '0' && *p <= '9') {
         p = parse_int(p, &fmt);
@@ -44,7 +44,7 @@ int s21_sprintf(char *str, const char *format, ...) {
 
       // Handle precision
       if (*p == '*') {
-        fmt.width_star = true;
+        fmt.precision = va_arg(fmt.args, int);
         p++;
       } else if (*p == '.') {
         p = parse_int(p, &fmt);
