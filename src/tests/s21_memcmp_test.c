@@ -3,7 +3,9 @@
 START_TEST(s21_memcmp_1) {
   const char str1[] = "Hello";
   const char str2[] = "Hello";
+
   ck_assert_int_eq(s21_memcmp(str1, str2, 5), memcmp(str1, str2, 5));
+  ck_assert_int_eq(s21_memcmp(str1, str1, 5), memcmp(str1, str1, 5));
 }
 END_TEST
 
@@ -52,13 +54,13 @@ START_TEST(s21_memcmp_7) {
 }
 END_TEST
 
-/*
-START_TEST (s21_memcmp_8) {
-    const char str1[] = "Lorem ipsum dolor sit amet.";
-    const char str2[] = "Lorem ipsum dolor sit amet, consectetur adipiscing
-elit."; ck_assert_int_eq(s21_memcmp(str1, str2, 27), memcmp(str1, str2, 27)); }
+START_TEST(s21_memcmp_8) {
+  const char str1[] = "Lorem ipsum dolor sit amet.";
+  const char str2[] =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+  ck_assert_int_eq(s21_memcmp(str1, str2, 27), memcmp(str1, str2, 27));
+}
 END_TEST
-*/
 
 Suite *s21_memcmp_test(void) {
   Suite *s = suite_create("s21_memcmp");
@@ -70,7 +72,7 @@ Suite *s21_memcmp_test(void) {
   tcase_add_test(tc, s21_memcmp_5);
   tcase_add_test(tc, s21_memcmp_6);
   tcase_add_test(tc, s21_memcmp_7);
-  // tcase_add_test(tc, s21_memcmp_8); // Закомментировано, если не нужно
+  tcase_add_test(tc, s21_memcmp_8);  // Закомментировано, если не нужно
   suite_add_tcase(s, tc);
   return s;
 }

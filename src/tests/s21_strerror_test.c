@@ -1,9 +1,9 @@
 #include "test.h"
 
 START_TEST(s21_strerror_1) {
-  for (int i = 0; i < 134; i++) {
-    ck_assert_str_eq(s21_strerror(i), strerror(i));
-  }
+  for (int i = 0; i < 134; i++) ck_assert_str_eq(s21_strerror(i), strerror(i));
+
+  ck_assert_str_eq(s21_strerror(-100), "Unknown error");
 }
 END_TEST
 

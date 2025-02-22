@@ -10,7 +10,7 @@ START_TEST(test_s21_sprintf_combined) {
   s21_count = s21_sprintf(buffer, "Just two prosents %%, cool");
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
- 
+
   // Test 1: Integer decimal (%d)
   int number1 = 42;
   count = sprintf(expected, "Number: %d", number1);
