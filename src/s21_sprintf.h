@@ -75,29 +75,15 @@ void insert_hexadecimal(Fmt *fmt);
 void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
 
-// Macros
-
-// Macro to convert an integer to a string
-#define int_to_str(number, str)     \
-  char *start = str;                \
-  int is_negative = 0;              \
+#define to_str(number, str)         \
   int i = 0;                        \
-                                    \
-  if (number < 0) {                 \
-    is_negative = 1;                \
-    number = -number;               \
-  }                                 \
+  char *start = str;                \
                                     \
   do {                              \
     *str++ = (number % 10) + '0';   \
     number /= 10;                   \
     i++;                            \
   } while (number > 0);             \
-                                    \
-  if (is_negative) {                \
-    *str++ = '-';                   \
-    i++;                            \
-  }                                 \
                                     \
   *str = '\0';                      \
                                     \
@@ -107,24 +93,16 @@ void return_count(Fmt *fmt, char *str);
     start[i - j - 1] = temp;        \
   }
 
-// Macro to convert an unsigned integer to a string
-#define unsigned_int_to_str(number, str) \
-  char *start = str;                     \
-  int i = 0;                             \
-                                         \
-  do {                                   \
-    *str++ = (number % 10) + '0';        \
-    number /= 10;                        \
-    i++;                                 \
-  } while (number > 0);                  \
-                                         \
-  *str = '\0';                           \
-                                         \
-  for (int j = 0; j < i / 2; j++) {      \
-    char temp = start[j];                \
-    start[j] = start[i - j - 1];         \
-    start[i - j - 1] = temp;             \
-  }
+// Macro to convert an integer to a string
+#define int_to_str(number, str, fmt) \
+  if (number < 0) {                  \
+    number = -number;                \
+    *str++ = '-';                    \
+  } else if (fmt->flag_plus) {       \
+    *str++ = '+';                    \
+  }                                  \
+                                     \
+  to_str(number, str)
 
 // Macro to convert a hexadecimal number to a string
 #define hexadecimal_to_str(number, str, hex_case) \

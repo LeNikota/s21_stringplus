@@ -154,23 +154,23 @@ void reset_fmt(Fmt *fmt) {
 void insert_integer(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     int number = va_arg(fmt->args, int);
-    int_to_str(number, fmt->str);
+    int_to_str(number, fmt->str, fmt);
 
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     long number = va_arg(fmt->args, long);
-    int_to_str(number, fmt->str);
+    int_to_str(number, fmt->str, fmt);
 
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     long long number = va_arg(fmt->args, long long);
-    int_to_str(number, fmt->str);
+    int_to_str(number, fmt->str, fmt);
 
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     short number = va_arg(fmt->args, int);
-    int_to_str(number, fmt->str);
+    int_to_str(number, fmt->str, fmt);
 
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     char number = va_arg(fmt->args, int);
-    int_to_str(number, fmt->str);
+    int_to_str(number, fmt->str, fmt);
   }
 }
 
@@ -218,19 +218,19 @@ void insert_character(Fmt *fmt) {
 void insert_unsigned_integer(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    unsigned_int_to_str(number, fmt->str);
+    to_str(number, fmt->str);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    unsigned_int_to_str(number, fmt->str);
+    to_str(number, fmt->str);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    unsigned_int_to_str(number, fmt->str);
+    to_str(number, fmt->str);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    unsigned_int_to_str(number, fmt->str);
+    to_str(number, fmt->str);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    unsigned_int_to_str(number, fmt->str);
+    to_str(number, fmt->str);
   }
 }
 
