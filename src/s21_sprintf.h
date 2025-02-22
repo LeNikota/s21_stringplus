@@ -15,7 +15,7 @@ typedef struct Fmt {
   bool flag_minus;
   bool flag_plus;
   bool flag_space;
-  bool flag_number;  // '#'
+  bool flag_base;  // '#'
   bool flag_zero;
   bool flag_point;  // Activate precision
 
@@ -94,21 +94,27 @@ void return_count(Fmt *fmt, char *str);
   }
 
 // Macro to convert an integer to a string
-#define int_to_str(number, str, fmt) \
-  if (number < 0) {                  \
-    number = -number;                \
-    *str++ = '-';                    \
-  } else if (fmt->flag_plus) {       \
-    *str++ = '+';                    \
-  } else if (fmt->flag_space) {      \
-    *str++ = ' ';                    \
-  }                                  \
-                                     \
+#define int_to_str(number, str, fmt)              \
+  int spaces = fmt->width;                        \
+  while (spaces && (number /= 10) > 10) spaces--; \
+                                                  \
+  if (number < 0) {                               \
+    number = -number;                             \
+    *str++ = '-';                                 \
+  } else if (fmt->flag_plus) {                    \
+    *str++ = '+';                                 \
+  } else if (fmt->flag_space) {                   \
+    *str++ = ' ';                                 \
+  }                                               \
+                                                  \
+  while (spaces-- > 0) *str++ = ' ';              \
+  *str = '\0';                                    \
+                                                  \
   to_str(number, str)
 
 // Macro to convert a hexadecimal number to a string
 #define hexadecimal_to_str(number, str, hex_case, fmt) \
-  if (fmt->flag_number) {                              \
+  if (fmt->flag_base) {                                \
     *str++ = '0';                                      \
     *str++ = hex_case + 23;                            \
   }                                                    \
@@ -138,7 +144,7 @@ void return_count(Fmt *fmt, char *str);
 
 // Macro to convert an octal number to a string
 #define octal_to_str(number, str, fmt) \
-  if (fmt->flag_number) *str++ = '0';  \
+  if (fmt->flag_base) *str++ = '0';    \
                                        \
   char *start = str;                   \
   int i = 0;                           \

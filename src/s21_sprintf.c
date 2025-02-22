@@ -28,7 +28,7 @@ int s21_sprintf(char *str, const char *format, ...) {
             fmt.flag_space = true;
             break;
           case '#':
-            fmt.flag_number = true;
+            fmt.flag_base = true;
             break;
         }
         p++;
@@ -129,7 +129,7 @@ const char *parse_int(const char *p, Fmt *fmt) {
     p++;
   }
 
-  // Return moved pointer
+  // Returns moved pointer
   return p;
 }
 
@@ -137,7 +137,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->flag_minus = false;
   fmt->flag_plus = false;
   fmt->flag_space = false;
-  fmt->flag_number = false;
+  fmt->flag_base = false;
   fmt->flag_zero = false;
   fmt->flag_point = false;
 
@@ -206,13 +206,27 @@ void insert_octal(Fmt *fmt) {
 void insert_string(Fmt *fmt) {
   char *string = va_arg(fmt->args, char *);
 
+  int spaces = fmt->width - s21_strlen(string);
+  if (!fmt->flag_minus)
+    while (spaces-- > 0) *fmt->str++ = ' ';
+
   while (*string) *fmt->str++ = *string++;
   *fmt->str = '\0';
+
+  if (fmt->flag_minus)
+    while (spaces-- > 0) *fmt->str++ = ' ';
 }
 
 void insert_character(Fmt *fmt) {
+  int spaces = fmt->width - 1;
+  if (!fmt->flag_minus)
+    while (spaces-- > 0) *fmt->str++ = ' ';
+
   *fmt->str++ = va_arg(fmt->args, int);
   *fmt->str = '\0';
+
+  if (fmt->flag_minus)
+    while (spaces-- > 0) *fmt->str++ = ' ';
 }
 
 void insert_unsigned_integer(Fmt *fmt) {

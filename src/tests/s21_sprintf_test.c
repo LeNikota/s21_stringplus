@@ -929,6 +929,210 @@ START_TEST(test_s21_sprintf_hash_flag) {
   ck_assert_int_eq(count, s21_count);
 }
 
+START_TEST(test_s21_sprintf_spaces_before) {
+  char buffer[100000];
+  char expected[100000];
+  int count, s21_count;
+
+  // Test 1: Characters with spaces
+  count = sprintf(expected, "Character: %3c%3c%3c", 'w', 'o', 'w');
+  s21_count = s21_sprintf(buffer, "Character: %3c%3c%3c", 'w', 'o', 'w');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 3: Text with spaces
+  const char *text = "Hello, World!";
+  count = sprintf(expected, "Text: %20s", text);
+  s21_count = s21_sprintf(buffer, "Text: %20s", text);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 2: Integer with spaces
+  int i = 42;
+  count = sprintf(expected, "Integer: %20d", i);
+  s21_count = s21_sprintf(buffer, "Integer: %20d", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 4: Signed integer with spaces
+  count = sprintf(expected, "Signed Integer: %20i", i);
+  s21_count = s21_sprintf(buffer, "Signed Integer: %20i", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 5: Octal with spaces
+  count = sprintf(expected, "Octal: %20o", i);
+  s21_count = s21_sprintf(buffer, "Octal: %20o", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 6: Hexadecimal (lowercase) with spaces
+  count = sprintf(expected, "Hexadecimal: %20x", i);
+  s21_count = s21_sprintf(buffer, "Hexadecimal: %20x", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 7: Hexadecimal (uppercase) with spaces
+  count = sprintf(expected, "Uppercase Hexadecimal: %20X", i);
+  s21_count = s21_sprintf(buffer, "Uppercase Hexadecimal: %20X", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 8: Unsigned integer with spaces
+  unsigned int u = 42;
+  count = sprintf(expected, "Unsigned Integer: %20u", u);
+  s21_count = s21_sprintf(buffer, "Unsigned Integer: %20u", u);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 9: Pointer with spaces
+  int *ptr = &i;
+  count = sprintf(expected, "Pointer: %20p", (void *)ptr);
+  s21_count = s21_sprintf(buffer, "Pointer: %20p", (void *)ptr);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  //   float f = 42.0f;
+  //   count = sprintf(expected, "Float: %20f", f);
+  //   s21_count = s21_sprintf(buffer, "Float: %20f", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 12: Double (%lf)
+  //   double d = 42.0;
+  //   count = sprintf(expected, "Double: %20lf", d);
+  //   s21_count = s21_sprintf(buffer, "Double: %20lf", d);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 13: Float with scientific notation (%e)
+  //   count = sprintf(expected, "Float (scientific): %20e", f);
+  //   s21_count = s21_sprintf(buffer, "Float (scientific): %20e", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 14: Double with scientific notation (%le)
+  //   count = sprintf(expected, "Double (scientific): %20le", d);
+  //   s21_count = s21_sprintf(buffer, "Double (scientific): %20le", d);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 15: Float with uppercase scientific notation (%E)
+  //   count = sprintf(expected, "Float (uppercase scientific): %20E", f);
+  //   s21_count = s21_sprintf(buffer, "Float (uppercase scientific): %20E", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 23: Float with precision (%2f)
+  //   count = sprintf(expected, "Float with precision: %20f", f);
+  //   s21_count = s21_sprintf(buffer, "Float with precision: %20f", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_spaces_after) {
+  char buffer[100000];
+  char expected[100000];
+  int count, s21_count;
+
+  // Test 1: Characters with spaces
+  count = sprintf(expected, "Character: %-3c%-3c%-3c", 'w', 'o', 'w');
+  s21_count = s21_sprintf(buffer, "Character: %-3c%-3c%-3c", 'w', 'o', 'w');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 3: Text with spaces
+  const char *text = "Hello, World!";
+  count = sprintf(expected, "Text: %-20s", text);
+  s21_count = s21_sprintf(buffer, "Text: %-20s", text);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 2: Integer with spaces
+  int i = 42;
+  count = sprintf(expected, "Integer: %-20d", i);
+  s21_count = s21_sprintf(buffer, "Integer: %-20d", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 4: Signed integer with spaces
+  count = sprintf(expected, "Signed Integer: %-20i", i);
+  s21_count = s21_sprintf(buffer, "Signed Integer: %-20i", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 5: Octal with spaces
+  count = sprintf(expected, "Octal: %-20o", i);
+  s21_count = s21_sprintf(buffer, "Octal: %-20o", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 6: Hexadecimal (lowercase) with spaces
+  count = sprintf(expected, "Hexadecimal: %-20x", i);
+  s21_count = s21_sprintf(buffer, "Hexadecimal: %-20x", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 7: Hexadecimal (uppercase) with spaces
+  count = sprintf(expected, "Uppercase Hexadecimal: %-20X", i);
+  s21_count = s21_sprintf(buffer, "Uppercase Hexadecimal: %-20X", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 8: Unsigned integer with spaces
+  unsigned int u = 42;
+  count = sprintf(expected, "Unsigned Integer: %-20u", u);
+  s21_count = s21_sprintf(buffer, "Unsigned Integer: %-20u", u);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 9: Pointer with spaces
+  int *ptr = &i;
+  count = sprintf(expected, "Pointer: %-20p", (void *)ptr);
+  s21_count = s21_sprintf(buffer, "Pointer: %-20p", (void *)ptr);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  //   float f = 42.0f;
+  //   count = sprintf(expected, "Float: %-20f", f);
+  //   s21_count = s21_sprintf(buffer, "Float: %-20f", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 12: Double (%-lf)
+  //   double d = 42.0;
+  //   count = sprintf(expected, "Double: %-20lf", d);
+  //   s21_count = s21_sprintf(buffer, "Double: %-20lf", d);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 13: Float with scientific notation (%-e)
+  //   count = sprintf(expected, "Float (scientific): %-20e", f);
+  //   s21_count = s21_sprintf(buffer, "Float (scientific): %-20e", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 14: Double with scientific notation (%-le)
+  //   count = sprintf(expected, "Double (scientific): %-20le", d);
+  //   s21_count = s21_sprintf(buffer, "Double (scientific): %-20le", d);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 15: Float with uppercase scientific notation (%-E)
+  //   count = sprintf(expected, "Float (uppercase scientific): %-20E", f);
+  //   s21_count = s21_sprintf(buffer, "Float (uppercase scientific): %-20E", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+
+  //   // Test 23: Float with precision (%-2f)
+  //   count = sprintf(expected, "Float with precision: %-20f", f);
+  //   s21_count = s21_sprintf(buffer, "Float with precision: %-20f", f);
+  //   ck_assert_str_eq(buffer, expected);
+  //   ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
 Suite *s21_sprintf_test(void) {
   Suite *s = suite_create("s21_sprintf");
   TCase *tc = tcase_create("Combined Tests");
@@ -937,6 +1141,8 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc, test_s21_sprintf_forced_plus_sign);
   tcase_add_test(tc, test_s21_sprintf_space_sign);
   tcase_add_test(tc, test_s21_sprintf_hash_flag);
+  tcase_add_test(tc, test_s21_sprintf_spaces_before);
+  tcase_add_test(tc, test_s21_sprintf_spaces_after);
 
   suite_add_tcase(s, tc);
   return s;
