@@ -107,47 +107,54 @@ void return_count(Fmt *fmt, char *str);
   to_str(number, str)
 
 // Macro to convert a hexadecimal number to a string
-#define hexadecimal_to_str(number, str, hex_case) \
-  char *start = str;                              \
-  int i = 0;                                      \
-                                                  \
-  do {                                            \
-    if ((number % 16) < 10) {                     \
-      *str++ = '0' + (number % 16);               \
-    } else {                                      \
-      *str++ = hex_case + ((number % 16) - 10);   \
-    }                                             \
-                                                  \
-    number /= 16;                                 \
-                                                  \
-    i++;                                          \
-  } while (number > 0);                           \
-                                                  \
-  *str = '\0';                                    \
-                                                  \
-  for (int j = 0; j < i / 2; j++) {               \
-    char temp = start[j];                         \
-    start[j] = start[i - j - 1];                  \
-    start[i - j - 1] = temp;                      \
+#define hexadecimal_to_str(number, str, hex_case, fmt) \
+  if (fmt->flag_number) {                              \
+    *str++ = '0';                                      \
+    *str++ = hex_case + 23;                            \
+  }                                                    \
+                                                       \
+  char *start = str;                                   \
+  int i = 0;                                           \
+                                                       \
+  do {                                                 \
+    if ((number % 16) < 10) {                          \
+      *str++ = '0' + (number % 16);                    \
+    } else {                                           \
+      *str++ = hex_case + ((number % 16) - 10);        \
+    }                                                  \
+                                                       \
+    number /= 16;                                      \
+                                                       \
+    i++;                                               \
+  } while (number > 0);                                \
+                                                       \
+  *str = '\0';                                         \
+                                                       \
+  for (int j = 0; j < i / 2; j++) {                    \
+    char temp = start[j];                              \
+    start[j] = start[i - j - 1];                       \
+    start[i - j - 1] = temp;                           \
   }
 
 // Macro to convert an octal number to a string
-#define octal_to_str(number, str)   \
-  char *start = str;                \
-  int i = 0;                        \
-                                    \
-  do {                              \
-    *str++ = '0' + (number % 8);    \
-    number /= 8;                    \
-    i++;                            \
-  } while (number > 0);             \
-                                    \
-  *str = '\0';                      \
-                                    \
-  for (int j = 0; j < i / 2; j++) { \
-    char temp = start[j];           \
-    start[j] = start[i - j - 1];    \
-    start[i - j - 1] = temp;        \
+#define octal_to_str(number, str, fmt) \
+  if (fmt->flag_number) *str++ = '0';  \
+                                       \
+  char *start = str;                   \
+  int i = 0;                           \
+                                       \
+  do {                                 \
+    *str++ = '0' + (number % 8);       \
+    number /= 8;                       \
+    i++;                               \
+  } while (number > 0);                \
+                                       \
+  *str = '\0';                         \
+                                       \
+  for (int j = 0; j < i / 2; j++) {    \
+    char temp = start[j];              \
+    start[j] = start[i - j - 1];       \
+    start[i - j - 1] = temp;           \
   }
 
 #define double_to_str(number, str, precision)       \

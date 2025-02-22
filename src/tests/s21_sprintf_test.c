@@ -5,6 +5,12 @@ START_TEST(test_s21_sprintf_combined) {
   char expected[100000];
   int count, s21_count;
 
+  // Test 0: %%
+  count = sprintf(expected, "Just two prosents %%, cool");
+  s21_count = s21_sprintf(buffer, "Just two prosents %%, cool");
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+ 
   // Test 1: Integer decimal (%d)
   int number1 = 42;
   count = sprintf(expected, "Number: %d", number1);
@@ -822,6 +828,107 @@ START_TEST(test_s21_sprintf_space_sign) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_hash_flag) {
+  char buffer[100000];
+  char expected[100000];
+  int count, s21_count;
+
+  // Test 1: Octal with signed char (%#hho)
+  signed char sc = 42;
+  count = sprintf(expected, "Signed Char Octal: %#hho", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Octal: %#hho", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 2: Octal with short (%#ho)
+  short s = 42;
+  count = sprintf(expected, "Short Octal: %#ho", s);
+  s21_count = s21_sprintf(buffer, "Short Octal: %#ho", s);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 3: Octal with int (%#o)
+  int i = 42;
+  count = sprintf(expected, "Integer Octal: %#o", i);
+  s21_count = s21_sprintf(buffer, "Integer Octal: %#o", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 4: Octal with long (%#lo)
+  long l = 42L;
+  count = sprintf(expected, "Long Octal: %#lo", l);
+  s21_count = s21_sprintf(buffer, "Long Octal: %#lo", l);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 5: Octal with long long (%#llo)
+  long long ll = 42LL;
+  count = sprintf(expected, "Long Long Octal: %#llo", ll);
+  s21_count = s21_sprintf(buffer, "Long Long Octal: %#llo", ll);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 6: Hexadecimal with signed char (%#hhx)
+  count = sprintf(expected, "Signed Char Hex: %#hhx", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Hex: %#hhx", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 7: Hexadecimal with short (%#hx)
+  count = sprintf(expected, "Short Hex: %#hx", s);
+  s21_count = s21_sprintf(buffer, "Short Hex: %#hx", s);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 8: Hexadecimal with int (%#x)
+  count = sprintf(expected, "Integer Hex: %#x", i);
+  s21_count = s21_sprintf(buffer, "Integer Hex: %#x", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 9: Hexadecimal with long (%#lx)
+  count = sprintf(expected, "Long Hex: %#lx", l);
+  s21_count = s21_sprintf(buffer, "Long Hex: %#lx", l);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 10: Hexadecimal with long long (%#llx)
+  count = sprintf(expected, "Long Long Hex: %#llx", ll);
+  s21_count = s21_sprintf(buffer, "Long Long Hex: %#llx", ll);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 11: Uppercase Hexadecimal with signed char (%#hhX)
+  count = sprintf(expected, "Signed Char Upper Hex: %#hhX", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Upper Hex: %#hhX", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 12: Uppercase Hexadecimal with short (%#hX)
+  count = sprintf(expected, "Short Upper Hex: %#hX", s);
+  s21_count = s21_sprintf(buffer, "Short Upper Hex: %#hX", s);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 13: Uppercase Hexadecimal with int (%#X)
+  count = sprintf(expected, "Integer Upper Hex: %#X", i);
+  s21_count = s21_sprintf(buffer, "Integer Upper Hex: %#X", i);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 14: Uppercase Hexadecimal with long (%#lX)
+  count = sprintf(expected, "Long Upper Hex: %#lX", l);
+  s21_count = s21_sprintf(buffer, "Long Upper Hex: %#lX", l);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 15: Uppercase Hexadecimal with long long (%#llX)
+  count = sprintf(expected, "Long Long Upper Hex: %#llX", ll);
+  s21_count = s21_sprintf(buffer, "Long Long Upper Hex: %#llX", ll);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+}
+
 Suite *s21_sprintf_test(void) {
   Suite *s = suite_create("s21_sprintf");
   TCase *tc = tcase_create("Combined Tests");
@@ -829,6 +936,7 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc, test_s21_sprintf_combined);
   tcase_add_test(tc, test_s21_sprintf_forced_plus_sign);
   tcase_add_test(tc, test_s21_sprintf_space_sign);
+  tcase_add_test(tc, test_s21_sprintf_hash_flag);
 
   suite_add_tcase(s, tc);
   return s;

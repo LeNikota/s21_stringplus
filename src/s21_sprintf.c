@@ -187,19 +187,19 @@ void insert_float(Fmt *fmt) {
 void insert_octal(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    octal_to_str(number, fmt->str);
+    octal_to_str(number, fmt->str, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    octal_to_str(number, fmt->str);
+    octal_to_str(number, fmt->str, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    octal_to_str(number, fmt->str);
+    octal_to_str(number, fmt->str, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    octal_to_str(number, fmt->str);
+    octal_to_str(number, fmt->str, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    octal_to_str(number, fmt->str);
+    octal_to_str(number, fmt->str, fmt);
   }
 }
 
@@ -245,19 +245,19 @@ void insert_hexadecimal(Fmt *fmt) {
 
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    hexadecimal_to_str(number, fmt->str, hex_case);
+    hexadecimal_to_str(number, fmt->str, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    hexadecimal_to_str(number, fmt->str, hex_case);
+    hexadecimal_to_str(number, fmt->str, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    hexadecimal_to_str(number, fmt->str, hex_case);
+    hexadecimal_to_str(number, fmt->str, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    hexadecimal_to_str(number, fmt->str, hex_case);
+    hexadecimal_to_str(number, fmt->str, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    hexadecimal_to_str(number, fmt->str, hex_case);
+    hexadecimal_to_str(number, fmt->str, hex_case, fmt);
   }
 }
 
@@ -278,7 +278,7 @@ void insert_pointer(Fmt *fmt) {
   *fmt->str++ = '0';
   *fmt->str++ = 'x';
 
-  hexadecimal_to_str(address, fmt->str, 'a');
+  hexadecimal_to_str(address, fmt->str, 'a', fmt);
 }
 
 void return_count(Fmt *fmt, char *str) {
