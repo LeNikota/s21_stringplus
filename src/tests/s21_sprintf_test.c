@@ -1278,6 +1278,94 @@ START_TEST(test_s21_sprintf_spaces_after_star) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_zero_padding) {
+  char buffer[100000];
+  char expected[100000];
+  int count, s21_count;
+
+  // Test 1: Characters with spaces
+  count = sprintf(expected, "Character: %-*c%-*c%-*c", 3, 'w', 3, 'o', 3, 'w');
+  s21_count =
+      s21_sprintf(buffer, "Character: %-*c%-*c%-*c", 3, 'w', 3, 'o', 3, 'w');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 2: Text with spaces
+  const char *text = "Hello, World!";
+  count = sprintf(expected, "Text: %-*s", 20, text);
+  s21_count = s21_sprintf(buffer, "Text: %-*s", 20, text);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 3: Integer with spaces (modified)
+  int i = 42;
+  long li = 1234567890L;         // Ensure this is a valid long
+  long long lli = 9876543210LL;  // Use a smaller value
+  count =
+      sprintf(expected, "Integer: %0*d\n%0*ld\n%014lld", 20, i, 15, li, lli);
+  s21_count =
+      s21_sprintf(buffer, "Integer: %0*d\n%0*ld\n%014lld", 20, i, 15, li, lli);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 4: Signed integer with spaces (modified)
+  count = sprintf(expected, "Signed Integer: %0*d\n%0*ld\n%014lld", 20, i, 15,
+                  li, lli);
+  s21_count = s21_sprintf(buffer, "Signed Integer: %0*d\n%0*ld\n%014lld", 20, i,
+                          15, li, lli);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 5: Octal with spaces (modified)
+  count = sprintf(expected, "Octal: %0*o\n%0*lo\n%014llo", 20, i, 15, li, lli);
+  s21_count =
+      s21_sprintf(buffer, "Octal: %0*o\n%0*lo\n%014llo", 20, i, 15, li, lli);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 6: Hexadecimal (lowercase) with spaces (modified)
+  count = sprintf(expected, "Hexadecimal: %0*x\n%0*lx\n%014llx", 20, i, 15, li,
+                  lli);
+  s21_count = s21_sprintf(buffer, "Hexadecimal: %0*x\n%0*lx\n%014llx", 20, i,
+                          15, li, lli);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 7: Hexadecimal (uppercase) with spaces (modified)
+  count = sprintf(expected, "Uppercase Hexadecimal: %0*X\n%0*lX\n%014llX", 20,
+                  i, 15, li, lli);
+  s21_count = s21_sprintf(buffer, "Uppercase Hexadecimal: %0*X\n%0*lX\n%014llX",
+                          20, i, 15, li, lli);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 8: Unsigned integer with spaces (modified)
+  unsigned int u = 42;
+  count = sprintf(expected, "Unsigned Integer: %0*u\n%0*lu\n%014llu", 20, u, 15,
+                  (unsigned long)li, (unsigned long long)lli);
+  s21_count = s21_sprintf(buffer, "Unsigned Integer: %0*u\n%0*lu\n%014llu", 20,
+                          u, 15, (unsigned long)li, (unsigned long long)lli);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // // Test 10: Float with spaces (modified)
+  // float f = 42.0f;
+  // count = sprintf(expected, "Float: %0*.*f\n%0*.*lf\n%0*.*Lf", 20, 2, f, 15,
+  // 2, (double)f, 15, 2, (long double)f); s21_count = s21_sprintf(buffer,
+  // "Float: %0*.*f\n%0*.*lf\n%0*.*Lf", 20, 2, f, 15, 2, (double)f, 15, 2, (long
+  // double)f); ck_assert_str_eq(buffer, expected); ck_assert_int_eq(count,
+  // s21_count);
+
+  // // Test 11: Double with spaces (modified)
+  // double d = 42.0;
+  // count = sprintf(expected, "Double: %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2,
+  // (long double)d); s21_count = s21_sprintf(buffer, "Double:
+  // %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2, (long double)d);
+  // ck_assert_str_eq(buffer, expected);
+  // ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
 Suite *s21_sprintf_test(void) {
   Suite *s = suite_create("s21_sprintf");
   TCase *tc = tcase_create("Combined Tests");
@@ -1290,6 +1378,7 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc, test_s21_sprintf_spaces_before_star);
   tcase_add_test(tc, test_s21_sprintf_spaces_after);
   tcase_add_test(tc, test_s21_sprintf_spaces_after_star);
+  tcase_add_test(tc, test_s21_sprintf_zero_padding);
 
   suite_add_tcase(s, tc);
   return s;

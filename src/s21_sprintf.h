@@ -23,13 +23,11 @@ typedef struct Fmt {
   // number
   // *: additional integer value in argument
   int width;
-  bool width_star;
 
   // Number of digits after decimal for floats; max chars for strings.
   // .number
   // .*: additional integer value in argument
   int precision;
-  bool precision_star;
 
   // Length modifier for data type:
   // 'h' : short int

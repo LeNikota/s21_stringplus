@@ -73,9 +73,11 @@ int s21_sprintf(char *str, const char *format, ...) {
           insert_integer(&fmt);
           break;
         case 's':
+          // wchar_t* IS NOT HANDLED
           insert_string(&fmt);
           break;
         case 'c':
+          // wint_t IS NOT HANDLED
           insert_character(&fmt);
           break;
         case 'e':
@@ -86,6 +88,7 @@ int s21_sprintf(char *str, const char *format, ...) {
           insert_float(&fmt);
           // implement e and E
           // implement g and G
+          // implement f
           break;
         case 'o':
           insert_octal(&fmt);
@@ -105,9 +108,6 @@ int s21_sprintf(char *str, const char *format, ...) {
           break;
         case '%':
           *fmt.str++ = '%';
-          break;
-        default:
-          *fmt.str++ = *p;
           break;
       }
     } else {
@@ -142,10 +142,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->flag_point = false;
 
   fmt->width = 0;
-  fmt->width_star = false;
-
   fmt->precision = 0;
-  fmt->precision_star = false;
 
   s21_memset(fmt->length, 0, sizeof(fmt->length));
   fmt->specifier = 0;
@@ -154,9 +151,12 @@ void reset_fmt(Fmt *fmt) {
 void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer) {
   int written = p_buffer - buffer;
   int spaces = fmt->width - written;
+  char ch = ' ';
+
+  if (fmt->flag_zero) ch = '0';
 
   if (!fmt->flag_minus)
-    while (spaces-- > 0) *fmt->str++ = ' ';
+    while (spaces-- > 0) *fmt->str++ = ch;
 
   while (p_buffer != buffer) {
     p_buffer--;
