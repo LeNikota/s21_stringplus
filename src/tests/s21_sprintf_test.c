@@ -483,11 +483,14 @@ START_TEST(test_s21_sprintf_combined) {
   ck_assert_int_eq(count, s21_count);
 
   // Test 67: Float simple (%f)
-  long double number55 = 3.14159;
-  count = sprintf(expected, "Float value: %Lf", number55);
-  s21_count = s21_sprintf(buffer, "Float value: %Lf", number55);
-  ck_assert_str_eq(buffer, expected);
-  ck_assert_int_eq(count, s21_count);
+  long double number55[] = {3.19159, 3.14151,   3.14159,   3.14127,
+                            3.1412,  3.1563267, 7.9943145, 7.9943143};
+  for (int i = 0; i < 4; i++) {
+    count = sprintf(expected, "Float value: %Lf", number55[i]);
+    s21_count = s21_sprintf(buffer, "Float value: %Lf", number55[i]);
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+  }
 
   // Test 68: Float zero (%f)
   long double number56 = 0.0;
