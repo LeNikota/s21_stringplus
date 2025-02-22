@@ -65,6 +65,7 @@ typedef struct Fmt {
 
 const char *parse_int(const char *p, Fmt *fmt);
 void reset_fmt(Fmt *fmt);
+void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer);
 void insert_integer(Fmt *fmt);
 void insert_float(Fmt *fmt);
 void insert_octal(Fmt *fmt);
@@ -75,42 +76,26 @@ void insert_hexadecimal(Fmt *fmt);
 void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
 
-#define to_str(number, str)         \
-  int i = 0;                        \
-  char *start = str;                \
-                                    \
-  do {                              \
-    *str++ = (number % 10) + '0';   \
-    number /= 10;                   \
-    i++;                            \
-  } while (number > 0);             \
-                                    \
-  *str = '\0';                      \
-                                    \
-  for (int j = 0; j < i / 2; j++) { \
-    char temp = start[j];           \
-    start[j] = start[i - j - 1];    \
-    start[i - j - 1] = temp;        \
-  }
+#define to_str(number, buffer)       \
+  do {                               \
+    *buffer++ = (number % 10) + '0'; \
+    number /= 10;                    \
+  } while (number > 0);              \
+                                     \
+  *buffer = '\0';
 
 // Macro to convert an integer to a string
-#define int_to_str(number, str, fmt)              \
-  int spaces = fmt->width;                        \
-  while (spaces && (number /= 10) > 10) spaces--; \
-                                                  \
-  if (number < 0) {                               \
-    number = -number;                             \
-    *str++ = '-';                                 \
-  } else if (fmt->flag_plus) {                    \
-    *str++ = '+';                                 \
-  } else if (fmt->flag_space) {                   \
-    *str++ = ' ';                                 \
-  }                                               \
-                                                  \
-  while (spaces-- > 0) *str++ = ' ';              \
-  *str = '\0';                                    \
-                                                  \
-  to_str(number, str)
+#define int_to_str(number, buffer, fmt) \
+  if (number < 0) {                     \
+    number = -number;                   \
+    *buffer++ = '-';                    \
+  } else if (fmt->flag_plus) {          \
+    *buffer++ = '+';                    \
+  } else if (fmt->flag_space) {         \
+    *buffer++ = ' ';                    \
+  }                                     \
+                                        \
+  to_str(number, buffer)
 
 // Macro to convert a hexadecimal number to a string
 #define hexadecimal_to_str(number, str, hex_case, fmt) \

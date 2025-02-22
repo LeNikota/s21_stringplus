@@ -151,27 +151,44 @@ void reset_fmt(Fmt *fmt) {
   fmt->specifier = 0;
 }
 
+void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer) {
+  int written = p_buffer - buffer;
+  int spaces = fmt->width - written;
+
+  if (!fmt->flag_minus)
+    while (spaces-- > 0) *fmt->str++ = ' ';
+
+  while (p_buffer != buffer) {
+    p_buffer--;
+    *fmt->str++ = *p_buffer;
+  }
+
+  if (fmt->flag_minus)
+    while (spaces-- > 0) *fmt->str++ = ' ';
+}
+
 void insert_integer(Fmt *fmt) {
+  char buffer[500] = {0};
+  char *p_buffer = buffer;
+
   if (s21_strcmp(fmt->length, "") == 0) {
     int number = va_arg(fmt->args, int);
-    int_to_str(number, fmt->str, fmt);
-
+    int_to_str(number, p_buffer, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     long number = va_arg(fmt->args, long);
-    int_to_str(number, fmt->str, fmt);
-
+    int_to_str(number, p_buffer, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     long long number = va_arg(fmt->args, long long);
-    int_to_str(number, fmt->str, fmt);
-
+    int_to_str(number, p_buffer, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     short number = va_arg(fmt->args, int);
-    int_to_str(number, fmt->str, fmt);
-
+    int_to_str(number, p_buffer, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     char number = va_arg(fmt->args, int);
-    int_to_str(number, fmt->str, fmt);
+    int_to_str(number, p_buffer, fmt);
   }
+
+  insert_spaces(fmt, buffer, p_buffer);
 }
 
 void insert_float(Fmt *fmt) {

@@ -1121,9 +1121,9 @@ START_TEST(test_s21_sprintf_spaces_after) {
 
   //   // Test 15: Float with uppercase scientific notation (%-E)
   //   count = sprintf(expected, "Float (uppercase scientific): %-20E", f);
-  //   s21_count = s21_sprintf(buffer, "Float (uppercase scientific): %-20E", f);
-  //   ck_assert_str_eq(buffer, expected);
-  //   ck_assert_int_eq(count, s21_count);
+  //   s21_count = s21_sprintf(buffer, "Float (uppercase scientific): %-20E",
+  //   f); ck_assert_str_eq(buffer, expected); ck_assert_int_eq(count,
+  //   s21_count);
 
   //   // Test 23: Float with precision (%-2f)
   //   count = sprintf(expected, "Float with precision: %-20f", f);
