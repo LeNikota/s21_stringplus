@@ -202,13 +202,19 @@ void insert_integer(Fmt *fmt) {
 
 void insert_float(Fmt *fmt) {
   // !EDIT: may be reduce to long double number
+  // !EDIT: precision is not handled
+  char buffer[10000] = {0};
+  char *p_buffer = buffer;
+
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
     double number = va_arg(fmt->args, double);
-    double_to_str(number, fmt->str, 6)
+    double_to_str(number, p_buffer, 6)
   } else if (s21_strcmp(fmt->length, "L") == 0) {
     long double number = va_arg(fmt->args, long double);
-    double_to_str(number, fmt->str, 6)
+    double_to_str(number, p_buffer, 6)
   }
+
+  insert_spaces(fmt, buffer, p_buffer);
 }
 
 void insert_octal(Fmt *fmt) {

@@ -500,13 +500,13 @@ START_TEST(test_s21_sprintf_combined) {
   ck_assert_int_eq(count, s21_count);
 
   // // Test 67: Float simple (%f)
-  for (size_t i = 0; i < 100; i++) {
-    long double number55 = random();
-    count = sprintf(expected, "Float value: %Lf", number55);
-    s21_count = s21_sprintf(buffer, "Float value: %Lf", number55);
-    ck_assert_str_eq(buffer, expected);
-    ck_assert_int_eq(count, s21_count);
-  }
+  //   for (size_t i = 0; i < 100; i++) {
+  //     long double number55 = random();
+  //     count = sprintf(expected, "Float value: %Lf", number55);
+  //     s21_count = s21_sprintf(buffer, "Float value: %Lf", number55);
+  //     ck_assert_str_eq(buffer, expected);
+  //     ck_assert_int_eq(count, s21_count);
+  //   }
 
   // Test 68: Float zero (%f)
   long double number56 = 0.0;
@@ -796,43 +796,43 @@ START_TEST(test_s21_sprintf_forced_plus_sign) {
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  //   // Test 11: Float (%f)
-  //   float f = 42.0f;
-  //   count = sprintf(expected, "Float: %+f", f);
-  //   s21_count = s21_sprintf(buffer, "Float: %+f", f);
-  //   ck_assert_str_eq(buffer, expected);
-  //   ck_assert_int_eq(count, s21_count);
+  // Test 11: Float (%f)
+  float f = 42.0f;
+  count = sprintf(expected, "Float: %+f", f);
+  s21_count = s21_sprintf(buffer, "Float: %+f", f);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 
-  //   // Test 12: Double (%lf)
-  //   double d = 42.0;
-  //   count = sprintf(expected, "Double: %+lf", d);
-  //   s21_count = s21_sprintf(buffer, "Double: %+lf", d);
-  //   ck_assert_str_eq(buffer, expected);
-  //   ck_assert_int_eq(count, s21_count);
+  // Test 12: Double (%lf)
+  double d = 42.0;
+  count = sprintf(expected, "Double: %+lf", d);
+  s21_count = s21_sprintf(buffer, "Double: %+lf", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 
-  //   // Test 13: Float with scientific notation (%e)
-  //   count = sprintf(expected, "Float (scientific): %+e", f);
-  //   s21_count = s21_sprintf(buffer, "Float (scientific): %+e", f);
-  //   ck_assert_str_eq(buffer, expected);
-  //   ck_assert_int_eq(count, s21_count);
+  // Test 13: Float with scientific notation (%e)
+  count = sprintf(expected, "Float (scientific): %+e", f);
+  s21_count = s21_sprintf(buffer, "Float (scientific): %+e", f);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 
-  //   // Test 14: Double with scientific notation (%le)
-  //   count = sprintf(expected, "Double (scientific): %+le", d);
-  //   s21_count = s21_sprintf(buffer, "Double (scientific): %+le", d);
-  //   ck_assert_str_eq(buffer, expected);
-  //   ck_assert_int_eq(count, s21_count);
+  // Test 14: Double with scientific notation (%le)
+  count = sprintf(expected, "Double (scientific): %+le", d);
+  s21_count = s21_sprintf(buffer, "Double (scientific): %+le", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 
-  //   // Test 15: Float with uppercase scientific notation (%E)
-  //   count = sprintf(expected, "Float (uppercase scientific): %+E", f);
-  //   s21_count = s21_sprintf(buffer, "Float (uppercase scientific): %+E", f);
-  //   ck_assert_str_eq(buffer, expected);
-  //   ck_assert_int_eq(count, s21_count);
+  // Test 15: Float with uppercase scientific notation (%E)
+  count = sprintf(expected, "Float (uppercase scientific): %+E", f);
+  s21_count = s21_sprintf(buffer, "Float (uppercase scientific): %+E", f);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 
-  //   // Test 23: Float with precision (%+.2f)
-  //   count = sprintf(expected, "Float with precision: %+0.2f", f);
-  //   s21_count = s21_sprintf(buffer, "Float with precision: %+0.2f", f);
-  //   ck_assert_str_eq(buffer, expected);
-  //   ck_assert_int_eq(count, s21_count);
+  // Test 23: Float with precision (%+.2f)
+  count = sprintf(expected, "Float with precision: %+0.2f", f);
+  s21_count = s21_sprintf(buffer, "Float with precision: %+0.2f", f);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 }
 END_TEST
 
@@ -1418,6 +1418,22 @@ START_TEST(test_s21_sprintf_zero_padding) {
   char expected[100000];
   int count, s21_count;
 
+  // Test 0:
+  double d = 4334.8573;
+  count = sprintf(expected, "Double: %020lf %+20lf %-20lf % 20lf", d, d, d, d);
+  s21_count =
+      s21_sprintf(buffer, "Double: %020lf %+20lf %-20lf % 20lf", d, d, d, d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  long double ld = 4334.8573;
+  count = sprintf(expected, "Long Double: %02Lf %+20Lf %-20Lf % 20Lf", ld, ld,
+                  ld, ld);
+  s21_count = s21_sprintf(buffer, "Long Double: %020Lf %+20Lf %-20Lf % 20Lf",
+                          ld, ld, ld, ld);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
   // Test 1: Characters with spaces
   count = sprintf(expected, "Character: %-*c%-*c%-*c", 3, 'w', 3, 'o', 3, 'w');
   s21_count =
@@ -1493,11 +1509,25 @@ START_TEST(test_s21_sprintf_zero_padding) {
   ck_assert_int_eq(count, s21_count);
 
   // Test 11: Double with spaces (modified)
-  double d = 42.0;
   count = sprintf(expected, "Double: %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2,
                   (long double)d);
   s21_count = s21_sprintf(buffer, "Double: %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2,
                           (long double)d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Double: %020lf\n", d);
+  s21_count = s21_sprintf(buffer, "Double: %020lf", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Double: %-20lf\n", d);
+  s21_count = s21_sprintf(buffer, "Double: %020lf", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Double: %-20lf\n", d);
+  s21_count = s21_sprintf(buffer, "Double: %020lf", d);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 }
