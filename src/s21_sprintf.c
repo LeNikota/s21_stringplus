@@ -43,9 +43,9 @@ int s21_sprintf(char *str, const char *format, ...) {
       }
 
       // Handle precision
-      if (*p == '*') {
+      if (*p == '.' && *(p + 1) == '*') {
         fmt.precision = va_arg(fmt.args, int);
-        p++;
+        p += 2;
       } else if (*p == '.') {
         p = parse_int(p, &fmt);
       }
@@ -142,7 +142,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->flag_point = false;
 
   fmt->width = 0;
-  fmt->precision = 0;
+  fmt->precision = 6;
 
   s21_memset(fmt->length, 0, sizeof(fmt->length));
   fmt->specifier = 0;
@@ -208,10 +208,10 @@ void insert_float(Fmt *fmt) {
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
     double number = va_arg(fmt->args, double);
-    double_to_str(number, p_buffer, 6)
+    double_to_str(number, p_buffer, fmt->precision)
   } else if (s21_strcmp(fmt->length, "L") == 0) {
     long double number = va_arg(fmt->args, long double);
-    double_to_str(number, p_buffer, 6)
+    double_to_str(number, p_buffer, fmt->precision)
   }
 
   insert_spaces(fmt, buffer, p_buffer);

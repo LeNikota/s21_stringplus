@@ -499,14 +499,14 @@ START_TEST(test_s21_sprintf_combined) {
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  // // Test 67: Float simple (%f)
-  //   for (size_t i = 0; i < 100; i++) {
-  //     long double number55 = random();
-  //     count = sprintf(expected, "Float value: %Lf", number55);
-  //     s21_count = s21_sprintf(buffer, "Float value: %Lf", number55);
-  //     ck_assert_str_eq(buffer, expected);
-  //     ck_assert_int_eq(count, s21_count);
-  //   }
+  // Test 67: Float simple (%f)
+  for (size_t i = 0; i < 100; i++) {
+    long double number55 = random();
+    count = sprintf(expected, "Float value: %Lf", number55);
+    s21_count = s21_sprintf(buffer, "Float value: %Lf", number55);
+    ck_assert_str_eq(buffer, expected);
+    ck_assert_int_eq(count, s21_count);
+  }
 
   // Test 68: Float zero (%f)
   long double number56 = 0.0;
@@ -1427,7 +1427,7 @@ START_TEST(test_s21_sprintf_zero_padding) {
   ck_assert_int_eq(count, s21_count);
 
   long double ld = 4334.8573;
-  count = sprintf(expected, "Long Double: %02Lf %+20Lf %-20Lf % 20Lf", ld, ld,
+  count = sprintf(expected, "Long Double: %020Lf %+20Lf %-20Lf % 20Lf", ld, ld,
                   ld, ld);
   s21_count = s21_sprintf(buffer, "Long Double: %020Lf %+20Lf %-20Lf % 20Lf",
                           ld, ld, ld, ld);
