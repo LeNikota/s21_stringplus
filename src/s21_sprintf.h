@@ -59,6 +59,9 @@ typedef struct Fmt {
 
   // The pointer to current position in the formatted string (str)
   char *str;
+
+  // Used to determine sign in insert_spaces
+  bool is_negative;
 } Fmt;
 
 const char *parse_int(const char *p, Fmt *fmt);
@@ -86,11 +89,10 @@ void return_count(Fmt *fmt, char *str);
 // Macro to convert an integer to a string
 #define int_to_str(number, buffer, fmt) \
   char *start = buffer;                 \
-  bool is_negative = 0;                 \
                                         \
   if (number < 0) {                     \
     number = -number;                   \
-    is_negative = 1;                    \
+    fmt->is_negative = 1;               \
   }                                     \
                                         \
   do {                                  \
@@ -98,25 +100,17 @@ void return_count(Fmt *fmt, char *str);
     number /= 10;                       \
   } while (number > 0);                 \
                                         \
-  if (is_negative) {                    \
-    *buffer++ = '-';                    \
-  } else if (fmt->flag_plus) {          \
-    *buffer++ = '+';                    \
-  } else if (fmt->flag_space) {         \
-    *buffer++ = ' ';                    \
-  }                                     \
-                                        \
   invert_str(start, buffer);
 
 // Macro to convert an unsigned integer to a string
-#define unsigned_int_to_str(number, buffer) \
-  char *start = buffer;                     \
-                                            \
-  do {                                      \
-    *buffer++ = (number % 10) + '0';        \
-    number /= 10;                           \
-  } while (number > 0);                     \
-                                            \
+#define unsigned_int_to_str(number, buffer, fmt) \
+  char *start = buffer;                          \
+                                                 \
+  do {                                           \
+    *buffer++ = (number % 10) + '0';             \
+    number /= 10;                                \
+  } while (number > 0);                          \
+                                                 \
   invert_str(start, buffer)
 
 // Macro to convert a hexadecimal number to a string
@@ -156,11 +150,14 @@ void return_count(Fmt *fmt, char *str);
   invert_str(start, buffer);
 
 // Decimal to string
-#define double_to_str(number, buffer, precision)             \
+#define double_to_str(number, buffer, precision, fmt)        \
   char *start = buffer;                                      \
   bool is_negative = signbit(number);                        \
                                                              \
-  if (is_negative) number = -number;                         \
+  if (is_negative) {                                         \
+    number = -number;                                        \
+    fmt->is_negative = 1;                                    \
+  }                                                          \
                                                              \
   long double int_part = truncl(number);                     \
   long double fractional_part = fmodl(number, 1.0);          \
@@ -185,14 +182,6 @@ void return_count(Fmt *fmt, char *str);
       *buffer++ = '0' + fmodl(int_part, 10.0);               \
       int_part /= 10;                                        \
     }                                                        \
-  }                                                          \
-                                                             \
-  if (is_negative) {                                         \
-    *buffer++ = '-';                                         \
-  } else if (fmt->flag_plus) {                               \
-    *buffer++ = '+';                                         \
-  } else if (fmt->flag_space) {                              \
-    *buffer++ = ' ';                                         \
   }                                                          \
                                                              \
   invert_str(start, buffer);

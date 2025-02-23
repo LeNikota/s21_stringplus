@@ -47,6 +47,7 @@ int s21_sprintf(char *str, const char *format, ...) {
         fmt.precision = va_arg(fmt.args, int);
         p += 2;
       } else if (*p == '.') {
+        p++;
         p = parse_int(p, &fmt);
       }
 
@@ -122,8 +123,6 @@ int s21_sprintf(char *str, const char *format, ...) {
 }
 
 const char *parse_int(const char *p, Fmt *fmt) {
-  fmt->width = 0;
-
   while (*p >= '0' && *p <= '9') {
     fmt->width = fmt->width * 10 + (*p - '0');
     p++;
@@ -146,6 +145,8 @@ void reset_fmt(Fmt *fmt) {
 
   s21_memset(fmt->length, 0, sizeof(fmt->length));
   fmt->specifier = 0;
+
+  fmt->is_negative = 0;
 }
 
 void invert_str(char *start, char *end) {
@@ -163,28 +164,41 @@ void invert_str(char *start, char *end) {
 void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
   int written = buffer_end - buffer;
   int spaces = fmt->width - written;
-  char ch = ' ';
+  char sign = 'r';
 
-  // // Bad code, cuz sign is placed into buffer in macro
-  if (fmt->flag_zero) {
-    //   char last = *(buffer_end - 1);
-    //   if (s21_strchr("+- ", last)) {
-    //     *fmt->str++ = last;
-    //     buffer_end--;
-    //   }
+  if (fmt->is_negative)
+    sign = '-';
+  else if (fmt->flag_plus)
+    sign = '+';
+  else if (fmt->flag_space)
+    sign = ' ';
 
-    ch = '0';
+  if (sign != 'r') spaces--;
+
+  if (!fmt->flag_minus) {
+    if (fmt->flag_zero) {
+      if (fmt->is_negative || fmt->flag_plus || fmt->flag_space) {
+        *fmt->str++ = sign;
+      }
+
+      while (spaces-- > 0) *fmt->str++ = '0';
+    } else {
+      while (spaces-- > 0) *fmt->str++ = ' ';
+      if (fmt->is_negative || fmt->flag_plus || fmt->flag_space) {
+        *fmt->str++ = sign;
+      }
+    }
+  } else if (fmt->is_negative || fmt->flag_plus || fmt->flag_space) {
+    *fmt->str++ = sign;
   }
 
-  if (!fmt->flag_minus)
-    while (spaces-- > 0) *fmt->str++ = ch;
-
-  while (buffer != buffer_end) {
+  while (buffer < buffer_end) {
     *fmt->str++ = *buffer++;
   }
 
-  if (fmt->flag_minus)
+  if (fmt->flag_minus) {
     while (spaces-- > 0) *fmt->str++ = ' ';
+  }
 }
 
 void insert_integer(Fmt *fmt) {
@@ -213,16 +227,16 @@ void insert_integer(Fmt *fmt) {
 
 void insert_float(Fmt *fmt) {
   // !EDIT: may be reduce to long double number
-  // !EDIT: precision is not handled
+  // !EDIT: rounding is not handled
   char buffer[10000] = {0};
   char *buffer_end = buffer;
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
     double number = va_arg(fmt->args, double);
-    double_to_str(number, buffer_end, fmt->precision)
+    double_to_str(number, buffer_end, fmt->precision, fmt)
   } else if (s21_strcmp(fmt->length, "L") == 0) {
     long double number = va_arg(fmt->args, long double);
-    double_to_str(number, buffer_end, fmt->precision)
+    double_to_str(number, buffer_end, fmt->precision, fmt)
   }
 
   insert_spaces(fmt, buffer, buffer_end);
@@ -275,19 +289,19 @@ void insert_unsigned_integer(Fmt *fmt) {
 
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    unsigned_int_to_str(number, buffer_end);
+    unsigned_int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    unsigned_int_to_str(number, buffer_end);
+    unsigned_int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    unsigned_int_to_str(number, buffer_end);
+    unsigned_int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    unsigned_int_to_str(number, buffer_end);
+    unsigned_int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    unsigned_int_to_str(number, buffer_end);
+    unsigned_int_to_str(number, buffer_end, fmt);
   }
 
   insert_spaces(fmt, buffer, buffer_end);

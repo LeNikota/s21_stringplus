@@ -1508,16 +1508,8 @@ START_TEST(test_s21_sprintf_zero_padding) {
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  // Test 11: Double with spaces (modified)
-  count = sprintf(expected, "Double: %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2,
-                  (long double)d);
-  s21_count = s21_sprintf(buffer, "Double: %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2,
-                          (long double)d);
-  ck_assert_str_eq(buffer, expected);
-  ck_assert_int_eq(count, s21_count);
-
   f = 42.56789f;
-  // Test 12: Rounding
+  // Test 11: Rounding
   count = sprintf(expected, "Double: %.2f", f);
   s21_count = s21_sprintf(buffer, "Double: %.2f", f);
   ck_assert_str_eq(buffer, expected);
@@ -1539,6 +1531,14 @@ START_TEST(test_s21_sprintf_zero_padding) {
 
   count = sprintf(expected, "Double: %-20lf\n", d);
   s21_count = s21_sprintf(buffer, "Double: %020lf", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test 11.1: Double with spaces (modified)
+  count = sprintf(expected, "Double: %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2,
+                  (long double)d);
+  s21_count = s21_sprintf(buffer, "Double: %0*.*lf\n%0*.*Lf", 20, 2, d, 15, 2,
+                          (long double)d);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 }
