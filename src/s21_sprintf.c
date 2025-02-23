@@ -153,7 +153,16 @@ void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer) {
   int spaces = fmt->width - written;
   char ch = ' ';
 
-  if (fmt->flag_zero) ch = '0';
+  // Bad code, cuz sign is placed into buffer in macro
+  if (fmt->flag_zero) {
+    char last = *(p_buffer - 1);
+    if (s21_strchr("+- ", last)) {
+      *fmt->str++ = last;
+      p_buffer--;
+    }
+
+    ch = '0';
+  }
 
   if (!fmt->flag_minus)
     while (spaces-- > 0) *fmt->str++ = ch;
@@ -192,6 +201,7 @@ void insert_integer(Fmt *fmt) {
 }
 
 void insert_float(Fmt *fmt) {
+  // !EDIT: may be reduce to long double number
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
     double number = va_arg(fmt->args, double);
     double_to_str(number, fmt->str, 6)
@@ -205,6 +215,7 @@ void insert_octal(Fmt *fmt) {
   char buffer[500] = {0};
   char *p_buffer = buffer;
 
+  // 0 prefix
   if (fmt->flag_base) *fmt->str++ = '0';
 
   if (s21_strcmp(fmt->length, "") == 0) {
@@ -228,6 +239,7 @@ void insert_octal(Fmt *fmt) {
 }
 
 void insert_string(Fmt *fmt) {
+  // !EDIT: CAN OVERFLOW IF STRING IS TOO LONG
   char buffer[500] = {0};
   char *p_buffer = buffer;
 
@@ -242,6 +254,7 @@ void insert_string(Fmt *fmt) {
 }
 
 void insert_character(Fmt *fmt) {
+  // !EDIT: CAN OVERFLOW IF STRING IS TOO LONG
   char buffer[500] = {0};
   char *p_buffer = buffer;
 

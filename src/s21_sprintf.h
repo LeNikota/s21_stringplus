@@ -125,41 +125,48 @@ void return_count(Fmt *fmt, char *str);
   *buffer = '\0';
 
 // Decimal to string
-#define double_to_str(number, str, precision)       \
-  char *start = str;                                \
-  int is_negative = signbit(number);                \
-  int i = 0;                                        \
-                                                    \
-  if (is_negative) number = -number;                \
-                                                    \
-  long double int_part = truncl(number);            \
-  long double fractional_part = fmodl(number, 1.0); \
-                                                    \
-  if (is_negative) *str++ = '-';                    \
-                                                    \
-  if (fmodl(int_part, 10.0) >= 1.0) {               \
-    do {                                            \
-      *str++ = '0' + fmodl(int_part, 10.0);         \
-      int_part /= 10;                               \
-      i++;                                          \
-    } while (int_part >= 1.0);                      \
-  } else {                                          \
-    *str++ = '0';                                   \
-  }                                                 \
-                                                    \
-  for (int j = 0; j < i / 2; j++) {                 \
-    char temp = start[j];                           \
-    start[j] = start[i - j - 1];                    \
-    start[i - j - 1] = temp;                        \
-  }                                                 \
-                                                    \
-  *str++ = '.';                                     \
-                                                    \
-  for (int i = 0; i < precision - 2; i++) {         \
-    fractional_part *= 10.0;                        \
-    int digit = (int)fractional_part;               \
-    *str++ = digit + '0';                           \
-    fractional_part -= digit;                       \
-  }                                                 \
-                                                    \
+#define double_to_str(number, str, precision)                \
+  char *start = str;                                         \
+  bool is_negative = signbit(number);                        \
+                                                             \
+  if (is_negative) number = -number;                         \
+                                                             \
+  long double int_part = truncl(number);                     \
+  long double fractional_part = fmodl(number, 1.0);          \
+                                                             \
+  if (int_part == 0.0) {                                     \
+    *str++ = '0';                                            \
+  } else {                                                   \
+    while (int_part >= 1.0) {                                \
+      *str++ = '0' + fmodl(int_part, 10.0);                  \
+      int_part /= 10;                                        \
+    }                                                        \
+  }                                                          \
+                                                             \
+  if (is_negative) {                                         \
+    *str++ = '-';                                            \
+  } else if (fmt->flag_plus) {                               \
+    *str++ = '+';                                            \
+  } else if (fmt->flag_space) {                              \
+    *str++ = ' ';                                            \
+  }                                                          \
+                                                             \
+  int i = str - start;                                       \
+  for (int j = 0; j < i / 2; j++) {                          \
+    char temp = start[j];                                    \
+    start[j] = start[i - j - 1];                             \
+    start[i - j - 1] = temp;                                 \
+  }                                                          \
+                                                             \
+  *str++ = '.';                                              \
+                                                             \
+  if (fractional_part > 1e-15) fractional_part += 0.0000005; \
+                                                             \
+  for (int i = 0; i < precision; i++) {                      \
+    fractional_part *= 10.0;                                 \
+    int digit = (int)fractional_part;                        \
+    *str++ = digit + '0';                                    \
+    fractional_part -= digit;                                \
+  }                                                          \
+                                                             \
   *str = '\0';
