@@ -148,18 +148,30 @@ void reset_fmt(Fmt *fmt) {
   fmt->specifier = 0;
 }
 
-void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer) {
-  int written = p_buffer - buffer;
+void invert_str(char *start, char *end) {
+  // cuz end is at the \0
+  // it must not be moved to the start
+  end--;
+
+  for (; start < end; start++, end--) {
+    char temp = *start;
+    *start = *end;
+    *end = temp;
+  }
+}
+
+void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
+  int written = buffer_end - buffer;
   int spaces = fmt->width - written;
   char ch = ' ';
 
-  // Bad code, cuz sign is placed into buffer in macro
+  // // Bad code, cuz sign is placed into buffer in macro
   if (fmt->flag_zero) {
-    char last = *(p_buffer - 1);
-    if (s21_strchr("+- ", last)) {
-      *fmt->str++ = last;
-      p_buffer--;
-    }
+    //   char last = *(buffer_end - 1);
+    //   if (s21_strchr("+- ", last)) {
+    //     *fmt->str++ = last;
+    //     buffer_end--;
+    //   }
 
     ch = '0';
   }
@@ -167,9 +179,8 @@ void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer) {
   if (!fmt->flag_minus)
     while (spaces-- > 0) *fmt->str++ = ch;
 
-  while (p_buffer != buffer) {
-    p_buffer--;
-    *fmt->str++ = *p_buffer;
+  while (buffer != buffer_end) {
+    *fmt->str++ = *buffer++;
   }
 
   if (fmt->flag_minus)
@@ -178,125 +189,113 @@ void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer) {
 
 void insert_integer(Fmt *fmt) {
   char buffer[500] = {0};
-  char *p_buffer = buffer;
+  char *buffer_end = buffer;
 
   if (s21_strcmp(fmt->length, "") == 0) {
     int number = va_arg(fmt->args, int);
-    int_to_str(number, p_buffer, fmt);
+    int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     long number = va_arg(fmt->args, long);
-    int_to_str(number, p_buffer, fmt);
+    int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     long long number = va_arg(fmt->args, long long);
-    int_to_str(number, p_buffer, fmt);
+    int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     short number = va_arg(fmt->args, int);
-    int_to_str(number, p_buffer, fmt);
+    int_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     char number = va_arg(fmt->args, int);
-    int_to_str(number, p_buffer, fmt);
+    int_to_str(number, buffer_end, fmt);
   }
 
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, buffer, buffer_end);
 }
 
 void insert_float(Fmt *fmt) {
   // !EDIT: may be reduce to long double number
   // !EDIT: precision is not handled
   char buffer[10000] = {0};
-  char *p_buffer = buffer;
+  char *buffer_end = buffer;
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
     double number = va_arg(fmt->args, double);
-    double_to_str(number, p_buffer, fmt->precision)
+    double_to_str(number, buffer_end, fmt->precision)
   } else if (s21_strcmp(fmt->length, "L") == 0) {
     long double number = va_arg(fmt->args, long double);
-    double_to_str(number, p_buffer, fmt->precision)
+    double_to_str(number, buffer_end, fmt->precision)
   }
 
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, buffer, buffer_end);
 }
 
 void insert_octal(Fmt *fmt) {
   char buffer[500] = {0};
-  char *p_buffer = buffer;
-
-  // 0 prefix
-  if (fmt->flag_base) *fmt->str++ = '0';
+  char *buffer_end = buffer;
 
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    octal_to_str(number, p_buffer);
+    octal_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    octal_to_str(number, p_buffer);
+    octal_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    octal_to_str(number, p_buffer);
+    octal_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    octal_to_str(number, p_buffer);
+    octal_to_str(number, buffer_end, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    octal_to_str(number, p_buffer);
+    octal_to_str(number, buffer_end, fmt);
   }
 
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, buffer, buffer_end);
 }
 
 void insert_string(Fmt *fmt) {
-  // !EDIT: CAN OVERFLOW IF STRING IS TOO LONG
-  char buffer[500] = {0};
-  char *p_buffer = buffer;
-
   char *string = va_arg(fmt->args, char *);
-
   s21_size_t length = s21_strlen(string);
-  for (int i = length - 1; i >= 0; i--) {
-    *p_buffer++ = string[i];
-  }
 
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, string, string + length);
 }
 
 void insert_character(Fmt *fmt) {
-  // !EDIT: CAN OVERFLOW IF STRING IS TOO LONG
-  char buffer[500] = {0};
-  char *p_buffer = buffer;
+  char buffer[2] = {0};
+  char *buffer_end = buffer;
 
-  *p_buffer++ = va_arg(fmt->args, int);
-  *p_buffer = '\0';
+  *buffer_end++ = va_arg(fmt->args, int);
+  *buffer_end = '\0';
 
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, buffer, buffer_end);
 }
 
 void insert_unsigned_integer(Fmt *fmt) {
   char buffer[500] = {0};
-  char *p_buffer = buffer;
+  char *buffer_end = buffer;
 
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    to_str(number, p_buffer);
+    unsigned_int_to_str(number, buffer_end);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    to_str(number, p_buffer);
+    unsigned_int_to_str(number, buffer_end);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    to_str(number, p_buffer);
+    unsigned_int_to_str(number, buffer_end);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    to_str(number, p_buffer);
+    unsigned_int_to_str(number, buffer_end);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    to_str(number, p_buffer);
+    unsigned_int_to_str(number, buffer_end);
   }
 
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, buffer, buffer_end);
 }
 
 void insert_hexadecimal(Fmt *fmt) {
   char buffer[500] = {0};
-  char *p_buffer = buffer;
+  char *buffer_end = buffer;
   char hex_case;
 
   if (fmt->specifier == 'x') {
@@ -307,33 +306,27 @@ void insert_hexadecimal(Fmt *fmt) {
 
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    hexadecimal_to_str(number, p_buffer, hex_case);
+    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    hexadecimal_to_str(number, p_buffer, hex_case);
+    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    hexadecimal_to_str(number, p_buffer, hex_case);
+    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    hexadecimal_to_str(number, p_buffer, hex_case);
+    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    hexadecimal_to_str(number, p_buffer, hex_case);
+    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
   }
 
-  // 0x prefix
-  if (fmt->flag_base) {
-    *p_buffer++ = hex_case + 23;
-    *p_buffer++ = '0';
-  }
-
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, buffer, buffer_end);
 }
 
 void insert_pointer(Fmt *fmt) {
   char buffer[500] = {0};
-  char *p_buffer = buffer;
+  char *buffer_end = buffer;
   void *ptr = va_arg(fmt->args, void *);
   unsigned long address = (unsigned long)ptr;
 
@@ -347,13 +340,10 @@ void insert_pointer(Fmt *fmt) {
     return;
   }
 
-  hexadecimal_to_str(address, p_buffer, 'a');
+  fmt->flag_base = true;
+  hexadecimal_to_str(address, buffer_end, 'a', fmt);
 
-  // 0x prefix
-  *p_buffer++ = 'x';
-  *p_buffer++ = '0';
-
-  insert_spaces(fmt, buffer, p_buffer);
+  insert_spaces(fmt, buffer, buffer_end);
 }
 
 void return_count(Fmt *fmt, char *str) {

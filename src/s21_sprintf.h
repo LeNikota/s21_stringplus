@@ -63,6 +63,7 @@ typedef struct Fmt {
 
 const char *parse_int(const char *p, Fmt *fmt);
 void reset_fmt(Fmt *fmt);
+void invert_str(char *start, char *end);
 void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer);
 void insert_integer(Fmt *fmt);
 void insert_float(Fmt *fmt);
@@ -74,16 +75,17 @@ void insert_hexadecimal(Fmt *fmt);
 void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
 
-#define to_str(number, buffer)       \
-  do {                               \
-    *buffer++ = (number % 10) + '0'; \
-    number /= 10;                    \
-  } while (number > 0);              \
-                                     \
-  *buffer = '\0';
+// /*Rounding*/
+// /*Even worse then upper one*/
+// if (fractional_part * 10 >= 5) {
+//   int digit = (*(buffer) - '0') + 10;
+//   digit += 1;
+//   *(buffer) = digit + '0';
+// }
 
 // Macro to convert an integer to a string
 #define int_to_str(number, buffer, fmt) \
+  char *start = buffer;                 \
   bool is_negative = 0;                 \
                                         \
   if (number < 0) {                     \
@@ -91,7 +93,10 @@ void return_count(Fmt *fmt, char *str);
     is_negative = 1;                    \
   }                                     \
                                         \
-  to_str(number, buffer);               \
+  do {                                  \
+    *buffer++ = (number % 10) + '0';    \
+    number /= 10;                       \
+  } while (number > 0);                 \
                                         \
   if (is_negative) {                    \
     *buffer++ = '-';                    \
@@ -99,33 +104,60 @@ void return_count(Fmt *fmt, char *str);
     *buffer++ = '+';                    \
   } else if (fmt->flag_space) {         \
     *buffer++ = ' ';                    \
-  }
+  }                                     \
+                                        \
+  invert_str(start, buffer);
+
+// Macro to convert an unsigned integer to a string
+#define unsigned_int_to_str(number, buffer) \
+  char *start = buffer;                     \
+                                            \
+  do {                                      \
+    *buffer++ = (number % 10) + '0';        \
+    number /= 10;                           \
+  } while (number > 0);                     \
+                                            \
+  invert_str(start, buffer)
 
 // Macro to convert a hexadecimal number to a string
-#define hexadecimal_to_str(number, buffer, hex_case) \
-  do {                                               \
-    if ((number % 16) < 10) {                        \
-      *buffer++ = '0' + (number % 16);               \
-    } else {                                         \
-      *buffer++ = hex_case + ((number % 16) - 10);   \
-    }                                                \
-                                                     \
-    number /= 16;                                    \
-  } while (number > 0);                              \
-                                                     \
-  *buffer = '\0';
+#define hexadecimal_to_str(number, buffer, hex_case, fmt) \
+  char *start = buffer;                                   \
+                                                          \
+  do {                                                    \
+    if ((number % 16) < 10) {                             \
+      *buffer++ = '0' + (number % 16);                    \
+    } else {                                              \
+      *buffer++ = hex_case + ((number % 16) - 10);        \
+    }                                                     \
+                                                          \
+    number /= 16;                                         \
+  } while (number > 0);                                   \
+                                                          \
+  /* 0x prefix */                                         \
+  if (fmt->flag_base) {                                   \
+    *buffer++ = hex_case + 23;                            \
+    *buffer++ = '0';                                      \
+  }                                                       \
+                                                          \
+  invert_str(start, buffer);
 
 // Macro to convert an octal number to a string
-#define octal_to_str(number, buffer) \
-  do {                               \
-    *buffer++ = '0' + (number % 8);  \
-    number /= 8;                     \
-  } while (number > 0);              \
-                                     \
-  *buffer = '\0';
+#define octal_to_str(number, buffer, fmt) \
+  char *start = buffer;                   \
+                                          \
+  do {                                    \
+    *buffer++ = '0' + (number % 8);       \
+    number /= 8;                          \
+  } while (number > 0);                   \
+                                          \
+  /* 0 prefix*/                           \
+  if (fmt->flag_base) *fmt->str++ = '0';  \
+                                          \
+  invert_str(start, buffer);
 
 // Decimal to string
 #define double_to_str(number, buffer, precision)             \
+  char *start = buffer;                                      \
   bool is_negative = signbit(number);                        \
                                                              \
   if (is_negative) number = -number;                         \
@@ -161,4 +193,6 @@ void return_count(Fmt *fmt, char *str);
     *buffer++ = '+';                                         \
   } else if (fmt->flag_space) {                              \
     *buffer++ = ' ';                                         \
-  }
+  }                                                          \
+                                                             \
+  invert_str(start, buffer);
