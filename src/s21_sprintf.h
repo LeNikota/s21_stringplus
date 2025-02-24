@@ -64,7 +64,7 @@ typedef struct Fmt {
   bool is_negative;
 } Fmt;
 
-const char *parse_int(const char *p, Fmt *fmt);
+int parse_int(const char **p);
 void reset_fmt(Fmt *fmt);
 void invert_str(char *start, char *end);
 void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer);
@@ -77,14 +77,6 @@ void insert_unsigned_integer(Fmt *fmt);
 void insert_hexadecimal(Fmt *fmt);
 void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
-
-// /*Rounding*/
-// /*Even worse then upper one*/
-// if (fractional_part * 10 >= 5) {
-//   int digit = (*(buffer) - '0') + 10;
-//   digit += 1;
-//   *(buffer) = digit + '0';
-// }
 
 // Macro to convert an integer to a string
 #define int_to_str(number, buffer, fmt) \
@@ -150,38 +142,47 @@ void return_count(Fmt *fmt, char *str);
   invert_str(start, buffer);
 
 // Decimal to string
-#define double_to_str(number, buffer, precision, fmt)        \
-  char *start = buffer;                                      \
-  bool is_negative = signbit(number);                        \
-                                                             \
-  if (is_negative) {                                         \
-    number = -number;                                        \
-    fmt->is_negative = 1;                                    \
-  }                                                          \
-                                                             \
-  long double int_part = truncl(number);                     \
-  long double fractional_part = fmodl(number, 1.0);          \
-                                                             \
-  if (fractional_part > 1e-15) fractional_part += 0.0000005; \
-                                                             \
-  /* Bad code, cuz inversion happens in insert_spaces*/      \
-  for (int i = 0; i < precision; i++) {                      \
-    fractional_part *= 10.0;                                 \
-    int digit = (int)fractional_part;                        \
-    *(buffer + precision - i - 1) = digit + '0';             \
-    fractional_part -= digit;                                \
-  }                                                          \
-  buffer += precision;                                       \
-                                                             \
-  *buffer++ = '.';                                           \
-                                                             \
-  if (int_part == 0.0) {                                     \
-    *buffer++ = '0';                                         \
-  } else {                                                   \
-    while (int_part >= 1.0) {                                \
-      *buffer++ = '0' + fmodl(int_part, 10.0);               \
-      int_part /= 10;                                        \
-    }                                                        \
-  }                                                          \
-                                                             \
+#define double_to_str(number, buffer, precision, fmt)            \
+  char *start = buffer;                                          \
+  bool is_negative = signbit(number);                            \
+                                                                 \
+  if (is_negative) {                                             \
+    number = -number;                                            \
+    fmt->is_negative = 1;                                        \
+  }                                                              \
+                                                                 \
+  long double int_part = truncl(number);                         \
+  long double fractional_part = fmodl(number, 1.0);              \
+                                                                 \
+  if (fractional_part > 1e-15) fractional_part += 0.00000000009; \
+                                                                 \
+  /* Bad code, cuz inversion happens in insert_spaces*/          \
+                                                                 \
+  for (int i = 0; i < precision; i++) {                          \
+    fractional_part *= 10.0;                                     \
+    int digit = (int)fractional_part;                            \
+    *(buffer + precision - i - 1) = digit + '0';                 \
+    fractional_part -= digit;                                    \
+  }                                                              \
+                                                                 \
+  /*Rounding*/                                                   \
+  /*Even worse then upper one*/                                  \
+  if ((int)(fractional_part * 10) >= 5) {                        \
+    int digit = (*buffer - '0');                                 \
+    digit += 1;                                                  \
+    *buffer = digit + '0';                                       \
+  }                                                              \
+  buffer += precision;                                           \
+                                                                 \
+  *buffer++ = '.';                                               \
+                                                                 \
+  if (int_part == 0.0) {                                         \
+    *buffer++ = '0';                                             \
+  } else {                                                       \
+    while (int_part >= 1.0) {                                    \
+      *buffer++ = '0' + fmodl(int_part, 10.0);                   \
+      int_part /= 10;                                            \
+    }                                                            \
+  }                                                              \
+                                                                 \
   invert_str(start, buffer);

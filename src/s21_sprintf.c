@@ -39,7 +39,7 @@ int s21_sprintf(char *str, const char *format, ...) {
         fmt.width = va_arg(fmt.args, int);
         p++;
       } else if (*p >= '0' && *p <= '9') {
-        p = parse_int(p, &fmt);
+        fmt.width = parse_int(&p);
       }
 
       // Handle precision
@@ -48,7 +48,7 @@ int s21_sprintf(char *str, const char *format, ...) {
         p += 2;
       } else if (*p == '.') {
         p++;
-        p = parse_int(p, &fmt);
+        fmt.precision = parse_int(&p);
       }
 
       // Handle length modifier
@@ -122,14 +122,15 @@ int s21_sprintf(char *str, const char *format, ...) {
   return fmt.str - str;
 }
 
-const char *parse_int(const char *p, Fmt *fmt) {
-  while (*p >= '0' && *p <= '9') {
-    fmt->width = fmt->width * 10 + (*p - '0');
-    p++;
+int parse_int(const char **p) {
+  int number = 0;
+
+  while (**p >= '0' && **p <= '9') {
+    number = number * 10 + (**p - '0');
+    *p += 1;
   }
 
-  // Returns moved pointer
-  return p;
+  return number;
 }
 
 void reset_fmt(Fmt *fmt) {
@@ -227,7 +228,6 @@ void insert_integer(Fmt *fmt) {
 
 void insert_float(Fmt *fmt) {
   // !EDIT: may be reduce to long double number
-  // !EDIT: rounding is not handled
   char buffer[10000] = {0};
   char *buffer_end = buffer;
 

@@ -1519,17 +1519,17 @@ START_TEST(test_s21_sprintf_zero_padding) {
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  count = sprintf(expected, "Double: %020lf\n", d);
+  count = sprintf(expected, "Double: %020lf", d);
   s21_count = s21_sprintf(buffer, "Double: %020lf", d);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  count = sprintf(expected, "Double: %-20lf\n", d);
-  s21_count = s21_sprintf(buffer, "Double: %020lf", d);
+  count = sprintf(expected, "Double: %-20lf", d);
+  s21_count = s21_sprintf(buffer, "Double: %-20lf", d);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  count = sprintf(expected, "Double: %-20lf\n", d);
+  count = sprintf(expected, "Double: %020lf", d);
   s21_count = s21_sprintf(buffer, "Double: %020lf", d);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
@@ -1555,7 +1555,7 @@ START_TEST(test_sprintf_external) {
   int negative_int = -36;
   unsigned int unsigned_int = 85;
   double float1 = 123456.789;
-  double float2 = 0.000123456;
+  double float2 = 0.00000123456;
   double float3 = -99.99;
   double float4 = 0.000012000001;
   double float5 = -12.34;
@@ -1721,7 +1721,6 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc, test_s21_sprintf_spaces_after);
   tcase_add_test(tc, test_s21_sprintf_spaces_after_star);
   tcase_add_test(tc, test_s21_sprintf_zero_padding);
-
   tcase_add_test(tc, test_sprintf_external);
 
   suite_add_tcase(s, tc);
