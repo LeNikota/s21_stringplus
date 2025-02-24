@@ -162,6 +162,59 @@ void invert_str(char *start, char *end) {
   }
 }
 
+// Convert a double to string
+void double_to_str(long double number, char **buffer, Fmt *fmt) {
+  bool is_negative = signbit(number);
+  if (is_negative) {
+    number = -number;
+    fmt->is_negative = 1;
+  }
+
+  convert_int_part(number, buffer, fmt);
+  convert_fractional_part(number, buffer, fmt);
+}
+
+void convert_int_part(long double number, char **buffer, Fmt *fmt) {
+  char *start = *buffer;
+  long double int_part = truncl(number);
+
+  if (int_part == 0.0) {
+    *(*buffer)++ = '0';
+  } else {
+    while (int_part >= 1.0) {
+      *(*buffer)++ = '0' + fmodl(int_part, 10.0);
+      int_part /= 10;
+    }
+  }
+
+  invert_str(start, *buffer);
+}
+
+void convert_fractional_part(long double number, char **buffer, Fmt *fmt) {
+  long double fractional_part = fmodl(number, 1.0);
+
+  if (fractional_part > 1e-15) fractional_part += 9e-13;
+
+  *(*buffer)++ = '.';
+
+  int last = 0;
+  for (int i = 0; i < fmt->precision; i++) {
+    fractional_part *= 10.0;
+    int digit = (int)fractional_part;
+    *(*buffer)++ = digit + '0';
+    fractional_part -= digit;
+
+    last = digit;
+  }
+
+  /*Rounding*/
+  int after_last = fractional_part * 10;
+  if (after_last >= 5) {
+    last += 1;
+    *(*buffer - 1) = last + '0';
+  }
+}
+
 void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
   int written = buffer_end - buffer;
   int spaces = fmt->width - written;
@@ -227,17 +280,17 @@ void insert_integer(Fmt *fmt) {
 }
 
 void insert_float(Fmt *fmt) {
-  // !EDIT: may be reduce to long double number
   char buffer[10000] = {0};
   char *buffer_end = buffer;
+  long double number = 0;
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
-    double number = va_arg(fmt->args, double);
-    double_to_str(number, buffer_end, fmt->precision, fmt)
+    number = (long double)va_arg(fmt->args, double);
   } else if (s21_strcmp(fmt->length, "L") == 0) {
-    long double number = va_arg(fmt->args, long double);
-    double_to_str(number, buffer_end, fmt->precision, fmt)
+    number = va_arg(fmt->args, long double);
   }
+
+  double_to_str(number, &buffer_end, fmt);
 
   insert_spaces(fmt, buffer, buffer_end);
 }
