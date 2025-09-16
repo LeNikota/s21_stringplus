@@ -122,6 +122,10 @@ int s21_sprintf(char *str, const char *format, ...) {
   return fmt.str - str;
 }
 
+// --------------------
+// ----- Utility -----
+// --------------------
+
 int parse_int(const char **p) {
   int number = 0;
 
@@ -132,6 +136,9 @@ int parse_int(const char **p) {
 
   return number;
 }
+
+int convert_str_to_digit(char chr) { return 10 + (chr - '0'); }
+char convert_digit_to_str(int chr) { return chr - '0'; }
 
 void reset_fmt(Fmt *fmt) {
   fmt->flag_minus = false;
@@ -150,6 +157,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->is_negative = 0;
 
   fmt->number.string_end = fmt->number.string;
+  fmt->number.decimal_point = NULL;
 }
 
 void invert_str(char *start, char *end) {
@@ -164,64 +172,97 @@ void invert_str(char *start, char *end) {
   }
 }
 
+void invert_str_temp(Fmt *fmt) {
+  char *start = fmt->number.string;
+  char *end = fmt->number.string_end - 1;
+
+  for (; start < end; start++, end--) {
+    char temp = *start;
+    *start = *end;
+    *end = temp;
+  }
+}
+
 // Convert a double to string
-void double_to_str(long double number, char **buffer, Fmt *fmt) {
-  bool is_negative = signbit(number);
-  if (is_negative) {
+void float_to_str(long double number, Fmt *fmt) {
+  if (signbit(number)) {
     number = -number;
     fmt->is_negative = 1;
   }
 
-  convert_int_part(number, buffer, fmt);
-  convert_fractional_part(number, buffer, fmt);
+  convert_fractional_part(number, fmt);
+  // *fmt->number.decimal_point = *fmt->number.string_end;
+  *fmt->number.string_end++ = '.';
+  convert_int_part(number, fmt);
+  // round_(fmt);
 }
 
-void convert_int_part(long double number, char **buffer, Fmt *fmt) {
-  (void)fmt;
-
-  char *start = *buffer;
+void convert_int_part(long double number, Fmt *fmt) {
   long double int_part = truncl(number);
 
-  if (int_part == 0.0) {
-    *(*buffer)++ = '0';
-  } else {
+  if (int_part != 0.0) {
     while (int_part >= 1.0) {
-      *(*buffer)++ = '0' + fmodl(int_part, 10.0);
+      *fmt->number.string_end++ = '0' + fmodl(int_part, 10.0);
       int_part /= 10;
     }
+  } else {
+    *fmt->number.string_end++ = '0';
   }
-
-  invert_str(start, *buffer);
 }
 
-void convert_fractional_part(long double number, char **buffer, Fmt *fmt) {
+void convert_fractional_part(long double number, Fmt *fmt) {
   long double fractional_part = fmodl(number, 1.0);
 
   if (fractional_part > 1e-15) fractional_part += 9e-13;
 
-  *(*buffer)++ = '.';
-
   for (int i = 0; i < fmt->precision; i++) {
     fractional_part *= 10.0;
     int digit = (int)fractional_part;
-    *(*buffer)++ = digit + '0';
+    *fmt->number.string_end++ = digit + '0';
     fractional_part -= digit;
   }
 
-  /*Rounding*/
-  // if (after_last >= 5) {
-  //   last += 1;
-  //   *(*buffer - 1) = last + '0';
-  // }
+  // Inverts number
+  // It has to be done because how insert_number works
+  // It reads from right to left
+  invert_str_temp(fmt);
 }
 
-// void round(int number, char **buffer, Fmt *fmt) {
-//   int after_last = fractional_part * 10;
-//   if (after_last >= 5) {
-//     last += 1;
-//     *(*buffer - 1) = last + '0';
-//   }
-// }
+void round_(Fmt *fmt) {
+  (void)fmt;
+  // int dot_remoteness = fmt->number.decimal_point - fmt->number.string;
+  // if (fmt->precision > dot_remoteness) return;
+
+  //   char *decimal = fmt->number.decimal_point;
+  //   int precision = fmt->precision;
+  //   char *rounding_start = decimal - precision + 1;
+
+  //   char *start = rounding_start;
+  //   char *end = fmt->number.string_end - 1;
+
+  //   int previous_number = convert_str_to_digit(*start++);
+  //   int next_number = 0;
+  //   for (; start < end && fmt->precision;) {
+  //     if (*start == '.') {
+  //       *start++ = '\0';
+  //       *start = convert_digit_to_str(convert_str_to_digit(*start) + 1);
+
+  //       return;
+  //     }
+
+  //     next_number = convert_str_to_digit(*start++);
+
+  //     if (previous_number >= 5) next_number++;
+  //     if (next_number != 10) {
+  //       *start = convert_digit_to_str(next_number);
+  //       *(start - 1) = '\0';
+
+  //       return;
+  //     }
+
+  //     previous_number = next_number;
+  //   }
+}
 
 void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
   int written = buffer_end - buffer;
@@ -304,6 +345,10 @@ void insert_number(Fmt *fmt) {
   }
 }
 
+// --------------------
+// ----- Handlers -----
+// --------------------
+
 void insert_integer(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     int number = va_arg(fmt->args, int);
@@ -326,8 +371,6 @@ void insert_integer(Fmt *fmt) {
 }
 
 void insert_float(Fmt *fmt) {
-  char buffer[10000] = {0};
-  char *buffer_end = buffer;
   long double number = 0;
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
@@ -336,9 +379,8 @@ void insert_float(Fmt *fmt) {
     number = va_arg(fmt->args, long double);
   }
 
-  double_to_str(number, &buffer_end, fmt);
-
-  insert_spaces(fmt, buffer, buffer_end);
+  float_to_str(number, fmt);
+  insert_number(fmt);
 }
 
 void insert_octal(Fmt *fmt) {

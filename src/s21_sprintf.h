@@ -68,6 +68,7 @@ typedef struct Fmt {
   struct Number {
     char string[5000];
     char *string_end;
+    char *decimal_point;
   } number;
 
 } Fmt;
@@ -75,6 +76,7 @@ typedef struct Fmt {
 int parse_int(const char **p);
 void reset_fmt(Fmt *fmt);
 void invert_str(char *start, char *end);
+void invert_str_temp(Fmt *fmt);
 
 void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer);
 void insert_number(Fmt *fmt);
@@ -89,9 +91,10 @@ void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
 
 void insert_float(Fmt *fmt);
-void double_to_str(long double number, char **buffer, Fmt *fmt);
-void convert_int_part(long double number, char **buffer, Fmt *fmt);
-void convert_fractional_part(long double number, char **buffer, Fmt *fmt);
+void float_to_str(long double number, Fmt *fmt);
+void convert_int_part(long double number, Fmt *fmt);
+void convert_fractional_part(long double number, Fmt *fmt);
+void round_(Fmt *fmt);
 
 // Macro to convert an integer to a string
 // Note: After conversion number is inverted
