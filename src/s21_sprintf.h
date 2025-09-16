@@ -57,17 +57,28 @@ typedef struct Fmt {
   // Variable argument list to hold the additional arguments
   va_list args;
 
-  // The pointer to current position in the formatted string (str)
+  // The pointer to current position in the formatted string
+  // Provided buffer (char *str in s21_sprintf) to be written to
   char *str;
 
   // Used to determine sign in insert_spaces
   bool is_negative;
+
+  // Contains converted to string number (number_buffer)
+  struct Number {
+    char string[5000];
+    char *string_end;
+  } number;
+
 } Fmt;
 
 int parse_int(const char **p);
 void reset_fmt(Fmt *fmt);
 void invert_str(char *start, char *end);
+
 void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer);
+void insert_number(Fmt *fmt);
+
 void insert_integer(Fmt *fmt);
 void insert_octal(Fmt *fmt);
 void insert_string(Fmt *fmt);
@@ -83,20 +94,17 @@ void convert_int_part(long double number, char **buffer, Fmt *fmt);
 void convert_fractional_part(long double number, char **buffer, Fmt *fmt);
 
 // Macro to convert an integer to a string
-#define int_to_str(number, buffer, fmt) \
-  char *start = buffer;                 \
-                                        \
-  if (number < 0) {                     \
-    number = -number;                   \
-    fmt->is_negative = 1;               \
-  }                                     \
-                                        \
-  do {                                  \
-    *buffer++ = (number % 10) + '0';    \
-    number /= 10;                       \
-  } while (number > 0);                 \
-                                        \
-  invert_str(start, buffer);
+// Note: After conversion number is inverted
+#define int_to_str(number, fmt)                      \
+  if (number < 0) {                                  \
+    number = -number;                                \
+    fmt->is_negative = 1;                            \
+  }                                                  \
+                                                     \
+  do {                                               \
+    *fmt->number.string_end++ = (number % 10) + '0'; \
+    number /= 10;                                    \
+  } while (number > 0);
 
 // Macro to convert an unsigned integer to a string
 #define unsigned_int_to_str(number, buffer, fmt) \

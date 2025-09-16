@@ -148,6 +148,8 @@ void reset_fmt(Fmt *fmt) {
   fmt->specifier = 0;
 
   fmt->is_negative = 0;
+
+  fmt->number.string_end = fmt->number.string;
 }
 
 void invert_str(char *start, char *end) {
@@ -175,6 +177,8 @@ void double_to_str(long double number, char **buffer, Fmt *fmt) {
 }
 
 void convert_int_part(long double number, char **buffer, Fmt *fmt) {
+  (void)fmt;
+
   char *start = *buffer;
   long double int_part = truncl(number);
 
@@ -197,23 +201,27 @@ void convert_fractional_part(long double number, char **buffer, Fmt *fmt) {
 
   *(*buffer)++ = '.';
 
-  int last = 0;
   for (int i = 0; i < fmt->precision; i++) {
     fractional_part *= 10.0;
     int digit = (int)fractional_part;
     *(*buffer)++ = digit + '0';
     fractional_part -= digit;
-
-    last = digit;
   }
 
   /*Rounding*/
-  int after_last = fractional_part * 10;
-  if (after_last >= 5) {
-    last += 1;
-    *(*buffer - 1) = last + '0';
-  }
+  // if (after_last >= 5) {
+  //   last += 1;
+  //   *(*buffer - 1) = last + '0';
+  // }
 }
+
+// void round(int number, char **buffer, Fmt *fmt) {
+//   int after_last = fractional_part * 10;
+//   if (after_last >= 5) {
+//     last += 1;
+//     *(*buffer - 1) = last + '0';
+//   }
+// }
 
 void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
   int written = buffer_end - buffer;
@@ -255,28 +263,66 @@ void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
   }
 }
 
-void insert_integer(Fmt *fmt) {
-  char buffer[500] = {0};
-  char *buffer_end = buffer;
+void insert_number(Fmt *fmt) {
+  char *string_start = fmt->number.string;
+  char *string_end = fmt->number.string_end - 1;
+  int written = string_end - string_start;
+  int spaces = fmt->width - written - 1;
 
-  if (s21_strcmp(fmt->length, "") == 0) {
-    int number = va_arg(fmt->args, int);
-    int_to_str(number, buffer_end, fmt);
-  } else if (s21_strcmp(fmt->length, "l") == 0) {
-    long number = va_arg(fmt->args, long);
-    int_to_str(number, buffer_end, fmt);
-  } else if (s21_strcmp(fmt->length, "ll") == 0) {
-    long long number = va_arg(fmt->args, long long);
-    int_to_str(number, buffer_end, fmt);
-  } else if (s21_strcmp(fmt->length, "h") == 0) {
-    short number = va_arg(fmt->args, int);
-    int_to_str(number, buffer_end, fmt);
-  } else if (s21_strcmp(fmt->length, "hh") == 0) {
-    char number = va_arg(fmt->args, int);
-    int_to_str(number, buffer_end, fmt);
+  char sign = '\0';
+  if (fmt->is_negative)
+    sign = '-';
+  else if (fmt->flag_plus)
+    sign = '+';
+  else if (fmt->flag_space)
+    sign = ' ';
+
+  // Adds spaces to the left
+  if (!(fmt->flag_minus || fmt->flag_zero)) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
   }
 
-  insert_spaces(fmt, buffer, buffer_end);
+  // Adds sign
+  if (sign != '\0') {
+    *fmt->str++ = sign;
+    spaces--;
+  }
+
+  // Adds zeros to the left
+  if (fmt->flag_zero) {
+    while (spaces-- > 0) *fmt->str++ = '0';
+  }
+
+  // Rewrite to the provided str buffer from the temp buffer
+  while (string_start <= string_end) {
+    *fmt->str++ = *string_end--;
+  }
+
+  // Adds spaces to the right
+  if (fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+}
+
+void insert_integer(Fmt *fmt) {
+  if (s21_strcmp(fmt->length, "") == 0) {
+    int number = va_arg(fmt->args, int);
+    int_to_str(number, fmt);
+  } else if (s21_strcmp(fmt->length, "l") == 0) {
+    long number = va_arg(fmt->args, long);
+    int_to_str(number, fmt);
+  } else if (s21_strcmp(fmt->length, "ll") == 0) {
+    long long number = va_arg(fmt->args, long long);
+    int_to_str(number, fmt);
+  } else if (s21_strcmp(fmt->length, "h") == 0) {
+    short number = va_arg(fmt->args, int);
+    int_to_str(number, fmt);
+  } else if (s21_strcmp(fmt->length, "hh") == 0) {
+    char number = va_arg(fmt->args, int);
+    int_to_str(number, fmt);
+  }
+
+  insert_number(fmt);
 }
 
 void insert_float(Fmt *fmt) {
