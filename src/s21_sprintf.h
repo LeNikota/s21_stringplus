@@ -66,9 +66,10 @@ typedef struct Fmt {
 
   // Contains converted to string number (number_buffer)
   struct Number {
-    char string[5000];
+    // 10000 because user may want precision of about 5000 and more
+    char string[10000];
     char *string_end;
-    char *decimal_point;
+    bool completely_rounded;
   } number;
 
 } Fmt;

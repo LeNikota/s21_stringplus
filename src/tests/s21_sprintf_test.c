@@ -1508,6 +1508,13 @@ START_TEST(test_s21_sprintf_zero_padding) {
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
+   f = 299.9;
+  count = sprintf(expected, "Float: %.0f %.1f", f, f);
+  s21_count =
+      s21_sprintf(buffer, "Float: %.0f %.1f", f, f);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
   f = 42.56789f;
   // Test 11: Rounding
   count = sprintf(expected, "Double: %.2f", f);

@@ -137,8 +137,8 @@ int parse_int(const char **p) {
   return number;
 }
 
-int convert_str_to_digit(char chr) { return 10 + (chr - '0'); }
-char convert_digit_to_str(int chr) { return chr - '0'; }
+int convert_str_to_digit(char chr) { return chr - '0'; }
+char convert_digit_to_str(int digit) { return digit + '0'; }
 
 void reset_fmt(Fmt *fmt) {
   fmt->flag_minus = false;
@@ -157,7 +157,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->is_negative = 0;
 
   fmt->number.string_end = fmt->number.string;
-  fmt->number.decimal_point = NULL;
+  fmt->number.completely_rounded = false;
 }
 
 void invert_str(char *start, char *end) {
@@ -191,15 +191,24 @@ void float_to_str(long double number, Fmt *fmt) {
   }
 
   convert_fractional_part(number, fmt);
-  // *fmt->number.decimal_point = *fmt->number.string_end;
-  *fmt->number.string_end++ = '.';
+  round_(fmt);
+  invert_str_temp(fmt);
   convert_int_part(number, fmt);
-  // round_(fmt);
 }
 
 void convert_int_part(long double number, Fmt *fmt) {
   long double int_part = truncl(number);
 
+  // Combines fractional part with integral (string)
+  // Places a dot
+  // char *start = fmt->number.fractional_part;
+  // char *end = fmt->number.fractional_end - 1;
+  // while (start <= end) *fmt->number.string_end++ = *end--;
+  // //! while (start < end && *start != '\0') *fmt->number.string_end++ =
+  // //! *start++;
+  *fmt->number.string_end++ = '.';
+
+  // Intergral part conversion
   if (int_part != 0.0) {
     while (int_part >= 1.0) {
       *fmt->number.string_end++ = '0' + fmodl(int_part, 10.0);
@@ -215,53 +224,44 @@ void convert_fractional_part(long double number, Fmt *fmt) {
 
   if (fractional_part > 1e-15) fractional_part += 9e-13;
 
-  for (int i = 0; i < fmt->precision; i++) {
+  for (int i = 0; i < fmt->precision + 1 && i < 5000; i++) {
     fractional_part *= 10.0;
     int digit = (int)fractional_part;
     *fmt->number.string_end++ = digit + '0';
     fractional_part -= digit;
   }
-
-  // Inverts number
-  // It has to be done because how insert_number works
-  // It reads from right to left
-  invert_str_temp(fmt);
 }
 
 void round_(Fmt *fmt) {
-  (void)fmt;
-  // int dot_remoteness = fmt->number.decimal_point - fmt->number.string;
-  // if (fmt->precision > dot_remoteness) return;
+  char *start = fmt->number.string;
+  char *end = fmt->number.string_end - 1;
 
-  //   char *decimal = fmt->number.decimal_point;
-  //   int precision = fmt->precision;
-  //   char *rounding_start = decimal - precision + 1;
+  int previous_number = convert_str_to_digit(*end--);
+  int current_number = 0;
 
-  //   char *start = rounding_start;
-  //   char *end = fmt->number.string_end - 1;
+  // if (*start == *end) {
+  //   fmt->number.completely_rounded = true;
+  //   return;
+  // }
 
-  //   int previous_number = convert_str_to_digit(*start++);
-  //   int next_number = 0;
-  //   for (; start < end && fmt->precision;) {
-  //     if (*start == '.') {
-  //       *start++ = '\0';
-  //       *start = convert_digit_to_str(convert_str_to_digit(*start) + 1);
+  while (true) {
+    if (start == end) {
+      fmt->number.completely_rounded = true;
+      return;
+    }
 
-  //       return;
-  //     }
+    current_number = convert_str_to_digit(*end);
 
-  //     next_number = convert_str_to_digit(*start++);
+    if (previous_number >= 5) current_number++;
+    if (current_number != 10) {
+      *end = convert_digit_to_str(current_number);
+      fmt->number.string_end = end + 1;
+      return;
+    }
 
-  //     if (previous_number >= 5) next_number++;
-  //     if (next_number != 10) {
-  //       *start = convert_digit_to_str(next_number);
-  //       *(start - 1) = '\0';
-
-  //       return;
-  //     }
-
-  //     previous_number = next_number;
-  //   }
+    end--;
+    previous_number = current_number;
+  }
 }
 
 void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
