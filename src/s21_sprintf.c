@@ -45,10 +45,12 @@ int s21_sprintf(char *str, const char *format, ...) {
       // Handle precision
       if (*p == '.' && *(p + 1) == '*') {
         fmt.precision = va_arg(fmt.args, int);
+        fmt.is_precision_specified = true;
         p += 2;
       } else if (*p == '.') {
         p++;
         fmt.precision = parse_int(&p);
+        fmt.is_precision_specified = true;
       }
 
       // Handle length modifier
@@ -81,15 +83,12 @@ int s21_sprintf(char *str, const char *format, ...) {
           // wint_t IS NOT HANDLED
           insert_character(&fmt);
           break;
+        case 'f':
         case 'e':
         case 'E':
-        case 'f':
         case 'g':
         case 'G':
-          insert_float(&fmt);
-          // implement e and E
-          // implement g and G
-          // implement f
+          handle_float(&fmt);
           break;
         case 'o':
           insert_octal(&fmt);
@@ -150,6 +149,7 @@ void reset_fmt(Fmt *fmt) {
 
   fmt->width = 0;
   fmt->precision = 6;
+  fmt->is_precision_specified = 0;
 
   s21_memset(fmt->length, 0, sizeof(fmt->length));
   fmt->specifier = 0;
@@ -185,13 +185,22 @@ void invert_str_temp(Fmt *fmt) {
 
 // Convert a double to string
 void float_to_str(long double number, Fmt *fmt) {
+  bool is_specifier_e = fmt->specifier == 'e' || fmt->specifier == 'E';
+  int exponent = 0;
+
   if (signbit(number)) {
     number = -number;
     fmt->is_negative = 1;
   }
 
+  if (is_specifier_e) {
+    exponent = (int)floor(log10(number));
+    number /= pow(10.0, exponent);
+  }
+
   convert_fractional_part(number, fmt);
   round_(fmt);
+  if (is_specifier_e) insert_exp(exponent, fmt);
   invert_str_temp(fmt);
   convert_int_part(number, fmt);
 }
@@ -201,14 +210,12 @@ void convert_int_part(long double number, Fmt *fmt) {
 
   // Combines fractional part with integral (string)
   // Places a dot
-  // char *start = fmt->number.fractional_part;
-  // char *end = fmt->number.fractional_end - 1;
-  // while (start <= end) *fmt->number.string_end++ = *end--;
-  // //! while (start < end && *start != '\0') *fmt->number.string_end++ =
-  // //! *start++;
-  *fmt->number.string_end++ = '.';
+  if (fmt->number.completely_rounded)
+    int_part++;
+  else
+    *fmt->number.string_end++ = '.';
 
-  // Intergral part conversion
+  // Integral part conversion
   if (int_part != 0.0) {
     while (int_part >= 1.0) {
       *fmt->number.string_end++ = '0' + fmodl(int_part, 10.0);
@@ -236,13 +243,14 @@ void round_(Fmt *fmt) {
   char *start = fmt->number.string;
   char *end = fmt->number.string_end - 1;
 
+  if (start == end) {
+    if (convert_str_to_digit(*end) >= 5) fmt->number.completely_rounded = true;
+    fmt->number.string_end = end;
+    return;
+  }
+
   int previous_number = convert_str_to_digit(*end--);
   int current_number = 0;
-
-  // if (*start == *end) {
-  //   fmt->number.completely_rounded = true;
-  //   return;
-  // }
 
   while (true) {
     if (start == end) {
@@ -261,6 +269,38 @@ void round_(Fmt *fmt) {
 
     end--;
     previous_number = current_number;
+  }
+}
+
+// Inserts exp into fmt
+// Example 100 -> 001+e
+// Example -100 -> 001-e
+void insert_exp(int exponent, Fmt *fmt) {
+  char exp_str[20];
+  char *exp_str_end = exp_str;
+
+  bool is_exponent_negative = exponent < 0;
+  bool is_exponent_digit = exponent < 10;
+
+  do {
+    exponent = abs(exponent);
+    *exp_str_end++ = (exponent % 10) + '0';
+    exponent /= 10;
+  } while (exponent > 0);
+
+  if (is_exponent_digit) {
+    *exp_str_end++ = '0';
+  }
+
+  if (is_exponent_negative)
+    *exp_str_end++ = '-';
+  else
+    *exp_str_end++ = '+';
+
+  *exp_str_end = fmt->specifier;
+
+  while (exp_str <= exp_str_end) {
+    *fmt->number.string_end++ = *exp_str_end--;
   }
 }
 
@@ -334,10 +374,7 @@ void insert_number(Fmt *fmt) {
     while (spaces-- > 0) *fmt->str++ = '0';
   }
 
-  // Rewrite to the provided str buffer from the temp buffer
-  while (string_start <= string_end) {
-    *fmt->str++ = *string_end--;
-  }
+  while (string_start <= string_end) *fmt->str++ = *string_end--;
 
   // Adds spaces to the right
   if (fmt->flag_minus) {
@@ -370,8 +407,9 @@ void insert_integer(Fmt *fmt) {
   insert_number(fmt);
 }
 
-void insert_float(Fmt *fmt) {
+void handle_float(Fmt *fmt) {
   long double number = 0;
+  bool is_specifier_g = fmt->specifier == 'g' || fmt->specifier == 'G';
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
     number = (long double)va_arg(fmt->args, double);
@@ -379,7 +417,12 @@ void insert_float(Fmt *fmt) {
     number = va_arg(fmt->args, long double);
   }
 
+  if (is_specifier_g && !fmt->is_precision_specified) {
+    fmt->precision = 0;
+  }
+
   float_to_str(number, fmt);
+
   insert_number(fmt);
 }
 

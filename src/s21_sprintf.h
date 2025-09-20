@@ -28,6 +28,7 @@ typedef struct Fmt {
   // .number
   // .*: additional integer value in argument
   int precision;
+  bool is_precision_specified;
 
   // Length modifier for data type:
   // 'h' : short int
@@ -91,11 +92,13 @@ void insert_hexadecimal(Fmt *fmt);
 void insert_pointer(Fmt *fmt);
 void return_count(Fmt *fmt, char *str);
 
-void insert_float(Fmt *fmt);
+void handle_float(Fmt *fmt);
+
 void float_to_str(long double number, Fmt *fmt);
 void convert_int_part(long double number, Fmt *fmt);
 void convert_fractional_part(long double number, Fmt *fmt);
 void round_(Fmt *fmt);
+void insert_exp(int exponent, Fmt *fmt);
 
 // Macro to convert an integer to a string
 // Note: After conversion number is inverted
