@@ -202,9 +202,9 @@ void float_to_str(long double number, Fmt *fmt) {
     return;
   }
   if (isinf(number)) {
-    *fmt->number.string_end++ = 'i';
-    *fmt->number.string_end++ = 'n';
     *fmt->number.string_end++ = 'f';
+    *fmt->number.string_end++ = 'n';
+    *fmt->number.string_end++ = 'i';
     return;
   }
 
@@ -251,10 +251,8 @@ void convert_int_part(long double number, Fmt *fmt) {
 
   // Combines fractional part with integral (string)
   // Places a dot
-  if (fmt->number.completely_rounded)
-    int_part++;
-  else if (fmt->precision > 0 || fmt->flag_base)
-    *fmt->number.string_end++ = '.';
+  if (fmt->number.completely_rounded) int_part++;
+  if (fmt->precision > 0 || fmt->flag_base) *fmt->number.string_end++ = '.';
 
   // Integral part conversion
   if (int_part != 0.0) {
@@ -281,35 +279,44 @@ void convert_fractional_part(long double number, Fmt *fmt) {
 }
 
 void round_(Fmt *fmt) {
-  char *start = fmt->number.string;
-  char *end = fmt->number.string_end - 1;
+  char *digits = fmt->number.string;
+  int length = fmt->number.string_end - digits;
 
-  if (start == end) {
-    if (convert_str_to_digit(*end) >= 5) fmt->number.completely_rounded = true;
-    fmt->number.string_end = end;
-    return;
+  // Start from the end and round backwards
+  int carry = 0;
+  for (int i = length - 1; i >= 0; i--) {
+    int digit = convert_str_to_digit(digits[i]);
+
+    if (i == length - 1) {
+      // Last digit - check if we need to round
+      if (digit >= 5) {
+        carry = 1;
+        digit = 0;
+      }
+    } else if (carry > 0) {
+      // Apply carry from previous rounding
+      digit += carry;
+      carry = 0;
+      if (digit >= 10) {
+        carry = 1;
+        digit -= 10;
+      }
+    }
+
+    digits[i] = convert_digit_to_str(digit);
+
+    // Stop if no more carry to propagate
+    if (carry == 0) {
+      // fmt->number.string_end = digits + i + 1;
+      fmt->number.string_end--;
+      return;
+    }
   }
 
-  int previous_number = convert_str_to_digit(*end--);
-  int current_number = 0;
-
-  while (true) {
-    if (start == end) {
-      fmt->number.completely_rounded = true;
-      return;
-    }
-
-    current_number = convert_str_to_digit(*end);
-
-    if (previous_number >= 5) current_number++;
-    if (current_number != 10) {
-      *end = convert_digit_to_str(current_number);
-      fmt->number.string_end = end + 1;
-      return;
-    }
-
-    end--;
-    previous_number = current_number;
+  // If carry reached the beginning
+  if (carry > 0) {
+    fmt->number.completely_rounded = true;
+    fmt->number.string_end--;
   }
 }
 

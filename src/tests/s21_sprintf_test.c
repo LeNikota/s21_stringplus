@@ -1420,9 +1420,9 @@ START_TEST(test_s21_sprintf_zero_padding) {
 
   // Test 0:
   double d = 4334.8573;
-  count = sprintf(expected, "Double: %04lf %+4lf %-4lf % 4lf", d, d, d, d);
+  count = sprintf(expected, "Double: %020lf %+20lf %-20lf % 20lf", d, d, d, d);
   s21_count =
-      s21_sprintf(buffer, "Double: %04lf %+4lf %-4lf % 4lf", d, d, d, d);
+      s21_sprintf(buffer, "Double: %020lf %+20lf %-20lf % 20lf", d, d, d, d);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
@@ -1753,36 +1753,36 @@ START_TEST(test_g_specifier_with_width) {
 }
 END_TEST
 
-// START_TEST(test_g_specifier_special_values) {
-//     char buffer[1000];
-//     char expected[1000];
-//     double d;
-//     int count, s21_count;
+START_TEST(test_g_specifier_special_values) {
+  char buffer[1000];
+  char expected[1000];
+  double d;
+  int count, s21_count;
 
-//     // Test infinity
-//     d = INFINITY;
-//     count = sprintf(expected, "%g", d);
-//     s21_count = s21_sprintf(buffer, "%g", d);
-//     ck_assert_str_eq(buffer, expected);
-//     ck_assert_int_eq(count, s21_count);
+  // Test infinity
+  d = INFINITY;
+  count = sprintf(expected, "%g", d);
+  s21_count = s21_sprintf(buffer, "%g", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 
-//     // Test negative infinity
-//     d = -INFINITY;
-//     count = sprintf(expected, "%g", d);
-//     s21_count = s21_sprintf(buffer, "%g", d);
-//     ck_assert_str_eq(buffer, expected);
-//     ck_assert_int_eq(count, s21_count);
+  // Test negative infinity
+  d = -INFINITY;
+  count = sprintf(expected, "%g", d);
+  s21_count = s21_sprintf(buffer, "%g", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 
-//     // Test NaN
-//     d = NAN;
-//     count = sprintf(expected, "%g", d);
-//     s21_count = s21_sprintf(buffer, "%g", d);
-//     // For NaN, we can't do direct string comparison due to different
-//     representations
-//     // but we can check that both contain "nan" (case insensitive)
-//     ck_assert_int_eq(count, s21_count);
-// }
-// END_TEST
+  // Test NaN
+  d = NAN;
+  count = sprintf(expected, "%g", d);
+  s21_count = s21_sprintf(buffer, "%g", d);
+  // For NaN, we can't do direct string comparison due to different
+  // representations
+  // but we can check that both contain "nan" (case insensitive)
+  ck_assert_int_eq(count, s21_count);
+}
+END_TEST
 
 START_TEST(test_sprintf_external) {
   char *str = "Testing";
@@ -1971,7 +1971,7 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc, test_g_specifier_with_flags);
   tcase_add_test(tc, test_g_specifier_large_small_numbers);
   tcase_add_test(tc, test_g_specifier_with_width);
-  // tcase_add_test(tc, test_g_specifier_special_values);
+  tcase_add_test(tc, test_g_specifier_special_values);
 
   suite_add_tcase(s, tc);
   return s;
