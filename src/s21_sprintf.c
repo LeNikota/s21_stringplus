@@ -252,7 +252,9 @@ void convert_int_part(long double number, Fmt *fmt) {
   // Combines fractional part with integral (string)
   // Places a dot
   if (fmt->number.completely_rounded) int_part++;
-  if (fmt->precision > 0 || fmt->flag_base) *fmt->number.string_end++ = '.';
+  if ((fmt->precision > 0 || fmt->flag_base) &&
+      fmt->number.string != fmt->number.string_end)
+    *fmt->number.string_end++ = '.';
 
   // Integral part conversion
   if (int_part != 0.0) {
