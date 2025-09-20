@@ -186,6 +186,8 @@ void invert_str_temp(Fmt *fmt) {
 // Convert a double to string
 void float_to_str(long double number, Fmt *fmt) {
   bool is_specifier_e = fmt->specifier == 'e' || fmt->specifier == 'E';
+  bool is_specifier_g = fmt->specifier == 'g' || fmt->specifier == 'G';
+  int precision = fmt->precision;
   int exponent = 0;
 
   if (signbit(number)) {
@@ -193,13 +195,52 @@ void float_to_str(long double number, Fmt *fmt) {
     fmt->is_negative = 1;
   }
 
-  if (is_specifier_e) {
-    exponent = (int)floor(log10(number));
-    number /= pow(10.0, exponent);
+  if (isnan(number)) {
+    *fmt->number.string_end++ = 'n';
+    *fmt->number.string_end++ = 'a';
+    *fmt->number.string_end++ = 'n';
+    return;
+  }
+  if (isinf(number)) {
+    *fmt->number.string_end++ = 'i';
+    *fmt->number.string_end++ = 'n';
+    *fmt->number.string_end++ = 'f';
+    return;
+  }
+
+  // Calculate exponent for scientific notation
+  if (is_specifier_e || is_specifier_g) {
+    if (number != 0.0) {
+      exponent = (int)floor(log10l(number));
+    }
+  }
+
+  // Handle %g/%G specific logic
+  if (is_specifier_g) {
+    int P = precision;
+    if (precision == 0) P = 1;  // Precision 0 becomes 1
+
+    if (P > exponent && exponent >= -4) {
+      // Use %f style with adjusted precision
+      is_specifier_e = false;
+      fmt->precision = P - 1 - exponent;
+      if (fmt->precision < 0) fmt->precision = 0;
+    } else {
+      // Use %e style with adjusted precision
+      is_specifier_e = true;
+      fmt->precision = P - 1;
+      if (fmt->precision < 0) fmt->precision = 0;
+    }
+  }
+
+  // Normalize number for scientific notation
+  if (is_specifier_e && number != 0.0) {
+    number /= powl(10.0, exponent);
   }
 
   convert_fractional_part(number, fmt);
   round_(fmt);
+  if (is_specifier_g && !fmt->flag_base) remove_trailing_zeros(fmt);
   if (is_specifier_e) insert_exp(exponent, fmt);
   invert_str_temp(fmt);
   convert_int_part(number, fmt);
@@ -212,7 +253,7 @@ void convert_int_part(long double number, Fmt *fmt) {
   // Places a dot
   if (fmt->number.completely_rounded)
     int_part++;
-  else
+  else if (fmt->precision > 0 || fmt->flag_base)
     *fmt->number.string_end++ = '.';
 
   // Integral part conversion
@@ -278,6 +319,7 @@ void round_(Fmt *fmt) {
 void insert_exp(int exponent, Fmt *fmt) {
   char exp_str[20];
   char *exp_str_end = exp_str;
+  char exp_sign = fmt->specifier == 'g' || fmt->specifier == 'e' ? 'e' : 'E';
 
   bool is_exponent_negative = exponent < 0;
   bool is_exponent_digit = exponent < 10;
@@ -297,7 +339,7 @@ void insert_exp(int exponent, Fmt *fmt) {
   else
     *exp_str_end++ = '+';
 
-  *exp_str_end = fmt->specifier;
+  *exp_str_end = exp_sign;
 
   while (exp_str <= exp_str_end) {
     *fmt->number.string_end++ = *exp_str_end--;
@@ -382,6 +424,14 @@ void insert_number(Fmt *fmt) {
   }
 }
 
+void remove_trailing_zeros(Fmt *fmt) {
+  fmt->number.string_end--;
+
+  while (*fmt->number.string_end == '0') fmt->number.string_end--;
+
+  fmt->number.string_end++;
+}
+
 // --------------------
 // ----- Handlers -----
 // --------------------
@@ -409,16 +459,11 @@ void insert_integer(Fmt *fmt) {
 
 void handle_float(Fmt *fmt) {
   long double number = 0;
-  bool is_specifier_g = fmt->specifier == 'g' || fmt->specifier == 'G';
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
     number = (long double)va_arg(fmt->args, double);
   } else if (s21_strcmp(fmt->length, "L") == 0) {
     number = va_arg(fmt->args, long double);
-  }
-
-  if (is_specifier_g && !fmt->is_precision_specified) {
-    fmt->precision = 0;
   }
 
   float_to_str(number, fmt);

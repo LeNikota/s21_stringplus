@@ -99,6 +99,7 @@ void convert_int_part(long double number, Fmt *fmt);
 void convert_fractional_part(long double number, Fmt *fmt);
 void round_(Fmt *fmt);
 void insert_exp(int exponent, Fmt *fmt);
+void remove_trailing_zeros(Fmt *fmt);
 
 // Macro to convert an integer to a string
 // Note: After conversion number is inverted
