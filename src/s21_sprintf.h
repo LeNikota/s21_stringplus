@@ -101,6 +101,7 @@ void convert_fractional_part(long double number, Fmt *fmt);
 void round_(Fmt *fmt);
 void insert_exp(int exponent, Fmt *fmt);
 void remove_trailing_zeros(Fmt *fmt);
+long double round_to_precision(long double value, int precision);
 
 // Macro to convert an integer to a string
 // Note: After conversion number is inverted

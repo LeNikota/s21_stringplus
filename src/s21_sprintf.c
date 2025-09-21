@@ -217,12 +217,13 @@ void float_to_str(long double number, Fmt *fmt) {
 
   if (is_specifier_g) {
     if (number != 0.0) {
-      long double rounded_logged = log10l(roundl(number));
-      if (isinf(rounded_logged)) {
+      if (number >= 1.0) {
         exponent = (int)floor(log10l(number));
       } else {
-        exponent = (int)floor(rounded_logged);
+        exponent = (int)floor(log10l(number)) - 1;
       }
+      long double rounded = round_to_precision(number, exponent);
+      exponent = (int)floor(log10l(rounded));
     }
   }
 
@@ -453,6 +454,12 @@ void remove_trailing_zeros(Fmt *fmt) {
 
   if (fmt->number.string == fmt->number.string_end)
     fmt->number.is_fractional_empty = true;
+}
+
+long double round_to_precision(long double value, int precision) {
+  if (precision < 0) precision = abs(precision);
+  long double scale = pow(10.0, precision);
+  return round(value * scale) / scale;
 }
 
 // --------------------
