@@ -421,16 +421,16 @@ void insert_number(Fmt *fmt) {
   else if (fmt->flag_space)
     sign = ' ';
 
+  // Sign removes one space
+  if (sign != '\0') spaces--;
+
   // Adds spaces to the left
   if (!(fmt->flag_minus || fmt->flag_zero)) {
     while (spaces-- > 0) *fmt->str++ = ' ';
   }
 
   // Adds sign
-  if (sign != '\0') {
-    *fmt->str++ = sign;
-    spaces--;
-  }
+  if (sign != '\0') *fmt->str++ = sign;
 
   // Adds zeros to the left
   if (fmt->flag_zero) {
