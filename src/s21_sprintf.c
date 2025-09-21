@@ -158,6 +158,7 @@ void reset_fmt(Fmt *fmt) {
 
   fmt->number.string_end = fmt->number.string;
   fmt->number.completely_rounded = false;
+  fmt->number.is_fractional_empty = false;
 }
 
 void invert_str(char *start, char *end) {
@@ -208,10 +209,20 @@ void float_to_str(long double number, Fmt *fmt) {
     return;
   }
 
-  // Calculate exponent for scientific notation
-  if (is_specifier_e || is_specifier_g) {
+  if (is_specifier_e) {
     if (number != 0.0) {
       exponent = (int)floor(log10l(number));
+    }
+  }
+
+  if (is_specifier_g) {
+    if (number != 0.0) {
+      long double rounded_logged = log10l(roundl(number));
+      if (isinf(rounded_logged)) {
+        exponent = (int)floor(log10l(number));
+      } else {
+        exponent = (int)floor(rounded_logged);
+      }
     }
   }
 
@@ -253,7 +264,7 @@ void convert_int_part(long double number, Fmt *fmt) {
   // Places a dot
   if (fmt->number.completely_rounded) int_part++;
   if ((fmt->precision > 0 || fmt->flag_base) &&
-      fmt->number.string != fmt->number.string_end)
+      !fmt->number.is_fractional_empty)
     *fmt->number.string_end++ = '.';
 
   // Integral part conversion
@@ -439,6 +450,9 @@ void remove_trailing_zeros(Fmt *fmt) {
   while (*fmt->number.string_end == '0') fmt->number.string_end--;
 
   fmt->number.string_end++;
+
+  if (fmt->number.string == fmt->number.string_end)
+    fmt->number.is_fractional_empty = true;
 }
 
 // --------------------

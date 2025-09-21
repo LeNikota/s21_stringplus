@@ -71,6 +71,7 @@ typedef struct Fmt {
     char string[10000];
     char *string_end;
     bool completely_rounded;
+    bool is_fractional_empty;
   } number;
 
 } Fmt;
