@@ -153,7 +153,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->flag_point = false;
 
   fmt->width = 0;
-  fmt->precision = 6;
+  fmt->precision = 0;
   fmt->is_precision_specified = 0;
 
   s21_memset(fmt->length, 0, sizeof(fmt->length));
@@ -193,7 +193,8 @@ void invert_str_temp(Fmt *fmt) {
 void float_to_str(long double number, Fmt *fmt) {
   bool is_specifier_e = fmt->specifier == 'e' || fmt->specifier == 'E';
   bool is_specifier_g = fmt->specifier == 'g' || fmt->specifier == 'G';
-  int precision = fmt->precision;
+
+  fmt->precision = (fmt->is_precision_specified) ? fmt->precision : 6;
   int exponent = 0;
 
   if (signbit(number)) {
@@ -234,18 +235,18 @@ void float_to_str(long double number, Fmt *fmt) {
 
   // Handle %g/%G specific logic
   if (is_specifier_g) {
-    int P = precision;
-    if (precision == 0) P = 1;  // Precision 0 becomes 1
+    // Precision 0 becomes 1
+    int precision = (fmt->precision == 0) ? 1 : fmt->precision;
 
-    if (P > exponent && exponent >= -4) {
+    if (precision > exponent && exponent >= -4) {
       // Use %f style with adjusted precision
       is_specifier_e = false;
-      fmt->precision = P - 1 - exponent;
+      fmt->precision = precision - 1 - exponent;
       if (fmt->precision < 0) fmt->precision = 0;
     } else {
       // Use %e style with adjusted precision
       is_specifier_e = true;
-      fmt->precision = P - 1;
+      fmt->precision = precision - 1;
       if (fmt->precision < 0) fmt->precision = 0;
     }
   }
@@ -413,10 +414,18 @@ void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
 }
 
 void insert_number(Fmt *fmt) {
+  bool is_zero_prepand = fmt->specifier == 'd' || fmt->specifier == 'i';
+
   char *string_start = fmt->number.string;
   char *string_end = fmt->number.string_end - 1;
-  int written = string_end - string_start;
-  int spaces = fmt->width - written - 1;
+  int written = string_end - string_start + 1;
+
+  // To prepand number with zeros for specifiers d, i, u, o, x, X upto precision
+  int precision = 0;
+  if (is_zero_prepand) precision = fmt->precision - written;
+  if (precision < 0) precision = 0;
+
+  int spaces = fmt->width - written - precision;
 
   char sign = '\0';
   if (fmt->is_negative)
@@ -440,6 +449,11 @@ void insert_number(Fmt *fmt) {
   // Adds zeros to the left
   if (fmt->flag_zero) {
     while (spaces-- > 0) *fmt->str++ = '0';
+  }
+
+  // Add zeros to the left upto precision
+  if (is_zero_prepand) {
+    while (precision-- > 0) *fmt->str++ = '0';
   }
 
   while (string_start <= string_end) *fmt->str++ = *string_end--;

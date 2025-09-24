@@ -1,6 +1,5 @@
 #include "test.h"
 
-
 START_TEST(test_s21_sprintf_combined) {
   char buffer[100000];
   char expected[100000];

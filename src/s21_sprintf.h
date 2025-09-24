@@ -101,16 +101,27 @@ long double round_to_precision(long double value, int precision);
 
 // Macro to convert an integer to a string
 // Note: After conversion number is inverted
-#define int_to_str(number, fmt)                      \
-  if (number < 0) {                                  \
-    number = -number;                                \
-    fmt->is_negative = 1;                            \
-  }                                                  \
-                                                     \
-  do {                                               \
-    *fmt->number.string_end++ = (number % 10) + '0'; \
-    number /= 10;                                    \
-  } while (number > 0);
+#define int_to_str(number, fmt)                        \
+  fmt->is_negative = number < 0;                       \
+                                                       \
+  if (fmt->is_negative) {                              \
+    int mod = number % 10;                             \
+    mod = -mod;                                        \
+    *fmt->number.string_end++ = mod + '0';             \
+                                                       \
+    number /= 10;                                      \
+    number = -number;                                  \
+                                                       \
+    while (number > 0) {                               \
+      *fmt->number.string_end++ = (number % 10) + '0'; \
+      number /= 10;                                    \
+    }                                                  \
+  } else {                                             \
+    do {                                               \
+      *fmt->number.string_end++ = (number % 10) + '0'; \
+      number /= 10;                                    \
+    } while (number > 0);                              \
+  }
 
 // Macro to convert an unsigned integer to a string
 #define unsigned_int_to_str(number, buffer, fmt) \
