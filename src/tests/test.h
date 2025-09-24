@@ -1,13 +1,11 @@
 #pragma once
+
 #include <check.h>
-#include <float.h>
-#include <limits.h>
+#include <locale.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 #include "../s21_string.h"
+
 Suite *s21_insert_test(void);
 Suite *s21_memchr_test(void);
 Suite *s21_memcmp_test(void);
@@ -28,4 +26,5 @@ Suite *s21_to_lower_test(void);
 Suite *s21_to_upper_test(void);
 Suite *s21_trim_test(void);
 Suite *s21_sprintf_test(void);
+Suite *s21_sprintf_external_test(void);
 Suite *s21_sscanf_test(void);

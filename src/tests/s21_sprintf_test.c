@@ -1,15 +1,5 @@
 #include "test.h"
 
-// long double random() {
-//   long long int min = -LLONG_MAX;
-//   long long int max = LLONG_MAX;
-
-//   long long int range = max - min + 1;
-//   long long int random_int = rand() % range + min;
-//   double random_double = rand() % 1000000000000000LL;
-
-//   return random_int / random_double;
-// }
 
 START_TEST(test_s21_sprintf_combined) {
   char buffer[100000];
@@ -1950,7 +1940,7 @@ END_TEST
 
 Suite *s21_sprintf_test(void) {
   Suite *s = suite_create("s21_sprintf");
-  TCase *tc = tcase_create("Combined Tests");
+  TCase *tc = tcase_create("s21_sprintf");
 
   tcase_add_test(tc, test_s21_sprintf_combined);
   tcase_add_test(tc, test_s21_sprintf_forced_plus_sign);

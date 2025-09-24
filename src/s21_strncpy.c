@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "s21_string.h"
 
 char *s21_strncpy(char *dest, const char *src,

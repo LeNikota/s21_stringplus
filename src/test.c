@@ -1,9 +1,5 @@
 #include "./tests/test.h"
 
-#include <check.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 int main(void) {
   // Создание массива указателей на сьюты
   Suite *suites[] = {
@@ -27,6 +23,7 @@ int main(void) {
       s21_to_upper_test(),
       s21_trim_test(),
       s21_sprintf_test(),
+      s21_sprintf_external_test(),
       s21_sscanf_test(),
       NULL  // Завершающий элемент массива
   };

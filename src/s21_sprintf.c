@@ -41,6 +41,10 @@ int s21_sprintf(char *str, const char *format, ...) {
       } else if (*p >= '0' && *p <= '9') {
         fmt.width = parse_int(&p);
       }
+      if (fmt.width < 0) {
+        fmt.flag_minus = true;
+        fmt.width = abs(fmt.width);
+      }
 
       // Handle precision
       if (*p == '.' && *(p + 1) == '*') {
@@ -52,6 +56,7 @@ int s21_sprintf(char *str, const char *format, ...) {
         fmt.precision = parse_int(&p);
         fmt.is_precision_specified = true;
       }
+      if (fmt.precision < 0) fmt.precision = 6;
 
       // Handle length modifier
       if (*p == 'h' || *p == 'l' || *p == 'L') {

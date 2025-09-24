@@ -1,7 +1,3 @@
-#include <math.h>
-#include <stdarg.h>
-#include <stdbool.h>
-
 #include "s21_string.h"
 
 // %[flags][width][.precision][length]specifier
