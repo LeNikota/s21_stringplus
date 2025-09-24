@@ -1660,9 +1660,24 @@ START_TEST(test_g_specifier_with_flags) {
   double d;
   int count, s21_count;
 
-  d = 123.450;
+  d = 123.45605;
   count = sprintf(expected, "%#g", d);
   s21_count = s21_sprintf(buffer, "%#g", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%g", d);
+  s21_count = s21_sprintf(buffer, "%g", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%#.10g", d);
+  s21_count = s21_sprintf(buffer, "%#.10g", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%.10g", d);
+  s21_count = s21_sprintf(buffer, "%.10g", d);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 

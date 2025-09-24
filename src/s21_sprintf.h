@@ -124,37 +124,23 @@ long double round_to_precision(long double value, int precision);
   }
 
 // Macro to convert an unsigned integer to a string
-#define unsigned_int_to_str(number, buffer, fmt) \
-  char *start = buffer;                          \
-                                                 \
-  do {                                           \
-    *buffer++ = (number % 10) + '0';             \
-    number /= 10;                                \
-  } while (number > 0);                          \
-                                                 \
-  invert_str(start, buffer)
+#define unsigned_int_to_str(number, fmt)             \
+  do {                                               \
+    *fmt->number.string_end++ = (number % 10) + '0'; \
+    number /= 10;                                    \
+  } while (number > 0);
 
 // Macro to convert a hexadecimal number to a string
-#define hexadecimal_to_str(number, buffer, hex_case, fmt) \
-  char *start = buffer;                                   \
-                                                          \
-  do {                                                    \
-    if ((number % 16) < 10) {                             \
-      *buffer++ = '0' + (number % 16);                    \
-    } else {                                              \
-      *buffer++ = hex_case + ((number % 16) - 10);        \
-    }                                                     \
-                                                          \
-    number /= 16;                                         \
-  } while (number > 0);                                   \
-                                                          \
-  /* 0x prefix */                                         \
-  if (fmt->flag_base) {                                   \
-    *buffer++ = hex_case + 23;                            \
-    *buffer++ = '0';                                      \
-  }                                                       \
-                                                          \
-  invert_str(start, buffer);
+#define hexadecimal_to_str(hex, hex_case, fmt)                  \
+  do {                                                          \
+    if ((hex % 16) < 10) {                                      \
+      *fmt->number.string_end++ = '0' + (hex % 16);             \
+    } else {                                                    \
+      *fmt->number.string_end++ = hex_case + ((hex % 16) - 10); \
+    }                                                           \
+                                                                \
+    hex /= 16;                                                  \
+  } while (hex > 0);
 
 // Macro to convert an octal number to a string
 #define octal_to_str(number, buffer, fmt) \

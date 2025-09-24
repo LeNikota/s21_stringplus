@@ -414,7 +414,11 @@ void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
 }
 
 void insert_number(Fmt *fmt) {
-  bool is_zero_prepand = fmt->specifier == 'd' || fmt->specifier == 'i';
+  bool is_zero_prepand = fmt->specifier == 'd' || fmt->specifier == 'i' ||
+                         fmt->specifier == 'u' || fmt->specifier == 'x' ||
+                         fmt->specifier == 'X' || fmt->specifier == 'o';
+  bool is_hex =
+      fmt->specifier == 'x' || fmt->specifier == 'X' || fmt->specifier == 'p';
 
   char *string_start = fmt->number.string;
   char *string_end = fmt->number.string_end - 1;
@@ -435,8 +439,13 @@ void insert_number(Fmt *fmt) {
   else if (fmt->flag_space)
     sign = ' ';
 
+  // Unsinded values don't have signs
+  if (fmt->specifier == 'u' || is_hex) sign = '\0';
+
   // Sign removes one space
   if (sign != '\0') spaces--;
+  // 0x prefix removes two spaces
+  if (fmt->flag_base) spaces -= 2;
 
   // Adds spaces to the left
   if (!(fmt->flag_minus || fmt->flag_zero)) {
@@ -446,8 +455,15 @@ void insert_number(Fmt *fmt) {
   // Adds sign
   if (sign != '\0') *fmt->str++ = sign;
 
+  // Add 0x prefix for x and X specifiers
+  if (fmt->flag_base && is_hex) {
+    char hex_case = (fmt->specifier == 'X') ? 'A' : 'a';
+    *fmt->str++ = '0';
+    *fmt->str++ = hex_case + 23;
+  }
+
   // Adds zeros to the left
-  if (fmt->flag_zero) {
+  if (fmt->flag_zero && !fmt->flag_minus) {
     while (spaces-- > 0) *fmt->str++ = '0';
   }
 
@@ -562,63 +578,50 @@ void insert_character(Fmt *fmt) {
 }
 
 void insert_unsigned_integer(Fmt *fmt) {
-  char buffer[500] = {0};
-  char *buffer_end = buffer;
-
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    unsigned_int_to_str(number, buffer_end, fmt);
+    unsigned_int_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    unsigned_int_to_str(number, buffer_end, fmt);
+    unsigned_int_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    unsigned_int_to_str(number, buffer_end, fmt);
+    unsigned_int_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    unsigned_int_to_str(number, buffer_end, fmt);
+    unsigned_int_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    unsigned_int_to_str(number, buffer_end, fmt);
+    unsigned_int_to_str(number, fmt);
   }
 
-  insert_spaces(fmt, buffer, buffer_end);
+  insert_number(fmt);
 }
 
 void insert_hexadecimal(Fmt *fmt) {
-  char buffer[500] = {0};
-  char *buffer_end = buffer;
-  char hex_case;
-
-  if (fmt->specifier == 'x') {
-    hex_case = 'a';
-  } else {
-    hex_case = 'A';
-  }
+  char hex_case = (fmt->specifier == 'x') ? 'a' : 'A';
 
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
+    hexadecimal_to_str(number, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
+    hexadecimal_to_str(number, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
+    hexadecimal_to_str(number, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
+    hexadecimal_to_str(number, hex_case, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    hexadecimal_to_str(number, buffer_end, hex_case, fmt);
+    hexadecimal_to_str(number, hex_case, fmt);
   }
 
-  insert_spaces(fmt, buffer, buffer_end);
+  insert_number(fmt);
 }
 
 void insert_pointer(Fmt *fmt) {
-  char buffer[500] = {0};
-  char *buffer_end = buffer;
   void *ptr = va_arg(fmt->args, void *);
   unsigned long address = (unsigned long)ptr;
 
@@ -633,9 +636,9 @@ void insert_pointer(Fmt *fmt) {
   }
 
   fmt->flag_base = true;
-  hexadecimal_to_str(address, buffer_end, 'a', fmt);
+  hexadecimal_to_str(address, 'a', fmt);
 
-  insert_spaces(fmt, buffer, buffer_end);
+  insert_number(fmt);
 }
 
 void return_count(Fmt *fmt, char *str) {
