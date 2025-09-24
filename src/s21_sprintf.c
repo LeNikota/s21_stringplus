@@ -373,62 +373,85 @@ void insert_number(Fmt *fmt) {
   char *string_end = fmt->number.string_end - 1;
   int written = string_end - string_start + 1;
 
-  // To prepend number with zeros for specifiers d, i, u, o, x, X upto precision
-  int precision = 0;
-  if (is_zero_prepend) precision = fmt->precision - written;
-  if (precision < 0) precision = 0;
+  // Calculate total characters needed (without padding)
+  int total_chars = written;
 
-  int spaces = fmt->width - written - precision;
+  // Add precision padding zeros
+  int precision_zeros = 0;
+  if (is_zero_prepend) {
+    precision_zeros = fmt->precision - written;
+    if (precision_zeros < 0) precision_zeros = 0;
+    total_chars += precision_zeros;
+  }
 
+  // Add sign character if needed
+  int sign_length = 0;
   char sign = '\0';
-  if (fmt->is_negative)
+  if (fmt->is_negative) {
     sign = '-';
-  else if (fmt->flag_plus)
+    sign_length = 1;
+  } else if (fmt->flag_plus) {
     sign = '+';
-  else if (fmt->flag_space)
+    sign_length = 1;
+  } else if (fmt->flag_space) {
     sign = ' ';
+    sign_length = 1;
+  }
+  if (fmt->specifier == 'u' || is_hex) sign_length = 0;  // unsigned, no sign
+  total_chars += sign_length;
 
-  // unsigned values don't have signs
-  if (fmt->specifier == 'u' || is_hex) sign = '\0';
+  // Add prefix if needed - SPECIAL HANDLING FOR OCTAL WITH PRECISION
+  int prefix_length = 0;
+  bool need_octal_prefix = false;
 
-  // Sign removes one space
-  if (sign != '\0') spaces--;
-  // 0x prefix removes two spaces
-  if (fmt->flag_base) spaces -= 2;
+  if (fmt->flag_base) {
+    if (is_hex) {
+      prefix_length = 2;  // "0x" or "0X"
+    } else if (is_octal) {
+      // For octal: only add prefix if it doesn't duplicate precision zero
+      // If precision already adds a leading zero, don't add another one
+      if (precision_zeros == 0 && *string_start != '0') {
+        prefix_length = 1;  // "0"
+        need_octal_prefix = true;
+      }
+    }
+  }
+  total_chars += prefix_length;
 
-  // Adds spaces to the left
-  if (!(fmt->flag_minus || fmt->flag_zero)) {
+  // Calculate padding spaces
+  int spaces = fmt->width - total_chars;
+  if (spaces < 0) spaces = 0;
+
+  // Adds spaces to the left (right alignment)
+  if (!fmt->flag_minus && !fmt->flag_zero) {
     while (spaces-- > 0) *fmt->str++ = ' ';
   }
 
   // Adds sign
-  if (sign != '\0') *fmt->str++ = sign;
+  if (sign_length > 0) *fmt->str++ = sign;
 
-  // Add 0x prefix for x and X specifiers
-  if (fmt->flag_base && is_hex) {
-    char hex_case = (fmt->specifier == 'X') ? 'A' : 'a';
-    *fmt->str++ = '0';
-    *fmt->str++ = hex_case + 23;
-  }
-  // Add 0 prefix prefix for o
-  if (fmt->flag_base && is_octal) {
-    *fmt->str++ = '0';
-    precision--;
+  // Add prefix
+  if (prefix_length > 0) {
+    if (is_hex) {
+      *fmt->str++ = '0';
+      *fmt->str++ = (fmt->specifier == 'X') ? 'X' : 'x';
+    } else if (is_octal && need_octal_prefix) {
+      *fmt->str++ = '0';
+    }
   }
 
-  // Adds zeros to the left
-  if (fmt->flag_zero && !fmt->flag_minus) {
+  // Adds zeros to the left (zero padding or precision)
+  if (!fmt->flag_minus && fmt->flag_zero) {
     while (spaces-- > 0) *fmt->str++ = '0';
   }
 
-  // Add zeros to the left upto precision
-  if (is_zero_prepend) {
-    while (precision-- > 0) *fmt->str++ = '0';
-  }
+  // Add precision zeros
+  while (precision_zeros-- > 0) *fmt->str++ = '0';
 
+  // Write the actual number
   while (string_start <= string_end) *fmt->str++ = *string_end--;
 
-  // Adds spaces to the right
+  // Adds spaces to the right (left alignment)
   if (fmt->flag_minus) {
     while (spaces-- > 0) *fmt->str++ = ' ';
   }
@@ -547,6 +570,9 @@ void handle_octal(Fmt *fmt) {
 
 void handle_string(Fmt *fmt) {
   char *string = va_arg(fmt->args, char *);
+
+  char null_string[] = "(null)";
+  if (string == S21_NULL) string = null_string;
 
   insert_string(fmt, string);
 }

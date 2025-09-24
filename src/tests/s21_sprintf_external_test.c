@@ -2837,14 +2837,10 @@ Suite *s21_sprintf_external_test(void) {
   tcase_add_test(tc, s21_sprintf_s_7);
   tcase_add_test(tc, s21_sprintf_s_8);
   tcase_add_test(tc, s21_sprintf_s_9);
-  (void)s21_sprintf_s_10;
-  (void)s21_sprintf_s_11;
-  (void)s21_sprintf_s_14;
-  (void)s21_sprintf_s_15;
-  // tcase_add_test(tc, s21_sprintf_s_10);
-  // tcase_add_test(tc, s21_sprintf_s_11);
-  // tcase_add_test(tc, s21_sprintf_s_14);
-  // tcase_add_test(tc, s21_sprintf_s_15);
+  tcase_add_test(tc, s21_sprintf_s_10);
+  tcase_add_test(tc, s21_sprintf_s_11);
+  tcase_add_test(tc, s21_sprintf_s_14);
+  tcase_add_test(tc, s21_sprintf_s_15);
 
   // n spec
   tcase_add_test(tc, s21_sprintf_n_1);
