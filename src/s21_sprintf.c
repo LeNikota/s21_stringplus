@@ -78,15 +78,15 @@ int s21_sprintf(char *str, const char *format, ...) {
       switch (fmt.specifier) {
         case 'd':
         case 'i':
-          insert_integer(&fmt);
+          handle_integer(&fmt);
           break;
         case 's':
-          // wchar_t* IS NOT HANDLED
-          insert_string(&fmt);
+          // TODO: wchar_t* IS NOT HANDLED
+          handle_string(&fmt);
           break;
         case 'c':
-          // wint_t IS NOT HANDLED
-          insert_character(&fmt);
+          // TODO: wint_t IS NOT HANDLED
+          handle_character(&fmt);
           break;
         case 'f':
         case 'e':
@@ -96,20 +96,20 @@ int s21_sprintf(char *str, const char *format, ...) {
           handle_float(&fmt);
           break;
         case 'o':
-          insert_octal(&fmt);
+          handle_octal(&fmt);
           break;
         case 'u':
-          insert_unsigned_integer(&fmt);
+          handle_unsigned_integer(&fmt);
           break;
         case 'x':
         case 'X':
-          insert_hexadecimal(&fmt);
+          handle_hexadecimal(&fmt);
           break;
         case 'p':
-          insert_pointer(&fmt);
+          handle_pointer(&fmt);
           break;
         case 'n':
-          return_count(&fmt, str);
+          handle_return_count(&fmt, str);
           break;
         case '%':
           *fmt.str++ = '%';
@@ -166,19 +166,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->number.is_fractional_empty = false;
 }
 
-void invert_str(char *start, char *end) {
-  // cuz end is at the \0
-  // it must not be moved to the start
-  end--;
-
-  for (; start < end; start++, end--) {
-    char temp = *start;
-    *start = *end;
-    *end = temp;
-  }
-}
-
-void invert_str_temp(Fmt *fmt) {
+void invert_str(Fmt *fmt) {
   char *start = fmt->number.string;
   char *end = fmt->number.string_end - 1;
 
@@ -260,7 +248,7 @@ void float_to_str(long double number, Fmt *fmt) {
   round_(fmt);
   if (is_specifier_g && !fmt->flag_base) remove_trailing_zeros(fmt);
   if (is_specifier_e) insert_exp(exponent, fmt);
-  invert_str_temp(fmt);
+  invert_str(fmt);
   convert_int_part(number, fmt);
 }
 
@@ -373,60 +361,21 @@ void insert_exp(int exponent, Fmt *fmt) {
   }
 }
 
-void insert_spaces(Fmt *fmt, char *buffer, char *buffer_end) {
-  int written = buffer_end - buffer;
-  int spaces = fmt->width - written;
-  char sign = 'r';
-
-  if (fmt->is_negative)
-    sign = '-';
-  else if (fmt->flag_plus)
-    sign = '+';
-  else if (fmt->flag_space)
-    sign = ' ';
-
-  if (sign != 'r') spaces--;
-
-  if (!fmt->flag_minus) {
-    if (fmt->flag_zero) {
-      if (fmt->is_negative || fmt->flag_plus || fmt->flag_space) {
-        *fmt->str++ = sign;
-      }
-
-      while (spaces-- > 0) *fmt->str++ = '0';
-    } else {
-      while (spaces-- > 0) *fmt->str++ = ' ';
-      if (fmt->is_negative || fmt->flag_plus || fmt->flag_space) {
-        *fmt->str++ = sign;
-      }
-    }
-  } else if (fmt->is_negative || fmt->flag_plus || fmt->flag_space) {
-    *fmt->str++ = sign;
-  }
-
-  while (buffer < buffer_end) {
-    *fmt->str++ = *buffer++;
-  }
-
-  if (fmt->flag_minus) {
-    while (spaces-- > 0) *fmt->str++ = ' ';
-  }
-}
-
 void insert_number(Fmt *fmt) {
-  bool is_zero_prepand = fmt->specifier == 'd' || fmt->specifier == 'i' ||
+  bool is_zero_prepend = fmt->specifier == 'd' || fmt->specifier == 'i' ||
                          fmt->specifier == 'u' || fmt->specifier == 'x' ||
                          fmt->specifier == 'X' || fmt->specifier == 'o';
   bool is_hex =
       fmt->specifier == 'x' || fmt->specifier == 'X' || fmt->specifier == 'p';
+  bool is_octal = fmt->specifier == 'o';
 
   char *string_start = fmt->number.string;
   char *string_end = fmt->number.string_end - 1;
   int written = string_end - string_start + 1;
 
-  // To prepand number with zeros for specifiers d, i, u, o, x, X upto precision
+  // To prepend number with zeros for specifiers d, i, u, o, x, X upto precision
   int precision = 0;
-  if (is_zero_prepand) precision = fmt->precision - written;
+  if (is_zero_prepend) precision = fmt->precision - written;
   if (precision < 0) precision = 0;
 
   int spaces = fmt->width - written - precision;
@@ -439,7 +388,7 @@ void insert_number(Fmt *fmt) {
   else if (fmt->flag_space)
     sign = ' ';
 
-  // Unsinded values don't have signs
+  // unsigned values don't have signs
   if (fmt->specifier == 'u' || is_hex) sign = '\0';
 
   // Sign removes one space
@@ -461,6 +410,11 @@ void insert_number(Fmt *fmt) {
     *fmt->str++ = '0';
     *fmt->str++ = hex_case + 23;
   }
+  // Add 0 prefix prefix for o
+  if (fmt->flag_base && is_octal) {
+    *fmt->str++ = '0';
+    precision--;
+  }
 
   // Adds zeros to the left
   if (fmt->flag_zero && !fmt->flag_minus) {
@@ -468,11 +422,45 @@ void insert_number(Fmt *fmt) {
   }
 
   // Add zeros to the left upto precision
-  if (is_zero_prepand) {
+  if (is_zero_prepend) {
     while (precision-- > 0) *fmt->str++ = '0';
   }
 
   while (string_start <= string_end) *fmt->str++ = *string_end--;
+
+  // Adds spaces to the right
+  if (fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+}
+
+void insert_string(Fmt *fmt, char *string) {
+  int written = s21_strlen(string);
+  int spaces = fmt->width - written;
+  int precision = fmt->is_precision_specified ? fmt->precision : -1;
+
+  // Adds spaces to the left
+  if (!fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+
+  while (*string != '\0' && precision--) *fmt->str++ = *string++;
+
+  // Adds spaces to the right
+  if (fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+}
+
+void insert_character(Fmt *fmt, char ch) {
+  int spaces = fmt->width - 1;
+
+  // Adds spaces to the left
+  if (!fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+
+  *fmt->str++ = ch;
 
   // Adds spaces to the right
   if (fmt->flag_minus) {
@@ -501,7 +489,7 @@ long double round_to_precision(long double value, int precision) {
 // ----- Handlers -----
 // --------------------
 
-void insert_integer(Fmt *fmt) {
+void handle_integer(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     int number = va_arg(fmt->args, int);
     int_to_str(number, fmt);
@@ -536,48 +524,40 @@ void handle_float(Fmt *fmt) {
   insert_number(fmt);
 }
 
-void insert_octal(Fmt *fmt) {
-  char buffer[500] = {0};
-  char *buffer_end = buffer;
-
+void handle_octal(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
-    octal_to_str(number, buffer_end, fmt);
+    octal_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "l") == 0) {
     unsigned long number = va_arg(fmt->args, unsigned long);
-    octal_to_str(number, buffer_end, fmt);
+    octal_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "ll") == 0) {
     unsigned long long number = va_arg(fmt->args, unsigned long long);
-    octal_to_str(number, buffer_end, fmt);
+    octal_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "h") == 0) {
     unsigned short number = va_arg(fmt->args, int);
-    octal_to_str(number, buffer_end, fmt);
+    octal_to_str(number, fmt);
   } else if (s21_strcmp(fmt->length, "hh") == 0) {
     unsigned char number = va_arg(fmt->args, int);
-    octal_to_str(number, buffer_end, fmt);
+    octal_to_str(number, fmt);
   }
 
-  insert_spaces(fmt, buffer, buffer_end);
+  insert_number(fmt);
 }
 
-void insert_string(Fmt *fmt) {
+void handle_string(Fmt *fmt) {
   char *string = va_arg(fmt->args, char *);
-  s21_size_t length = s21_strlen(string);
 
-  insert_spaces(fmt, string, string + length);
+  insert_string(fmt, string);
 }
 
-void insert_character(Fmt *fmt) {
-  char buffer[2] = {0};
-  char *buffer_end = buffer;
+void handle_character(Fmt *fmt) {
+  char ch = va_arg(fmt->args, int);
 
-  *buffer_end++ = va_arg(fmt->args, int);
-  *buffer_end = '\0';
-
-  insert_spaces(fmt, buffer, buffer_end);
+  insert_character(fmt, ch);
 }
 
-void insert_unsigned_integer(Fmt *fmt) {
+void handle_unsigned_integer(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     unsigned int number = va_arg(fmt->args, unsigned int);
     unsigned_int_to_str(number, fmt);
@@ -598,7 +578,7 @@ void insert_unsigned_integer(Fmt *fmt) {
   insert_number(fmt);
 }
 
-void insert_hexadecimal(Fmt *fmt) {
+void handle_hexadecimal(Fmt *fmt) {
   char hex_case = (fmt->specifier == 'x') ? 'a' : 'A';
 
   if (s21_strcmp(fmt->length, "") == 0) {
@@ -621,7 +601,7 @@ void insert_hexadecimal(Fmt *fmt) {
   insert_number(fmt);
 }
 
-void insert_pointer(Fmt *fmt) {
+void handle_pointer(Fmt *fmt) {
   void *ptr = va_arg(fmt->args, void *);
   unsigned long address = (unsigned long)ptr;
 
@@ -641,7 +621,7 @@ void insert_pointer(Fmt *fmt) {
   insert_number(fmt);
 }
 
-void return_count(Fmt *fmt, char *str) {
+void handle_return_count(Fmt *fmt, char *str) {
   if (s21_strcmp(fmt->length, "") == 0) {
     int *count = va_arg(fmt->args, int *);
     *count = fmt->str - str;

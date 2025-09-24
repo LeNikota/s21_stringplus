@@ -74,20 +74,20 @@ typedef struct Fmt {
 
 int parse_int(const char **p);
 void reset_fmt(Fmt *fmt);
-void invert_str(char *start, char *end);
-void invert_str_temp(Fmt *fmt);
+void invert_str(Fmt *fmt);
 
-void insert_spaces(Fmt *fmt, char *buffer, char *p_buffer);
 void insert_number(Fmt *fmt);
+void insert_string(Fmt *fmt, char *string);
+void insert_character(Fmt *fmt, char ch);
 
-void insert_integer(Fmt *fmt);
-void insert_octal(Fmt *fmt);
-void insert_string(Fmt *fmt);
-void insert_character(Fmt *fmt);
-void insert_unsigned_integer(Fmt *fmt);
-void insert_hexadecimal(Fmt *fmt);
-void insert_pointer(Fmt *fmt);
-void return_count(Fmt *fmt, char *str);
+void handle_integer(Fmt *fmt);
+void handle_octal(Fmt *fmt);
+void handle_string(Fmt *fmt);
+void handle_character(Fmt *fmt);
+void handle_unsigned_integer(Fmt *fmt);
+void handle_hexadecimal(Fmt *fmt);
+void handle_pointer(Fmt *fmt);
+void handle_return_count(Fmt *fmt, char *str);
 
 void handle_float(Fmt *fmt);
 
@@ -143,15 +143,8 @@ long double round_to_precision(long double value, int precision);
   } while (hex > 0);
 
 // Macro to convert an octal number to a string
-#define octal_to_str(number, buffer, fmt) \
-  char *start = buffer;                   \
-                                          \
-  do {                                    \
-    *buffer++ = '0' + (number % 8);       \
-    number /= 8;                          \
-  } while (number > 0);                   \
-                                          \
-  /* 0 prefix*/                           \
-  if (fmt->flag_base) *fmt->str++ = '0';  \
-                                          \
-  invert_str(start, buffer);
+#define octal_to_str(number, fmt)                   \
+  do {                                              \
+    *fmt->number.string_end++ = '0' + (number % 8); \
+    number /= 8;                                    \
+  } while (number > 0);

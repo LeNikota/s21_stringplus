@@ -1,5 +1,35 @@
 #include "test.h"
 
+START_TEST(nulled_within_provided_string) {
+  char buffer[100];
+  char expected[100];
+  int count, s21_count;
+
+  const char *text = "Hello \0 World!";
+  count = sprintf(expected, "Text: %s", text);
+  s21_count = s21_sprintf(buffer, "Text: %s", text);
+
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
+START_TEST(nulled_char) {
+  char buffer[100];
+  char expected[100];
+  int count, s21_count;
+
+  int number = 3005;
+  const char ch = '\0';
+  const char *text = "Hello World!";
+  count = sprintf(expected, "Text: %i %5c %s", number, ch, text);
+  s21_count = s21_sprintf(buffer, "Text: %i %5c %s", number, ch, text);
+
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
 START_TEST(test_s21_sprintf_combined) {
   char buffer[100000];
   char expected[100000];
@@ -949,6 +979,36 @@ START_TEST(test_s21_sprintf_hash_flag) {
   signed char sc = 42;
   count = sprintf(expected, "Signed Char Octal: %#hho", sc);
   s21_count = s21_sprintf(buffer, "Signed Char Octal: %#hho", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Signed Char Octal: %#.2hho", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Octal: %#.2hho", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Signed Char Octal: %#.3hho", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Octal: %#.3hho", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Signed Char Octal: %#8.2hho", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Octal: %#8.2hho", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Signed Char Octal: %#8.3hho", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Octal: %#8.3hho", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Signed Char Octal: %#8.4hho", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Octal: %#8.4hho", sc);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Signed Char Octal: %#-8.4hho", sc);
+  s21_count = s21_sprintf(buffer, "Signed Char Octal: %#-8.4hho", sc);
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
@@ -1956,6 +2016,8 @@ Suite *s21_sprintf_test(void) {
   Suite *s = suite_create("s21_sprintf");
   TCase *tc = tcase_create("s21_sprintf");
 
+  tcase_add_test(tc, nulled_within_provided_string);
+  tcase_add_test(tc, nulled_char);
   tcase_add_test(tc, test_s21_sprintf_combined);
   tcase_add_test(tc, test_s21_sprintf_forced_plus_sign);
   tcase_add_test(tc, test_s21_sprintf_space_sign);
