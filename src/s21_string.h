@@ -89,3 +89,4 @@ void *s21_trim(const char *src, const char *trim_chars);
 // Utilties
 int s21_strcmp(const char *str1, const char *str2);
 char *s21_strcat(char *dest, const char *src);
+size_t s21_wcslen(const wchar_t *str);

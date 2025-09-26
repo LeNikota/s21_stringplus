@@ -77,8 +77,10 @@ void reset_fmt(Fmt *fmt);
 void invert_str(Fmt *fmt);
 
 void insert_number(Fmt *fmt);
-void insert_string(Fmt *fmt, char *string);
+void insert_string(Fmt *fmt, char* passer);
+void insert_wstring(Fmt *fmt, wchar_t* passer);
 void insert_character(Fmt *fmt, char ch);
+void insert_wcharacter(Fmt *fmt, wchar_t ch);
 
 void handle_integer(Fmt *fmt);
 void handle_octal(Fmt *fmt);

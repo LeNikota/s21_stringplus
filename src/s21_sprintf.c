@@ -475,6 +475,31 @@ void insert_string(Fmt *fmt, char *string) {
   }
 }
 
+void insert_wstring(Fmt *fmt, wchar_t *string) {
+  int written = s21_wcslen(string);
+  int spaces = fmt->width - written;
+  int precision = fmt->is_precision_specified ? fmt->precision : -1;
+
+  // Adds spaces to the left
+  if (!fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+
+  while (*string != L'\0' && precision--) {
+    wchar_t wc = *string++;
+
+    // For non-ASCII, print  ?
+    if (wc >= 0 && wc <= 127) *fmt->str++ = ((char)wc);
+
+    *fmt->str++ = *string++;
+  }
+
+  // Adds spaces to the right
+  if (fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+}
+
 void insert_character(Fmt *fmt, char ch) {
   int spaces = fmt->width - 1;
 
@@ -484,6 +509,23 @@ void insert_character(Fmt *fmt, char ch) {
   }
 
   *fmt->str++ = ch;
+
+  // Adds spaces to the right
+  if (fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+}
+
+void insert_wcharacter(Fmt *fmt, wchar_t wc) {
+  int spaces = fmt->width - 1;
+
+  // Adds spaces to the left
+  if (!fmt->flag_minus) {
+    while (spaces-- > 0) *fmt->str++ = ' ';
+  }
+
+  // For non-ASCII, print  ?
+  if (wc >= 0 && wc <= 127) *fmt->str++ = ((char)wc);
 
   // Adds spaces to the right
   if (fmt->flag_minus) {
@@ -569,18 +611,32 @@ void handle_octal(Fmt *fmt) {
 }
 
 void handle_string(Fmt *fmt) {
-  char *string = va_arg(fmt->args, char *);
+  if (s21_strcmp(fmt->length, "") == 0) {
+    char *string = va_arg(fmt->args, char *);
 
-  char null_string[] = "(null)";
-  if (string == S21_NULL) string = null_string;
+    char null_string[] = "(null)";
+    if (string == S21_NULL) string = null_string;
 
-  insert_string(fmt, string);
+    insert_string(fmt, string);
+  } else {
+    wchar_t *wstr = va_arg(fmt->args, wchar_t *);
+
+    wchar_t null_wstr[] = L"(null)";
+    if (wstr == S21_NULL) wstr = null_wstr;
+
+    insert_wstring(fmt, wstr);
+  }
 }
 
 void handle_character(Fmt *fmt) {
-  char ch = va_arg(fmt->args, int);
+  if (s21_strcmp(fmt->length, "") == 0) {
+    char ch = va_arg(fmt->args, int);
+    insert_character(fmt, ch);
 
-  insert_character(fmt, ch);
+  } else {
+    wchar_t wc = (wchar_t)va_arg(fmt->args, wint_t);
+    insert_wcharacter(fmt, wc);
+  }
 }
 
 void handle_unsigned_integer(Fmt *fmt) {

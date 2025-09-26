@@ -7,3 +7,13 @@ s21_size_t s21_strlen(const char *str) {
 
   return s - str;
 }
+
+size_t s21_wcslen(const wchar_t *str) {
+  const wchar_t *s = str;
+
+  if (str == NULL) return 0;
+
+  while (*s) s++;
+
+  return s - str;
+}
