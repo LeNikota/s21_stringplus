@@ -60,6 +60,7 @@ dkms.conf
 s21_cat
 s21_grep
 test
+test_debugging
 coverage*
 *.gcno
 *.gcda

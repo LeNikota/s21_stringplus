@@ -2129,7 +2129,7 @@ START_TEST(test_char_numeric_values) {
 }
 END_TEST
 
-START_TEST(test_char_width_precision) {
+START_TEST(test_char_width_width) {
   char buffer[100];
   char expected[100];
   int count, s21_count;
@@ -2140,15 +2140,79 @@ START_TEST(test_char_width_precision) {
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  // Test with left alignment (not zero padding for %c)
+  count = sprintf(expected, "%*c", 10, 'X');
+  s21_count = s21_sprintf(buffer, "%*c", 10, 'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test with left alignment
   count = sprintf(expected, "%-5c", 'X');
   s21_count = s21_sprintf(buffer, "%-5c", 'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%*c", -5, 'X');
+  s21_count = s21_sprintf(buffer, "%*c", -5, 'X');
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
   // Test with width 0
   count = sprintf(expected, "%c", 'X');
   s21_count = s21_sprintf(buffer, "%c", 'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test positive and negative width
+  count = sprintf(expected, "%3c", 'A');
+  s21_count = s21_sprintf(buffer, "%3c", 'A');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%-3c", 'B');
+  s21_count = s21_sprintf(buffer, "%-3c", 'B');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%1c", 'C');
+  s21_count = s21_sprintf(buffer, "%1c", 'C');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
+START_TEST(test_char_combined) {
+  char buffer[100];
+  char expected[100];
+  int count, s21_count;
+
+  // Test multiple characters with width in one string
+  count = sprintf(expected, "%5c %5c", 'X', 'Y');
+  s21_count = s21_sprintf(buffer, "%5c %5c", 'X', 'Y');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%-5c %-5c", 'X', 'Y');
+  s21_count = s21_sprintf(buffer, "%-5c %-5c", 'X', 'Y');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%3c%-3c%5c", 'A', 'B', 'C');
+  s21_count = s21_sprintf(buffer, "%3c%-3c%5c", 'A', 'B', 'C');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%*c%*c", 5, 'X', -3, 'Y');
+  s21_count = s21_sprintf(buffer, "%*c%*c", 5, 'X', -3, 'Y');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%c %c %c", 'A', 'B', 'C');
+  s21_count = s21_sprintf(buffer, "%c %c %c", 'A', 'B', 'C');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "Char: %5c, Second: %3c", 'X', 'Y');
+  s21_count = s21_sprintf(buffer, "Char: %5c, Second: %3c", 'X', 'Y');
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 }
@@ -2613,20 +2677,97 @@ START_TEST(test_wchar_extended_unicode) {
 }
 END_TEST
 
-START_TEST(test_wchar_with_width_precision) {
+START_TEST(test_wchar_width) {
   char buffer[100];
   char expected[100];
   int count, s21_count;
 
-  // Test with width (if your implementation supports it)
+  // Test with width
+  count = sprintf(expected, "%5lc", (wint_t)L'X');
+  s21_count = s21_sprintf(buffer, "%5lc", (wint_t)L'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%*lc", 10, (wint_t)L'X');
+  s21_count = s21_sprintf(buffer, "%*lc", 10, (wint_t)L'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test with left alignment
+  count = sprintf(expected, "%-5lc", (wint_t)L'X');
+  s21_count = s21_sprintf(buffer, "%-5lc", (wint_t)L'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%*lc", -5, (wint_t)L'X');
+  s21_count = s21_sprintf(buffer, "%*lc", -5, (wint_t)L'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test with width 0
+  count = sprintf(expected, "%lc", (wint_t)L'X');
+  s21_count = s21_sprintf(buffer, "%lc", (wint_t)L'X');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test positive and negative width
   count = sprintf(expected, "%3lc", (wint_t)L'A');
   s21_count = s21_sprintf(buffer, "%3lc", (wint_t)L'A');
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 
-  // Test with zero padding (if supported)
-  count = sprintf(expected, "%3lc", (wint_t)L'5');
-  s21_count = s21_sprintf(buffer, "%3lc", (wint_t)L'5');
+  count = sprintf(expected, "%-3lc", (wint_t)L'B');
+  s21_count = s21_sprintf(buffer, "%-3lc", (wint_t)L'B');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%1lc", (wint_t)L'C');
+  s21_count = s21_sprintf(buffer, "%1lc", (wint_t)L'C');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
+START_TEST(test_wchar_combined_format) {
+  char buffer[100];
+  char expected[100];
+  int count, s21_count;
+
+  // Test multiple wide characters with width in one string
+  count = sprintf(expected, "%5lc %5lc", (wint_t)L'X', (wint_t)L'Y');
+  s21_count = s21_sprintf(buffer, "%5lc %5lc", (wint_t)L'X', (wint_t)L'Y');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%-5lc %-5lc", (wint_t)L'X', (wint_t)L'Y');
+  s21_count = s21_sprintf(buffer, "%-5lc %-5lc", (wint_t)L'X', (wint_t)L'Y');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%3lc%-3lc%5lc", (wint_t)L'A', (wint_t)L'B',
+                  (wint_t)L'C');
+  s21_count = s21_sprintf(buffer, "%3lc%-3lc%5lc", (wint_t)L'A', (wint_t)L'B',
+                          (wint_t)L'C');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%*lc%*lc", 5, (wint_t)L'X', -3, (wint_t)L'Y');
+  s21_count =
+      s21_sprintf(buffer, "%*lc%*lc", 5, (wint_t)L'X', -3, (wint_t)L'Y');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%lc %lc %lc", (wint_t)L'A', (wint_t)L'B',
+                  (wint_t)L'C');
+  s21_count = s21_sprintf(buffer, "%lc %lc %lc", (wint_t)L'A', (wint_t)L'B',
+                          (wint_t)L'C');
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "WChar: %5lc, Second: %3lc", (wint_t)L'X',
+                  (wint_t)L'Y');
+  s21_count = s21_sprintf(buffer, "WChar: %5lc, Second: %3lc", (wint_t)L'X',
+                          (wint_t)L'Y');
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 }
@@ -2791,6 +2932,11 @@ START_TEST(test_wstr_with_width) {
   s21_count = s21_sprintf(buffer, "%10.3ls", L"HelloWorld");
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%-10.3ls", L"HelloWorld");
+  s21_count = s21_sprintf(buffer, "%-10.3ls", L"HelloWorld");
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 }
 END_TEST
 
@@ -2905,7 +3051,8 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc_wchar, test_wchar_basic);
   tcase_add_test(tc_wchar, test_wchar_null_character);
   tcase_add_test(tc_wchar, test_wchar_extended_unicode);
-  tcase_add_test(tc_wchar, test_wchar_with_width_precision);
+  tcase_add_test(tc_wchar, test_wchar_width);
+  tcase_add_test(tc_wchar, test_wchar_combined_format);
   suite_add_tcase(s, tc_wchar);
   // Wide string tests
   tc_wstr = tcase_create("WideString");
@@ -2929,7 +3076,8 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc_char, test_char_basic);
   tcase_add_test(tc_char, test_char_special);
   tcase_add_test(tc_char, test_char_numeric_values);
-  tcase_add_test(tc_char, test_char_width_precision);
+  tcase_add_test(tc_char, test_char_width_width);
+  tcase_add_test(tc_char, test_char_combined);
   suite_add_tcase(s, tc_char);
   // String tests
   tc_str = tcase_create("String");

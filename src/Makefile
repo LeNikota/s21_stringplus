@@ -17,16 +17,25 @@ s21_string.a: $(OBJ)
 	@gcc $(FLAGS) $(TEST_FLAGS) -c $^ -o $@
 
 clean:
-	@rm -rf $(OBJ) *.gcno *.gcda coverage* s21_string.a a.out test
+	@rm -rf $(OBJ) *.gcno *.gcda coverage* s21_string.a a.out test test_debugging
 
 format:
 	@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs clang-format -i
 
+static_check:
+	@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs cppcheck --enable=all --suppress=missingIncludeSystem
+
+
 test: all
-	@gcc $(FLAGS) -o test test.c ./tests/*.c -L. -l:s21_string.a -lcheck -lm -lsubunit -lgcov
+	@gcc $(FLAGS) -o test test.c ./tests/*.c -L. -l:s21_string.a -lcheck -lsubunit -lm -lgcov
 	@./test
-#@find $(git rev-parse --show-toplevel) \( -name "*.c" -o -name "*.h" \) | xargs cppcheck --enable=all --suppress=missingIncludeSystem
-#valgrind --tool=memcheck --leak-check=yes --leak-check=full --show-leak-kinds=all ./s21_cat $flags $files 2>&1 | grep -E "ERROR"
+
+debugging:
+	@gcc $(FLAGS) -o test_debugging *.c ./tests/*.c -lcheck -lsubunit -lm -g
+
+leak: all
+	@gcc $(FLAGS) -o test test.c ./tests/*.c -L. -l:s21_string.a -lcheck -lsubunit -lm
+	valgrind --tool=memcheck --leak-check=yes --leak-check=full --show-leak-kinds=all ./test
 
 gcov_report: clean test
 	@lcov --capture --directory . --output-file coverage.info
