@@ -81,12 +81,12 @@ int s21_sprintf(char *str, const char *format, ...) {
           handle_integer(&fmt);
           break;
         case 's':
-          // TODO: wchar_t* IS NOT HANDLED
           handle_string(&fmt);
+          if (fmt.is_error) return -1;
           break;
         case 'c':
-          // TODO: wint_t IS NOT HANDLED
           handle_character(&fmt);
+          if (fmt.is_error) return -1;
           break;
         case 'f':
         case 'e':
@@ -361,6 +361,10 @@ void insert_exp(int exponent, Fmt *fmt) {
   }
 }
 
+// --------------------
+// ----- inserters -----
+// --------------------
+
 void insert_number(Fmt *fmt) {
   bool is_zero_prepend = fmt->specifier == 'd' || fmt->specifier == 'i' ||
                          fmt->specifier == 'u' || fmt->specifier == 'x' ||
@@ -458,9 +462,17 @@ void insert_number(Fmt *fmt) {
 }
 
 void insert_string(Fmt *fmt, char *string) {
-  int written = s21_strlen(string);
-  int spaces = fmt->width - written;
   int precision = fmt->is_precision_specified ? fmt->precision : -1;
+
+  char null_wstr[] = "(null)";
+  if (string == S21_NULL) {
+    string = null_wstr;
+    if (precision < 6 && precision != -1) *string = '\0';
+  }
+
+  int written = s21_strlen(string);
+  int spaces = (precision > 0 && precision <= written) ? fmt->width - precision
+                                                       : fmt->width - written;
 
   // Adds spaces to the left
   if (!fmt->flag_minus) {
@@ -476,9 +488,30 @@ void insert_string(Fmt *fmt, char *string) {
 }
 
 void insert_wstring(Fmt *fmt, wchar_t *string) {
-  int written = s21_wcslen(string);
-  int spaces = fmt->width - written;
   int precision = fmt->is_precision_specified ? fmt->precision : -1;
+
+  wchar_t null_wstr[] = L"(null)";
+  if (string == S21_NULL) {
+    string = null_wstr;
+    if (precision < 6 && precision != -1) *string = '\0';
+  }
+
+  int written = s21_wcslen(string);
+  int spaces = (precision > 0 && precision <= written) ? fmt->width - precision
+                                                       : fmt->width - written;
+
+  // Checks for non-ASCII, return error
+  wchar_t *check_string = string;
+  int check_precision = precision;
+  while (*check_string != L'\0' && check_precision--) {
+    wchar_t wc = *check_string++;
+
+    if (wc < 0 || wc > 127) {
+      fmt->is_error = true;
+      *fmt->str++ = '\0';
+      return;
+    }
+  }
 
   // Adds spaces to the left
   if (!fmt->flag_minus) {
@@ -488,10 +521,7 @@ void insert_wstring(Fmt *fmt, wchar_t *string) {
   while (*string != L'\0' && precision--) {
     wchar_t wc = *string++;
 
-    // For non-ASCII, print  ?
-    if (wc >= 0 && wc <= 127) *fmt->str++ = ((char)wc);
-
-    *fmt->str++ = *string++;
+    *fmt->str++ = ((char)wc);
   }
 
   // Adds spaces to the right
@@ -519,13 +549,19 @@ void insert_character(Fmt *fmt, char ch) {
 void insert_wcharacter(Fmt *fmt, wchar_t wc) {
   int spaces = fmt->width - 1;
 
+  // For non-ASCII, return error
+  if (wc < 0 || wc > 127) {
+    fmt->is_error = true;
+    *fmt->str = '\0';
+    return;
+  }
+
   // Adds spaces to the left
   if (!fmt->flag_minus) {
     while (spaces-- > 0) *fmt->str++ = ' ';
   }
 
-  // For non-ASCII, print  ?
-  if (wc >= 0 && wc <= 127) *fmt->str++ = ((char)wc);
+  *fmt->str++ = ((char)wc);
 
   // Adds spaces to the right
   if (fmt->flag_minus) {
@@ -613,17 +649,9 @@ void handle_octal(Fmt *fmt) {
 void handle_string(Fmt *fmt) {
   if (s21_strcmp(fmt->length, "") == 0) {
     char *string = va_arg(fmt->args, char *);
-
-    char null_string[] = "(null)";
-    if (string == S21_NULL) string = null_string;
-
     insert_string(fmt, string);
   } else {
     wchar_t *wstr = va_arg(fmt->args, wchar_t *);
-
-    wchar_t null_wstr[] = L"(null)";
-    if (wstr == S21_NULL) wstr = null_wstr;
-
     insert_wstring(fmt, wstr);
   }
 }

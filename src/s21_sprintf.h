@@ -70,6 +70,9 @@ typedef struct Fmt {
     bool is_fractional_empty;
   } number;
 
+  // Exists solely for handeling when wchar_t is not in ASCII
+  // Immediately exits s21_printf and returns -1
+  bool is_error;
 } Fmt;
 
 int parse_int(const char **p);
@@ -77,8 +80,8 @@ void reset_fmt(Fmt *fmt);
 void invert_str(Fmt *fmt);
 
 void insert_number(Fmt *fmt);
-void insert_string(Fmt *fmt, char* passer);
-void insert_wstring(Fmt *fmt, wchar_t* passer);
+void insert_string(Fmt *fmt, char *string);
+void insert_wstring(Fmt *fmt, wchar_t *string);
 void insert_character(Fmt *fmt, char ch);
 void insert_wcharacter(Fmt *fmt, wchar_t ch);
 

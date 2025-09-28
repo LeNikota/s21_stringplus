@@ -2195,21 +2195,39 @@ START_TEST(test_string_null) {
   char buffer[100];
   char expected[100];
   int count, s21_count;
+  char *str_nulled = NULL;
 
-  // Test NULL string - use a safe way to handle NULL
-  strcpy(expected, "(null)");
-  s21_count = s21_sprintf(buffer, "%s", (char *)NULL);
+  // Test NULL string
+  count = sprintf(expected, "%s", str_nulled);
+  s21_count = s21_sprintf(buffer, "%s", str_nulled);
   ck_assert_str_eq(buffer, expected);
-  ck_assert_int_eq(s21_count, 6);
+  ck_assert_int_eq(s21_count, count);
 
-  // Test with precision on NULL - use a safe way to handle NULL
-  sprintf(expected, "%.3s", "(null)");
-  s21_count = s21_sprintf(buffer, "%.3s", (char *)NULL);
+  count = sprintf(expected, "%10.3s", str_nulled);
+  s21_count = s21_sprintf(buffer, "%10.3s", str_nulled);
   ck_assert_str_eq(buffer, expected);
-  ck_assert_int_eq(s21_count, 3);
+  ck_assert_int_eq(s21_count, count);
 
-  sprintf(expected, "%.10s", "(null)");
-  s21_count = s21_sprintf(buffer, "%.10s", (char *)NULL);
+  count = sprintf(expected, "%10.5s", str_nulled);
+  s21_count = s21_sprintf(buffer, "%10.5s", str_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
+  count = sprintf(expected, "%10.6s", str_nulled);
+  s21_count = s21_sprintf(buffer, "%10.6s", str_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
+  count = sprintf(expected, "%10.7s", str_nulled);
+  s21_count = s21_sprintf(buffer, "%10.7s", str_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
+  count = sprintf(expected, "%20.10s", str_nulled);
+  s21_count = s21_sprintf(buffer, "%20.10s", str_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(s21_count, count);
 }
@@ -2396,6 +2414,13 @@ START_TEST(test_string_format_combinations) {
   s21_count = s21_sprintf(buffer, "%s%d%s", "Number:", 123, ":End");
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
+
+  count = sprintf(expected, "%4.3s %4.6i %4.6g %4lc %4.6i %4lc %4.3s",
+                  "wow lol", 404, 404.607601, '^', 404, 'l', "wow lol");
+  s21_count = s21_sprintf(buffer, "%4.3s %4.6i %4.6g %4lc %4.6i %4lc %4.3s",
+                          "wow lol", 404, 404.607601, '^', 404, 'l', "wow lol");
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
 }
 END_TEST
 
@@ -2492,6 +2517,24 @@ START_TEST(test_char_string_mixed_formats) {
   // Format with precision and width combined
   count = sprintf(expected, "%10.3s", "HelloWorld");
   s21_count = s21_sprintf(buffer, "%10.3s", "HelloWorld");
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count =
+      sprintf(expected, "%4.3s %4.6i %4.6g %4lc %4.6i %4lc %4.3s", "wow lol",
+              404, 404.607601, (wint_t)L'€', 404, (wint_t)L'l', "wow lol");
+  s21_count =
+      s21_sprintf(buffer, "%4.3s %4.6i %4.6g %4lc %4.6i %4lc %4.3s", "wow lol",
+                  404, 404.607601, (wint_t)L'€', 404, (wint_t)L'l', "wow lol");
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  count =
+      sprintf(expected, "%4.3s %4.6i %4.6g %4lc %4.6i %4lc %4.3s", "wow lol",
+              404, 4046.6076, (wint_t)L'€', 404, (wint_t)L'l', "wow lol");
+  s21_count =
+      s21_sprintf(buffer, "%4.3s %4.6i %4.6g %4lc %4.6i %4lc %4.3s", "wow lol",
+                  404, 4046.6076, (wint_t)L'€', 404, (wint_t)L'l', "wow lol");
   ck_assert_str_eq(buffer, expected);
   ck_assert_int_eq(count, s21_count);
 }
@@ -2628,13 +2671,39 @@ START_TEST(test_wstr_null) {
   char buffer[100];
   char expected[100];
   int count, s21_count;
-  wchar_t *wstr = (wchar_t *)NULL;
+  wchar_t *wstr_nulled = (wchar_t *)NULL;
 
-  // Test NULL wide string
-  count = sprintf(expected, "%ls", wstr);
-  s21_count = s21_sprintf(buffer, "%ls", wstr);
+  // Test NULL string
+  count = sprintf(expected, "%ls", wstr_nulled);
+  s21_count = s21_sprintf(buffer, "%ls", wstr_nulled);
   ck_assert_str_eq(buffer, expected);
-  ck_assert_int_eq(count, s21_count);
+  ck_assert_int_eq(s21_count, count);
+
+  // Test with precision on NULL - use a safe way to handle NULL
+  count = sprintf(expected, "%10.3ls", wstr_nulled);
+  s21_count = s21_sprintf(buffer, "%10.3ls", wstr_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
+  count = sprintf(expected, "%10.5ls", wstr_nulled);
+  s21_count = s21_sprintf(buffer, "%10.5ls", wstr_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
+  count = sprintf(expected, "%10.6ls", wstr_nulled);
+  s21_count = s21_sprintf(buffer, "%10.6ls", wstr_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
+  count = sprintf(expected, "%10.7ls", wstr_nulled);
+  s21_count = s21_sprintf(buffer, "%10.7ls", wstr_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
+
+  count = sprintf(expected, "%20.10ls", wstr_nulled);
+  s21_count = s21_sprintf(buffer, "%20.10ls", wstr_nulled);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(s21_count, count);
 }
 END_TEST
 
