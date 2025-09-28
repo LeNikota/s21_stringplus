@@ -276,8 +276,6 @@ void convert_int_part(long double number, Fmt *fmt) {
 void convert_fractional_part(long double number, Fmt *fmt) {
   long double fractional_part = fmodl(number, 1.0);
 
-  if (fractional_part > 1e-15) fractional_part += 9e-13;
-
   for (int i = 0; i < fmt->precision + 1 && i < 5000; i++) {
     fractional_part *= 10.0;
     int digit = (int)fractional_part;
