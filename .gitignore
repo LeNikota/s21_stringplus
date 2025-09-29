@@ -59,8 +59,9 @@ dkms.conf
 .vscode
 s21_cat
 s21_grep
-test
+test_runner
 test_debugging
+objects
 coverage*
 *.gcno
 *.gcda

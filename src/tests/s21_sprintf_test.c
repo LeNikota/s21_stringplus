@@ -1,4 +1,4 @@
-#include "test.h"
+#include "test_runner.h"
 
 START_TEST(nulled_within_provided_string) {
   char buffer[100];

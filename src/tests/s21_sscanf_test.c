@@ -1,4 +1,4 @@
-#include "test.h"
+#include "test_runner.h"
 
 START_TEST(test_sscanf_basic_int) {
   int x1 = 0, x2 = 0;

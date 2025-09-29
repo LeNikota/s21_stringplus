@@ -1,4 +1,4 @@
-#include "test.h"
+#include "test_runner.h"
 
 // tests for specificator "c"
 START_TEST(s21_sprintf_c_1) {
