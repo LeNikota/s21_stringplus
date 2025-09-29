@@ -3045,7 +3045,6 @@ Suite *s21_sprintf_test(void) {
 
   // Wide characters and strings
   TCase *tc_wchar, *tc_wstr, *tc_wmixed;
-  s = suite_create("WidePrintf");
   // Wide character tests
   tc_wchar = tcase_create("WideChar");
   tcase_add_test(tc_wchar, test_wchar_basic);

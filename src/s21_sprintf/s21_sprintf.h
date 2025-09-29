@@ -104,6 +104,10 @@ void insert_exp(int exponent, Fmt *fmt);
 void remove_trailing_zeros(Fmt *fmt);
 long double round_to_precision(long double value, int precision);
 
+//
+// Converters
+//
+
 // Macro to convert an integer to a string
 // Note: After conversion number is inverted
 #define int_to_str(number, fmt)                        \
