@@ -62,6 +62,7 @@ s21_grep
 test_runner
 test_debugging
 objects
+test_io
 coverage*
 *.gcno
 *.gcda

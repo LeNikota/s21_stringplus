@@ -1,9 +1,9 @@
 #include "s21_sprintf.h"
 
 void insert_number(Fmt *fmt) {
-  bool is_zero_prepend = fmt->specifier == 'd' || fmt->specifier == 'i' ||
-                         fmt->specifier == 'u' || fmt->specifier == 'x' ||
-                         fmt->specifier == 'X' || fmt->specifier == 'o';
+  bool is_zero_prepend = !(fmt->specifier == 'f' || fmt->specifier == 'e' ||
+                           fmt->specifier == 'E' || fmt->specifier == 'g' ||
+                           fmt->specifier == 'G');
   bool is_hex =
       fmt->specifier == 'x' || fmt->specifier == 'X' || fmt->specifier == 'p';
   bool is_octal = fmt->specifier == 'o';
