@@ -73,6 +73,12 @@ typedef struct Fmt {
   // Exists solely for handeling when wchar_t is not in ASCII
   // Immediately exits s21_printf and returns -1
   bool is_error;
+  // The current implementation requires this two bools.
+  // Otherwise, NaN or infinity values will vanish after converting to long
+  // double in the handle_float(Fmt *fmt) function. Although the program may
+  // work, Valgrind will hang.
+  bool is_nan;
+  bool is_inf;
 } Fmt;
 
 int parse_int(const char **p);

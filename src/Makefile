@@ -50,7 +50,8 @@ debugging:
 
 leak: all
 	@gcc $(FLAGS) -o test_runner tests/test_runner.c $(filter-out tests/test_runner.c,$(TEST_SRC)) -I. -L. -l:s21_string.a -lcheck -lsubunit -lm
-	@valgrind --tool=memcheck --leak-check=yes --leak-check=full --show-leak-kinds=all --verbose  ./test_runner
+	@valgrind --tool=memcheck --leak-check=yes --leak-check=full --show-leak-kinds=all ./test_runner
+#	@valgrind --tool=memcheck --leak-check=yes --leak-check=full --show-leak-kinds=all --verbose ./test_runner
 
 gcov_report: clean
 	@mkdir -p objects

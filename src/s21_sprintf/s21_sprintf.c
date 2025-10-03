@@ -161,4 +161,7 @@ void reset_fmt(Fmt *fmt) {
   fmt->number.string_end = fmt->number.string;
   fmt->number.completely_rounded = false;
   fmt->number.is_fractional_empty = false;
+
+  fmt->is_nan = false;
+  fmt->is_inf = false;
 }

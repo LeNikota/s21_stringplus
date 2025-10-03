@@ -25,9 +25,17 @@ void handle_float(Fmt *fmt) {
   long double number = 0;
 
   if (s21_strcmp(fmt->length, "") == 0 || s21_strcmp(fmt->length, "l") == 0) {
-    number = (long double)va_arg(fmt->args, double);
+    double temp = va_arg(fmt->args, double);
+
+    if (isinf(temp)) fmt->is_inf = true;
+    if (isnan(temp)) fmt->is_nan = true;
+
+    number = (long double)temp;
   } else if (s21_strcmp(fmt->length, "L") == 0) {
     number = va_arg(fmt->args, long double);
+
+    if (isinf(number)) fmt->is_inf = true;
+    if (isnan(number)) fmt->is_nan = true;
   }
 
   float_to_str(number, fmt);

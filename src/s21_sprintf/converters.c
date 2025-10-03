@@ -16,16 +16,18 @@ void float_to_str(long double number, Fmt *fmt) {
     fmt->is_negative = 1;
   }
 
-  if (isnan(number)) {
+  if (fmt->is_nan) {
     *fmt->number.string_end++ = 'n';
     *fmt->number.string_end++ = 'a';
     *fmt->number.string_end++ = 'n';
+    *fmt->number.string_end = '\0';
     return;
   }
-  if (isinf(number)) {
+  if (fmt->is_inf) {
     *fmt->number.string_end++ = 'f';
     *fmt->number.string_end++ = 'n';
     *fmt->number.string_end++ = 'i';
+    *fmt->number.string_end = '\0';
     return;
   }
 
