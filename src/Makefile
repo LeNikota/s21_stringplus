@@ -46,7 +46,7 @@ test: all
 	@./test_runner
 
 debugging:
-	@gcc $(FLAGS) -o test_debugging $(ALL_SRC) $(filter-out tests/test_runner.c,$(TEST_SRC)) -I. -lcheck -lsubunit -lm -g
+	@gcc $(FLAGS) -o test_debugging tests/test_runner.c $(ALL_SRC) $(filter-out tests/test_runner.c,$(TEST_SRC)) -lcheck -lsubunit -lm -g
 
 leak: all
 	@gcc $(FLAGS) -o test_runner tests/test_runner.c $(filter-out tests/test_runner.c,$(TEST_SRC)) -I. -L. -l:s21_string.a -lcheck -lsubunit -lm

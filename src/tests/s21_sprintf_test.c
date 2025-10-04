@@ -1817,7 +1817,7 @@ START_TEST(test_g_specifier_with_width) {
 }
 END_TEST
 
-START_TEST(test_g_specifier_special_values) {
+START_TEST(test_g_specifier_special_values_float) {
   char buffer[1000];
   char expected[1000];
   double d;
@@ -1844,6 +1844,62 @@ START_TEST(test_g_specifier_special_values) {
   // For NaN, we can't do direct string comparison due to different
   // representations
   // but we can check that both contain "nan" (case insensitive)
+  ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
+START_TEST(test_g_specifier_special_values_double) {
+  char buffer[1000];
+  char expected[1000];
+  double d;
+  int count, s21_count;
+
+  // Test infinity
+  d = INFINITY;
+  count = sprintf(expected, "%g", d);
+  s21_count = s21_sprintf(buffer, "%g", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test negative infinity
+  d = -INFINITY;
+  count = sprintf(expected, "%g", d);
+  s21_count = s21_sprintf(buffer, "%g", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test NaN
+  d = NAN;
+  count = sprintf(expected, "%g", d);
+  s21_count = s21_sprintf(buffer, "%g", d);
+  ck_assert_int_eq(count, s21_count);
+}
+END_TEST
+
+START_TEST(test_g_specifier_special_values_long_double) {
+  char buffer[1000];
+  char expected[1000];
+  long double d;
+  int count, s21_count;
+
+  // Test infinity
+  d = INFINITY;
+  count = sprintf(expected, "%Lg", d);
+  s21_count = s21_sprintf(buffer, "%Lg", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test negative infinity
+  d = -INFINITY;
+  count = sprintf(expected, "%Lg", d);
+  s21_count = s21_sprintf(buffer, "%Lg", d);
+  ck_assert_str_eq(buffer, expected);
+  ck_assert_int_eq(count, s21_count);
+
+  // Test NaN
+  d = NAN;
+  count = sprintf(expected, "%Lg", d);
+  s21_count = s21_sprintf(buffer, "%Lg", d);
   ck_assert_int_eq(count, s21_count);
 }
 END_TEST
@@ -3033,7 +3089,7 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc, test_s21_sprintf_spaces_after_star);
   tcase_add_test(tc, test_s21_sprintf_zero_padding);
   tcase_add_test(tc, test_sprintf_external);
-  // %g and %G tests
+
   tcase_add_test(tc, test_g_specifier_basic);
   tcase_add_test(tc, test_g_specifier_precision);
   tcase_add_test(tc, test_g_specifier_edge_cases);
@@ -3041,7 +3097,9 @@ Suite *s21_sprintf_test(void) {
   tcase_add_test(tc, test_g_specifier_with_flags);
   tcase_add_test(tc, test_g_specifier_large_small_numbers);
   tcase_add_test(tc, test_g_specifier_with_width);
-  tcase_add_test(tc, test_g_specifier_special_values);
+  tcase_add_test(tc, test_g_specifier_special_values_float);
+  tcase_add_test(tc, test_g_specifier_special_values_double);
+  tcase_add_test(tc, test_g_specifier_special_values_long_double);
 
   // Wide characters and strings
   TCase *tc_wchar, *tc_wstr, *tc_wmixed;

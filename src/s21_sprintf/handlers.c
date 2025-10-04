@@ -34,7 +34,8 @@ void handle_float(Fmt *fmt) {
   } else if (s21_strcmp(fmt->length, "L") == 0) {
     number = va_arg(fmt->args, long double);
 
-    if (isinf(number)) fmt->is_inf = true;
+    if (isinf(number) || number == INFINITY || number == -INFINITY)
+      fmt->is_inf = true;
     if (isnan(number)) fmt->is_nan = true;
   }
 
