@@ -26,6 +26,7 @@ Suite *s21_to_lower_test(void);
 Suite *s21_to_upper_test(void);
 Suite *s21_trim_test(void);
 Suite *s21_sprintf_test(void);
-Suite *s21_sprintf_excruciating_test(void);
+Suite *s21_sprintf_excruciating_int_test(void);
+Suite *s21_sprintf_excruciating_str_test(void);
 Suite *s21_sprintf_external_test(void);
 Suite *s21_sscanf_test(void);

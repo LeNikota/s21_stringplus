@@ -1,22 +1,24 @@
 #include "test_runner.h"
 
-typedef struct IntTypes {
+struct IntTypes {
   int i;
   long li;
   long long lli;
   short hi;
   char hhi;
-} IntTypes;
+};
 
-int width[] = {0, 1, 10, 100, -1, -10, -100};
-int precision[] = {0, 1, 10, 100, -1};
-IntTypes num[] = {{0, 0L, 0LL, 0, 0},
-                  {INT_MAX, LONG_MAX, LLONG_MAX, SHRT_MAX, CHAR_MAX},
-                  {INT_MIN, LONG_MIN, LLONG_MIN, SHRT_MIN, CHAR_MIN}};
+typedef struct IntTypes IntTypes;
 
-size_t num_count = sizeof(num) / sizeof(num[0]);
-size_t width_count = sizeof(width) / sizeof(width[0]);
-size_t precision_count = sizeof(precision) / sizeof(precision[0]);
+static int width[] = {0, 1, 10, 100, -1, -10, -100};
+static int precision[] = {0, 1, 10, 100, -1};
+static IntTypes num[] = {{0, 0L, 0LL, 0, 0},
+                         {INT_MAX, LONG_MAX, LLONG_MAX, SHRT_MAX, CHAR_MAX},
+                         {INT_MIN, LONG_MIN, LLONG_MIN, SHRT_MIN, CHAR_MIN}};
+
+static size_t num_count = sizeof(num) / sizeof(num[0]);
+static size_t width_count = sizeof(width) / sizeof(width[0]);
+static size_t precision_count = sizeof(precision) / sizeof(precision[0]);
 
 // Experimental
 // START_TEST(test_string) {
@@ -272,6 +274,7 @@ START_TEST(test_string_zero_AND_space) {
     ck_assert_int_eq(count, s21_count);
   }
 }
+
 // Zero AND Hash
 START_TEST(test_string_zero_AND_hash) {
   char buffer[5000];
@@ -363,8 +366,8 @@ START_TEST(test_string_precision) {
   int count, s21_count;
 
   for (size_t i = 0; i < num_count; i++) {
-    for (size_t j = 0; j < width_count; j++) {
-      int p = precision[j];
+    for (size_t k = 0; k < precision_count; k++) {
+      int p = precision[k];
 
       count = sprintf(expected, "%.*d %.*ld %.*lld %.*hd %.*hhd", p, num[i].i,
                       p, num[i].li, p, num[i].lli, p, num[i].hi, p, num[i].hhi);
@@ -418,53 +421,55 @@ START_TEST(test_string_precision_AND_width) {
 
   for (size_t i = 0; i < num_count; i++) {
     for (size_t j = 0; j < width_count; j++) {
-      int w = width[j];
-      int p = precision[j];
+      for (size_t k = 0; k < precision_count; k++) {
+        int w = width[j];
+        int p = precision[k];
 
-      count = sprintf(expected, "%*.*d %*.*ld %*.*lld %*.*hd %*.*hhd", w, p,
-                      num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(buffer, "%*.*d %*.*ld %*.*lld %*.*hd %*.*hhd", w,
-                              p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w,
-                              p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%*.*d %*.*ld %*.*lld %*.*hd %*.*hhd", w, p,
+                        num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count = s21_sprintf(buffer, "%*.*d %*.*ld %*.*lld %*.*hd %*.*hhd",
+                                w, p, num[i].i, w, p, num[i].li, w, p,
+                                num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
 
-      count = sprintf(expected, "%*.*o %*.*lo %*.*llo %*.*ho %*.*hho", w, p,
-                      num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(buffer, "%*.*o %*.*lo %*.*llo %*.*ho %*.*hho", w,
-                              p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w,
-                              p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%*.*o %*.*lo %*.*llo %*.*ho %*.*hho", w, p,
+                        num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count = s21_sprintf(buffer, "%*.*o %*.*lo %*.*llo %*.*ho %*.*hho",
+                                w, p, num[i].i, w, p, num[i].li, w, p,
+                                num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
 
-      count = sprintf(expected, "%*.*x %*.*lx %*.*llx %*.*hx %*.*hhx", w, p,
-                      num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(buffer, "%*.*x %*.*lx %*.*llx %*.*hx %*.*hhx", w,
-                              p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w,
-                              p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%*.*x %*.*lx %*.*llx %*.*hx %*.*hhx", w, p,
+                        num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count = s21_sprintf(buffer, "%*.*x %*.*lx %*.*llx %*.*hx %*.*hhx",
+                                w, p, num[i].i, w, p, num[i].li, w, p,
+                                num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
 
-      count = sprintf(expected, "%*.*X %*.*lX %*.*llX %*.*hX %*.*hhX", w, p,
-                      num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(buffer, "%*.*X %*.*lX %*.*llX %*.*hX %*.*hhX", w,
-                              p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w,
-                              p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%*.*X %*.*lX %*.*llX %*.*hX %*.*hhX", w, p,
+                        num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count = s21_sprintf(buffer, "%*.*X %*.*lX %*.*llX %*.*hX %*.*hhX",
+                                w, p, num[i].i, w, p, num[i].li, w, p,
+                                num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
 
-      count = sprintf(expected, "%*.*u %*.*lu %*.*llu %*.*hu %*.*hhu", w, p,
-                      num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(buffer, "%*.*u %*.*lu %*.*llu %*.*hu %*.*hhu", w,
-                              p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w,
-                              p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%*.*u %*.*lu %*.*llu %*.*hu %*.*hhu", w, p,
+                        num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count = s21_sprintf(buffer, "%*.*u %*.*lu %*.*llu %*.*hu %*.*hhu",
+                                w, p, num[i].i, w, p, num[i].li, w, p,
+                                num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
+      }
     }
   }
 }
@@ -559,8 +564,8 @@ START_TEST(test_string_precision_AND_plus) {
   int count, s21_count;
 
   for (size_t i = 0; i < num_count; i++) {
-    for (size_t j = 0; j < width_count; j++) {
-      int p = precision[j];
+    for (size_t k = 0; k < precision_count; k++) {
+      int p = precision[k];
 
       count =
           sprintf(expected, "%+.*d %+.*ld %+.*lld %+.*hd %+.*hhd", p, num[i].i,
@@ -582,8 +587,8 @@ START_TEST(test_string_precision_AND_space) {
   int count, s21_count;
 
   for (size_t i = 0; i < num_count; i++) {
-    for (size_t j = 0; j < width_count; j++) {
-      int p = precision[j];
+    for (size_t k = 0; k < precision_count; k++) {
+      int p = precision[k];
 
       count =
           sprintf(expected, "% .*d % .*ld % .*lld % .*hd % .*hhd", p, num[i].i,
@@ -605,8 +610,8 @@ START_TEST(test_string_precision_AND_hash) {
   int count, s21_count;
 
   for (size_t i = 0; i < num_count; i++) {
-    for (size_t j = 0; j < width_count; j++) {
-      int p = precision[j];
+    for (size_t k = 0; k < precision_count; k++) {
+      int p = precision[k];
 
       count =
           sprintf(expected, "%#.*o %#.*lo %#.*llo %#.*ho %#.*hho", p, num[i].i,
@@ -734,17 +739,20 @@ START_TEST(test_string_precision_AND_width_AND_plus) {
 
   for (size_t i = 0; i < num_count; i++) {
     for (size_t j = 0; j < width_count; j++) {
-      int w = width[j];
-      int p = precision[j];
+      for (size_t k = 0; k < precision_count; k++) {
+        int w = width[j];
+        int p = precision[k];
 
-      count = sprintf(expected, "%+*.*d %+*.*ld %+*.*lld %+*.*hd %+*.*hhd", w,
-                      p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(
-          buffer, "%+*.*d %+*.*ld %+*.*lld %+*.*hd %+*.*hhd", w, p, num[i].i, w,
-          p, num[i].li, w, p, num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%+*.*d %+*.*ld %+*.*lld %+*.*hd %+*.*hhd", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count =
+            s21_sprintf(buffer, "%+*.*d %+*.*ld %+*.*lld %+*.*hd %+*.*hhd", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
+      }
     }
   }
 }
@@ -758,17 +766,20 @@ START_TEST(test_string_precision_AND_width_AND_space) {
 
   for (size_t i = 0; i < num_count; i++) {
     for (size_t j = 0; j < width_count; j++) {
-      int w = width[j];
-      int p = precision[j];
+      for (size_t k = 0; k < precision_count; k++) {
+        int w = width[j];
+        int p = precision[k];
 
-      count = sprintf(expected, "% *.*d % *.*ld % *.*lld % *.*hd % *.*hhd", w,
-                      p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(
-          buffer, "% *.*d % *.*ld % *.*lld % *.*hd % *.*hhd", w, p, num[i].i, w,
-          p, num[i].li, w, p, num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "% *.*d % *.*ld % *.*lld % *.*hd % *.*hhd", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count =
+            s21_sprintf(buffer, "% *.*d % *.*ld % *.*lld % *.*hd % *.*hhd", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
+      }
     }
   }
 }
@@ -782,35 +793,40 @@ START_TEST(test_string_precision_AND_width_AND_hash) {
 
   for (size_t i = 0; i < num_count; i++) {
     for (size_t j = 0; j < width_count; j++) {
-      int w = width[j];
-      int p = precision[j];
+      for (size_t k = 0; k < precision_count; k++) {
+        int w = width[j];
+        int p = precision[k];
 
-      count = sprintf(expected, "%#*.*o %#*.*lo %#*.*llo %#*.*ho %#*.*hho", w,
-                      p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(
-          buffer, "%#*.*o %#*.*lo %#*.*llo %#*.*ho %#*.*hho", w, p, num[i].i, w,
-          p, num[i].li, w, p, num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%#*.*o %#*.*lo %#*.*llo %#*.*ho %#*.*hho", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count =
+            s21_sprintf(buffer, "%#*.*o %#*.*lo %#*.*llo %#*.*ho %#*.*hho", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
 
-      count = sprintf(expected, "%#*.*x %#*.*lx %#*.*llx %#*.*hx %#*.*hhx", w,
-                      p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(
-          buffer, "%#*.*x %#*.*lx %#*.*llx %#*.*hx %#*.*hhx", w, p, num[i].i, w,
-          p, num[i].li, w, p, num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%#*.*x %#*.*lx %#*.*llx %#*.*hx %#*.*hhx", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count =
+            s21_sprintf(buffer, "%#*.*x %#*.*lx %#*.*llx %#*.*hx %#*.*hhx", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
 
-      count = sprintf(expected, "%#*.*X %#*.*lX %#*.*llX %#*.*hX %#*.*hhX", w,
-                      p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
-                      num[i].hi, w, p, num[i].hhi);
-      s21_count = s21_sprintf(
-          buffer, "%#*.*X %#*.*lX %#*.*llX %#*.*hX %#*.*hhX", w, p, num[i].i, w,
-          p, num[i].li, w, p, num[i].lli, w, p, num[i].hi, w, p, num[i].hhi);
-      ck_assert_str_eq(buffer, expected);
-      ck_assert_int_eq(count, s21_count);
+        count = sprintf(expected, "%#*.*X %#*.*lX %#*.*llX %#*.*hX %#*.*hhX", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        s21_count =
+            s21_sprintf(buffer, "%#*.*X %#*.*lX %#*.*llX %#*.*hX %#*.*hhX", w,
+                        p, num[i].i, w, p, num[i].li, w, p, num[i].lli, w, p,
+                        num[i].hi, w, p, num[i].hhi);
+        ck_assert_str_eq(buffer, expected);
+        ck_assert_int_eq(count, s21_count);
+      }
     }
   }
 }
@@ -840,8 +856,8 @@ START_TEST(test_count_specifier) {
   ck_assert_int_eq(n4, n6);
 }
 
-Suite *s21_sprintf_excruciating_test(void) {
-  Suite *s = suite_create("s21_sprintf_excruciating_test");
+Suite *s21_sprintf_excruciating_int_test(void) {
+  Suite *s = suite_create("s21_sprintf_excruciating_int_test");
   TCase *tc_d = tcase_create("All");
 
   tcase_add_test(tc_d, test_string);
