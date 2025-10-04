@@ -37,7 +37,7 @@ objects/%.o: s21_sscanf/%.c | object_dir
 	@gcc $(FLAGS) $(TEST_FLAGS) -c $< -o $@
 
 clean:
-	@rm -rf objects/ *.gcno *.gcda coverage* s21_string.a test_runner test test_debugging coverage_html coverage.info
+	@rm -rf objects/ *.gcno *.gcda coverage* s21_string.a test_runner test test_debugging coverage_html coverage.info test_io ../test_io
 
 
 # Testing
