@@ -135,17 +135,16 @@ void handle_pointer(Fmt *fmt) {
   unsigned long address = (unsigned long)ptr;
 
   if (address == 0) {
-    *fmt->str++ = '(';
-    *fmt->str++ = 'n';
-    *fmt->str++ = 'i';
-    *fmt->str++ = 'l';
-    *fmt->str++ = ')';
-    *fmt->str = '\0';
-    return;
+    *fmt->number.string_end++ = ')';
+    *fmt->number.string_end++ = 'l';
+    *fmt->number.string_end++ = 'i';
+    *fmt->number.string_end++ = 'n';
+    *fmt->number.string_end++ = '(';
+    *fmt->number.string_end = '\0';
+  } else {
+    fmt->flag_base = true;
+    hexadecimal_to_str(address, 'a', fmt);
   }
-
-  fmt->flag_base = true;
-  hexadecimal_to_str(address, 'a', fmt);
 
   insert_number(fmt);
 }
