@@ -8,7 +8,7 @@ struct StrTypes {
 typedef struct StrTypes StrTypes;
 
 static int width[] = {0, 1, 10, 100, -1, -10, -100};
-static int precision[] = {0, 1, 10, 100, -1};
+static int precision[] = {0, 1, 10, 100, -1, -3, -10};
 static StrTypes str[] = {
     {"T", 'T'},
     {"t", 't'},

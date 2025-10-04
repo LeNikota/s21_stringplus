@@ -106,8 +106,8 @@ void insert_string(Fmt *fmt, char *string) {
   }
 
   int written = s21_strlen(string);
-  int spaces = (precision > 0 && precision <= written) ? fmt->width - precision
-                                                       : fmt->width - written;
+  int spaces = (precision >= 0 && precision <= written) ? fmt->width - precision
+                                                        : fmt->width - written;
 
   // Adds spaces to the left
   if (!fmt->flag_minus) {

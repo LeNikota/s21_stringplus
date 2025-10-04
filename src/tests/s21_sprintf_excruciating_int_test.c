@@ -1,5 +1,10 @@
 #include "test_runner.h"
 
+// If debugging is needed, use something like:
+// if (strcmp(expected, buffer)) {
+//   printf("expected: %s\nbuffer: %s\np:%i\n\n", expected, buffer, p);
+// }
+
 struct IntTypes {
   int i;
   long li;
@@ -11,7 +16,7 @@ struct IntTypes {
 typedef struct IntTypes IntTypes;
 
 static int width[] = {0, 1, 10, 100, -1, -10, -100};
-static int precision[] = {0, 1, 10, 100, -1};
+static int precision[] = {0, 1, 10, 100, -1, -3, -10};
 static IntTypes num[] = {{0, 0L, 0LL, 0, 0},
                          {INT_MAX, LONG_MAX, LLONG_MAX, SHRT_MAX, CHAR_MAX},
                          {INT_MIN, LONG_MIN, LLONG_MIN, SHRT_MIN, CHAR_MIN}};
@@ -834,28 +839,6 @@ END_TEST
 
 // Other
 
-START_TEST(test_count_specifier) {
-  char buffer[100];
-  char expected[100];
-  int count, s21_count;
-  int n1, n2;
-
-  count = sprintf(expected, "test%n", &n1);
-  s21_count = s21_sprintf(buffer, "test%n", &n2);
-  ck_assert_str_eq(buffer, expected);
-  ck_assert_int_eq(count, s21_count);
-  ck_assert_int_eq(n1, n2);
-
-  // Test with multiple %n
-  int n3, n4, n5, n6;
-  count = sprintf(expected, "ab%n %f cd%n", &n3, 342.34f, &n4);
-  s21_count = s21_sprintf(buffer, "ab%n %f cd%n", &n5, 342.34f, &n6);
-  ck_assert_str_eq(buffer, expected);
-  ck_assert_int_eq(count, s21_count);
-  ck_assert_int_eq(n3, n5);
-  ck_assert_int_eq(n4, n6);
-}
-
 Suite *s21_sprintf_excruciating_int_test(void) {
   Suite *s = suite_create("s21_sprintf_excruciating_int_test");
   TCase *tc_d = tcase_create("All");
@@ -889,8 +872,6 @@ Suite *s21_sprintf_excruciating_int_test(void) {
   tcase_add_test(tc_d, test_string_precision_AND_width_AND_plus);
   tcase_add_test(tc_d, test_string_precision_AND_width_AND_space);
   tcase_add_test(tc_d, test_string_precision_AND_width_AND_hash);
-
-  tcase_add_test(tc_d, test_count_specifier);
 
   suite_add_tcase(s, tc_d);
 

@@ -56,7 +56,6 @@ int s21_sprintf(char *str, const char *format, ...) {
         fmt.precision = parse_int(&p);
         fmt.is_precision_specified = true;
       }
-      if (fmt.precision < 0) fmt.precision = 6;
 
       // Handle length modifier
       if (*p == 'h' || *p == 'l' || *p == 'L') {
@@ -73,6 +72,14 @@ int s21_sprintf(char *str, const char *format, ...) {
 
       // Handle the format specifier
       fmt.specifier = *p;
+
+      if (fmt.precision < 0) {
+        if (fmt.specifier == 'f' || fmt.specifier == 'e' ||
+            fmt.specifier == 'E' || fmt.specifier == 'g' ||
+            fmt.specifier == 'G')
+          fmt.precision = 6;
+        fmt.is_precision_specified = false;
+      }
 
       // Process the specifier
       switch (fmt.specifier) {
