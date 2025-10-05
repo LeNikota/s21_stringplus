@@ -39,8 +39,9 @@ void handle_float(Fmt *fmt) {
     if (isnan(number)) fmt->is_nan = true;
   }
 
-  float_to_str(number, fmt);
+  if (fmt->is_inf || fmt->is_nan) fmt->flag_zero = false;
 
+  float_to_str(number, fmt);
   insert_number(fmt);
 }
 
