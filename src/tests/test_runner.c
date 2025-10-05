@@ -25,6 +25,7 @@ int main(void) {
       s21_sprintf_test(),
       s21_sprintf_excruciating_int_test(),
       s21_sprintf_excruciating_str_test(),
+      s21_sprintf_excruciating_float_test(),
       s21_sprintf_external_test(),
       s21_sscanf_test(),
       NULL  // Завершающий элемент массива

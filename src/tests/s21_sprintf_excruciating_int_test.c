@@ -933,8 +933,6 @@ START_TEST(test_number_pointer) {
 }
 END_TEST
 
-// Other
-
 Suite *s21_sprintf_excruciating_int_test(void) {
   Suite *s = suite_create("s21_sprintf_excruciating_int_test");
   TCase *tc_d = tcase_create("All");

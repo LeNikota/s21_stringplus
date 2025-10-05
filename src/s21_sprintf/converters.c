@@ -163,6 +163,7 @@ void insert_exp(int exponent, Fmt *fmt) {
   char exp_sign = fmt->specifier == 'g' || fmt->specifier == 'e' ? 'e' : 'E';
 
   bool is_exponent_negative = exponent < 0;
+  if (is_exponent_negative) exponent = abs(exponent);
   bool is_exponent_digit = exponent < 10;
 
   do {
