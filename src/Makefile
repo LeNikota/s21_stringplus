@@ -59,12 +59,13 @@ gcov_report: clean
 
 	# Create directory for coverage data files
 	@mkdir -p coverage_data
+
 	# Copy coverage files to the coverage_data directory
 	@find . -name "*.gcno" -exec mv {} coverage_data/ \; 2>/dev/null || true
 	@find . -name "*.gcda" -exec mv {} coverage_data/ \; 2>/dev/null || true
 
 	# Generate coverage report
-	@lcov --capture --directory . --output-file coverage.info
+	@lcov --capture --directory . --output-file coverage.info --exclude '*/tests/*'
 	@genhtml coverage.info --output-directory coverage_html
 	@echo "Coverage report generated in coverage_html/index.html"
 	@echo "Coverage data files (.gcno, .gcda) copied to coverage_data/ directory"
