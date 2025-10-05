@@ -39,19 +39,13 @@ void insert_number(Fmt *fmt) {
   if (fmt->specifier == 'u' || is_hex) sign_length = 0;  // unsigned, no sign
   total_chars += sign_length;
 
-  // Add prefix if needed - SPECIAL HANDLING FOR OCTAL WITH PRECISION
   int prefix_length = 0;
-  bool need_octal_prefix = false;
-
   if (fmt->flag_base) {
     if (is_hex) {
       prefix_length = 2;  // "0x" or "0X"
     } else if (is_octal) {
-      // For octal: only add prefix if it doesn't duplicate precision zero
-      // If precision already adds a leading zero, don't add another one
-      if (precision_zeros == 0 && *string_start != '0') {
+      if (precision_zeros == 0) {
         prefix_length = 1;  // "0"
-        need_octal_prefix = true;
       }
     }
   }
@@ -74,7 +68,7 @@ void insert_number(Fmt *fmt) {
     if (is_hex) {
       *fmt->str++ = '0';
       *fmt->str++ = (fmt->specifier == 'X') ? 'X' : 'x';
-    } else if (is_octal && need_octal_prefix) {
+    } else if (is_octal) {
       *fmt->str++ = '0';
     }
   }

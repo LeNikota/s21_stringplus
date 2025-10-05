@@ -114,52 +114,70 @@ long double round_to_precision(long double value, int precision);
 // Converters
 //
 
+// The if (!(number == 0 && fmt->is_precision_specified && fmt->precision == 0))
+// is necessary when the user specifies a precision of 0 and the number is 0.
+// In this case, we output no number, as per the sprintf documentation.
+
 // Macro to convert an integer to a string
 // Note: After conversion number is inverted
-#define int_to_str(number, fmt)                        \
-  fmt->is_negative = number < 0;                       \
-                                                       \
-  if (fmt->is_negative) {                              \
-    int mod = number % 10;                             \
-    mod = -mod;                                        \
-    *fmt->number.string_end++ = mod + '0';             \
-                                                       \
-    number /= 10;                                      \
-    number = -number;                                  \
-                                                       \
-    while (number > 0) {                               \
-      *fmt->number.string_end++ = (number % 10) + '0'; \
-      number /= 10;                                    \
-    }                                                  \
-  } else {                                             \
-    do {                                               \
-      *fmt->number.string_end++ = (number % 10) + '0'; \
-      number /= 10;                                    \
-    } while (number > 0);                              \
+#define int_to_str(number, fmt)                                               \
+  if (!(number == 0 && fmt->is_precision_specified && fmt->precision == 0)) { \
+    fmt->is_negative = number < 0;                                            \
+                                                                              \
+    if (fmt->is_negative) {                                                   \
+      int mod = number % 10;                                                  \
+      mod = -mod;                                                             \
+      *fmt->number.string_end++ = mod + '0';                                  \
+                                                                              \
+      number /= 10;                                                           \
+      number = -number;                                                       \
+                                                                              \
+      while (number > 0) {                                                    \
+        *fmt->number.string_end++ = (number % 10) + '0';                      \
+        number /= 10;                                                         \
+      }                                                                       \
+    } else {                                                                  \
+      do {                                                                    \
+        *fmt->number.string_end++ = (number % 10) + '0';                      \
+        number /= 10;                                                         \
+      } while (number > 0);                                                   \
+    }                                                                         \
   }
 
 // Macro to convert an unsigned integer to a string
-#define unsigned_int_to_str(number, fmt)             \
-  do {                                               \
-    *fmt->number.string_end++ = (number % 10) + '0'; \
-    number /= 10;                                    \
-  } while (number > 0);
+#define unsigned_int_to_str(number, fmt)                                      \
+  if (!(number == 0 && fmt->is_precision_specified && fmt->precision == 0)) { \
+    do {                                                                      \
+      *fmt->number.string_end++ = (number % 10) + '0';                        \
+      number /= 10;                                                           \
+    } while (number > 0);                                                     \
+  }
 
 // Macro to convert a hexadecimal number to a string
-#define hexadecimal_to_str(hex, hex_case, fmt)                  \
-  do {                                                          \
-    if ((hex % 16) < 10) {                                      \
-      *fmt->number.string_end++ = '0' + (hex % 16);             \
-    } else {                                                    \
-      *fmt->number.string_end++ = hex_case + ((hex % 16) - 10); \
-    }                                                           \
-                                                                \
-    hex /= 16;                                                  \
-  } while (hex > 0);
+#define hexadecimal_to_str(hex, hex_case, fmt)                             \
+  if (!(hex == 0 && fmt->is_precision_specified && fmt->precision == 0)) { \
+    if (hex == 0)                                                          \
+      fmt->flag_base = false; /* Make insert_number not output  0x */      \
+    do {                                                                   \
+      if ((hex % 16) < 10) {                                               \
+        *fmt->number.string_end++ = '0' + (hex % 16);                      \
+      } else {                                                             \
+        *fmt->number.string_end++ = hex_case + ((hex % 16) - 10);          \
+      }                                                                    \
+                                                                           \
+      hex /= 16;                                                           \
+    } while (hex > 0);                                                     \
+  } else {                                                                 \
+    fmt->flag_base = false; /* Make insert_number not output  0x */        \
+  }
 
 // Macro to convert an octal number to a string
-#define octal_to_str(number, fmt)                   \
-  do {                                              \
-    *fmt->number.string_end++ = '0' + (number % 8); \
-    number /= 8;                                    \
-  } while (number > 0);
+#define octal_to_str(number, fmt)                                             \
+  if (!(number == 0 && fmt->is_precision_specified && fmt->precision == 0)) { \
+    if (number == 0)                                                          \
+      fmt->flag_base = false; /* Make insert_number not output  0 */          \
+    do {                                                                      \
+      *fmt->number.string_end++ = '0' + (number % 8);                         \
+      number /= 8;                                                            \
+    } while (number > 0);                                                     \
+  }
